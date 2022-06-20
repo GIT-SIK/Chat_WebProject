@@ -42,7 +42,7 @@ out/
 ### Vue ###
 **/.DS_Store
 node_modules
-**/vue/dist
+**/dist
 
 
 # local env files
