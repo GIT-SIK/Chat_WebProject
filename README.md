@@ -35,8 +35,8 @@ json-server --watch file.json [--port 3001]
 
 * #### 패키지 (package.json) 내 터미널 실행
 ```
-"scripts": { <br>
-  "db": "json-server --watch file.json [--port 3001]" <br>
+"scripts": {
+  "db": "json-server --watch file.json [--port 3001]"
 }
 ```
 ```
