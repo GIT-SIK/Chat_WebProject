@@ -26,20 +26,47 @@ npm run build
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 ```
 
+
+
+### (package.json) Vue CLI
+```
+"scripts": {
+  "serve": "vue-cli-service serve",
+  "build": "vue-cli-service build",
+  "lint": "vue-cli-service lint"
+ }
+```
+### (package.json) Vite
+```
+"scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview"
+}
+```
+
+
+
 # json-server
 
 * #### Json-server Start
 ```
 json-server --watch file.json [--port 3001]
 ```
-
-* #### 패키지 (package.json) 내 터미널 실행
-```
-"scripts": {
-  "db": "json-server --watch file.json [--port 3001]"
-}
-```
 ```
 npm run db
 ```
-  
+
+
+# json-server + vite
+* #### Json-server + vite
+```
+npm install concurrently --save-dev
+```
+
+* #### 패키지 (package.json) 추가
+```
+"scripts": {
+  "dev": "concurrently \"json-server --watch db.json --port 3001\" \"vite\""
+}
+```
