@@ -6,18 +6,20 @@
   <div v-else-if="error">{{ error }}</div>
   <div v-else>
     <table>
-      <tr>
-        <td>id</td>
-        <td>{{ apiData.id }}</td>
-      </tr>
-      <tr>
-        <td>title</td>
-        <td>{{ apiData.title }}</td>
-      </tr>
-      <tr>
-        <td>content</td>
-        <td>{{ apiData.content }}</td>
-      </tr>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td>{{ apiData.id }}</td>
+        </tr>
+        <tr>
+          <td>title</td>
+          <td>{{ apiData.title }}</td>
+        </tr>
+        <tr>
+          <td>content</td>
+          <td>{{ apiData.content }}</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </template>
