@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from 'axios'
 
-const baseURL = 'http://localhost:3001/';
+const baseURL = 'http://localhost:3001/'
 
 const axiosInst = axios.create({
   baseURL: baseURL,
@@ -8,30 +8,26 @@ const axiosInst = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
 
 axiosInst.interceptors.response.use(
   (response) => {
-    return response;
-  }, 
+    return response
+  },
   (error) => {
-    console.error('API ERROR:', error.response || error.message);
-    return Promise.reject(error.response || error.message);
-  }
-);
+    console.error('API ERROR:', error.response || error.message)
+    return Promise.reject(error.response || error.message)
+  },
+)
 
 const api = {
-  get: (url, params = {}, config = {}) =>
-    axiosInst.get(url, { params, ...config }),
+  get: (url, params = {}, config = {}) => axiosInst.get(url, { params, ...config }),
 
-  post: (url, data = {}, config = {}) =>
-    axiosInst.post(url, data, config),
+  post: (url, data = {}, config = {}) => axiosInst.post(url, data, config),
 
-  put: (url, data = {}, config = {}) =>
-    axiosInst.put(url, data, config),
+  put: (url, data = {}, config = {}) => axiosInst.put(url, data, config),
 
-  delete: (url, config = {}) =>
-    axiosInst.delete(url, config),
-};
+  delete: (url, config = {}) => axiosInst.delete(url, config),
+}
 
-export default api;
+export default api
