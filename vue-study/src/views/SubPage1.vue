@@ -1,7 +1,7 @@
 <template>
   <div>SubPage1</div>
-  <button @click="fetchApi(1)">1</button>
-  <button @click="fetchApi(2)">2</button>
+  <BaseButton class="primary" @click="fetchApi(1)" />
+  <BaseButton class="danger" @click="fetchApi(2)" />
   <div v-if="loading"></div>
   <div v-else-if="error">{{ error }}</div>
   <div v-else>
