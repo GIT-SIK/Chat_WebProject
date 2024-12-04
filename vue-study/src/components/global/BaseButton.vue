@@ -1,5 +1,5 @@
 <template>
-  <button :class="['custom-button', type]" :disabled="disabled">클릭</button>
+  <button :class="['custom-button', type]" :disabled="disabled"><slot></slot></button>
 </template>
 
 <script>

@@ -30,7 +30,7 @@ const loadComponents = async () => {
       app.component(componentName, module.default)
     }
   } catch (error) {
-    console.error('Error loading global components:', error)
+    console.error('[main.js] Error loading global components:', error)
   }
 }
 loadComponents().then(() => {

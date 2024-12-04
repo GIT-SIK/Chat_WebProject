@@ -15,7 +15,7 @@ axiosInst.interceptors.response.use(
     return response
   },
   (error) => {
-    console.error('API ERROR:', error.response || error.message)
+    console.error('[api.js] API ERROR:', error.response || error.message)
     return Promise.reject(error.response || error.message)
   },
 )
