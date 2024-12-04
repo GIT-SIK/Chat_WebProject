@@ -29,22 +29,34 @@ export default {
 }
 
 .custom-button.primary {
-  background-color: #007bff;
-  color: black;
+  background-color: lightskyblue;
+  color: white;
+}
+
+.custom-button.primary:hover {
+  background-color: lightblue;
 }
 
 .custom-button.secondary {
   background-color: #6c757d;
-  color: black;
+  color: white;
 }
 
 .custom-button.danger {
   background-color: #dc3545;
-  color: black;
+  color: white;
+}
+
+.custom-button.danger:hover {
+  background-color: lightcoral;
 }
 
 .custom-button:disabled {
   background-color: #dcdcdc;
   cursor: not-allowed;
+}
+
+.custom-button:active {
+  box-shadow: inset 1.5px 1.5px 10px rgb(0, 0, 0, 0.5);
 }
 </style>
