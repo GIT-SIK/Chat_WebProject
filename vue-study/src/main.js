@@ -11,12 +11,12 @@ app.config.globalProperties.$api = api
 /* 공통 뷰 전역 지정*/
 const globalComponents = import.meta.glob('@/components/global/*.vue')
 
-Object.entries(globalComponents).forEach(([path, loader]) => {
-  // path: '@/components/global/*.vue'
-  // loader: (Promise) 비동기 함수
-  loader()
-    .then((module) => {
-      // module: Component 전체 모듈 정보
+const loadComponents = async () => {
+  // async -> await
+  try {
+    for (const [path, loader] of Object.entries(globalComponents)) {
+      const module = await loader()
+      console.log('path: ', path)
       const componentName = path
         .split('/')
         .pop()
@@ -25,14 +25,17 @@ Object.entries(globalComponents).forEach(([path, loader]) => {
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join('')
 
+      console.log('공통 컴포넌트 등록: ', module.default.name)
+
       app.component(componentName, module.default)
-      // module.default: Component 객체 정보
-    })
-    .catch((error) => {
-      console.error('Error loading global component:', error)
-    })
+    }
+  } catch (error) {
+    console.error('Error loading global components:', error)
+  }
+}
+loadComponents().then(() => {
+  app.mount('#app')
 })
 
 app.component()
 app.use(router)
-app.mount('#app')
