@@ -1,15 +1,11 @@
 <template>
-  <button :class="['custom-button', type]" :disabled="disabled"><slot></slot></button>
+  <button :class="['base-button']" :disabled="disabled"><slot></slot></button>
 </template>
 
 <script>
 export default {
   name: 'BaseButton',
   props: {
-    type: {
-      type: String,
-      default: 'primary',
-    },
     disabled: {
       type: Boolean,
       default: false,
@@ -19,44 +15,50 @@ export default {
 </script>
 
 <style scoped>
-.custom-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
+.base-button {
+  width: 100px;
+  height: 40px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  line-height: 42px;
+  padding: 0;
+  border: none;
 }
-
-.custom-button.primary {
-  background-color: lightskyblue;
-  color: white;
+.base-button:hover {
+  background: transparent;
+  color: #000;
+  box-shadow:
+    -7px -7px 20px 0px #fff9,
+    -4px -4px 5px 0px #fff9,
+    7px 7px 20px 0px #0002,
+    4px 4px 5px 0px #0001;
 }
-
-.custom-button.primary:hover {
-  background-color: lightblue;
+.base-button:before,
+.base-button:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 2px;
+  width: 0;
+  background: #000;
+  transition: 400ms ease all;
 }
-
-.custom-button.secondary {
-  background-color: #6c757d;
-  color: white;
+.base-button:after {
+  right: inherit;
+  top: inherit;
+  left: 0;
+  bottom: 0;
 }
-
-.custom-button.danger {
-  background-color: #dc3545;
-  color: white;
-}
-
-.custom-button.danger:hover {
-  background-color: lightcoral;
-}
-
-.custom-button:disabled {
-  background-color: #dcdcdc;
-  cursor: not-allowed;
-}
-
-.custom-button:active {
-  box-shadow: inset 1.5px 1.5px 10px rgb(0, 0, 0, 0.5);
+.base-button:hover:before,
+.base-button:hover:after {
+  width: 100%;
+  transition: 800ms ease all;
 }
 </style>

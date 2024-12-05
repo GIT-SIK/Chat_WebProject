@@ -8,7 +8,7 @@
           <span> id : 1 </span>
         </td>
         <td>
-          <DesignButton @click="fetchApi(1)">클릭</DesignButton>
+          <BaseButton @click="fetchApi(1)">클릭</BaseButton>
         </td>
       </tr>
       <tr>
@@ -16,7 +16,7 @@
           <input v-model="val" placeholder="id 입력" />
         </td>
         <td>
-          <DesignButton @click="fetchApi(val)">클릭</DesignButton>
+          <BaseButton @click="fetchApi(val)">클릭</BaseButton>
         </td>
       </tr>
     </tbody>
