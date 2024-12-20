@@ -17,7 +17,7 @@
 > vue-router@4.5.0 <br>
 > vue@3.5.13 <br>
 > vuetify@3.7.4 <br>
-> @stomp/stompjs@^7.0.0 <br>
+> @stomp/stompjs@7.0.0 <br>
 > sockjs-client@1.6.1 <br>
 
 ## Vue 시작하기
