@@ -16,6 +16,9 @@
 .springBeans
 .sts4-cache
 
+### Vue
+node_modules
+
 
 # Created by https://www.gitignore.io/api/git,java,maven,eclipse,windows
 
@@ -140,9 +143,11 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
 
 ### Spring boot ###
-**/application.properties
+# **/application.properties
 HELP.md
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
