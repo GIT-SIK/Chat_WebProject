@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import FullPage1 from '../views/FullPage1.vue'
+import WSPage from '../views/WSPage.vue'
 import SubPage1 from '../views/SubPage1.vue'
 import SubPage2 from '../views/SubPage2.vue'
 import MainPage from '../views/MainPage.vue'
@@ -18,8 +18,8 @@ const router = createRouter({
       ],
     },
     {
-      path: '/full-page1',
-      component: FullPage1,
+      path: '/wspage',
+      component: WSPage,
     },
   ],
 })
