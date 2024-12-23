@@ -8,7 +8,13 @@
     />
     <h1>출력</h1>
     <ul>
-      <li v-for="(message, index) in messages" :key="index">{{ message }}</li>
+      <li
+        v-for="(message, index) in messages"
+        :class="{ 'm-me': message.sender === userId, 'm-other': message.sender !== userId }"
+        :key="index"
+      >
+        {{ message.text }}
+      </li>
     </ul>
   </div>
 </template>
@@ -23,10 +29,20 @@ export default {
       client: null,
       messages: [],
       newMessage: '',
+      userId: '',
     }
   },
 
   methods: {
+    addUserId() {
+      let userId = localStorage.getItem('userId') // 시큐리티 대신 localstorage 로 대체
+      if (!userId) {
+        userId = Math.random().toString(36).slice(2, 11)
+        localStorage.setItem('userId', userId)
+      }
+      this.userId = userId
+    },
+
     connectWebSocket() {
       const sockJS = new SockJS('http://localhost:8081/ws')
       this.client = new Client({
@@ -36,7 +52,7 @@ export default {
           console.log('WebSocket connected!')
           // /topic/ws1 구독
           this.client.subscribe('/topic/ws1', (message) => {
-            this.messages.push(message.body)
+            this.messages.push(JSON.parse(message.body))
           })
         },
         onStompError: (frame) => {
@@ -48,8 +64,7 @@ export default {
         onWebSocketClose: (event) => {
           if (!event.wasClean) {
             console.error('WebSocket closed error!!')
-            console.log('Code:', event.code) // 종료 상태 코드
-            console.log('Reason:', event.reason || 'No reason provided')
+            console.log(event.code + ' : ' + event.reason || 'No reason provided')
           } else {
             console.log('WebSocket closed')
           }
@@ -64,9 +79,13 @@ export default {
 
     sendMessage() {
       if (this.newMessage.trim()) {
+        const message = {
+          sender: this.userId,
+          text: this.newMessage,
+        }
         this.client.publish({
           destination: '/app/ws1',
-          body: this.newMessage,
+          body: JSON.stringify(message),
         })
         this.newMessage = ''
       }
@@ -74,6 +93,7 @@ export default {
   },
 
   mounted() {
+    this.addUserId()
     this.connectWebSocket()
     console.log('mounted : WS Mounted')
   },
@@ -86,3 +106,24 @@ export default {
   },
 }
 </script>
+
+<style>
+ul {
+  min-width: 30%;
+  width: 70%;
+  list-style-type: none;
+}
+
+li {
+  height: 35px;
+}
+
+.m-me {
+  text-align: right;
+  color: darkblue;
+}
+.m-other {
+  text-align: left;
+  color: black;
+}
+</style>
