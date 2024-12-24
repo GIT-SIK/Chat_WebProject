@@ -65,7 +65,7 @@ npm run build
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 ```
 
-
+<!--
 - - - - -
 
 ## json-server
@@ -89,3 +89,5 @@ npm install concurrently --save-dev
   "dev": "concurrently \"json-server --watch db.json --port 3001\" \"vite\""
 }
 ```
+
+-->
