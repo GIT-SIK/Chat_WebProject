@@ -1,5 +1,7 @@
 <template>
   <div class="ws-chat-container">
+    <!-- UserCount 컴포넌트 -->
+    <user-count :user-count="userCount" />
     <ul>
       <li
         v-for="(message, index) in messages"
@@ -24,18 +26,26 @@
 <script>
 import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
+import UserCount from './WbSktUC.vue'
+import axios from 'axios'; 
 
 export default {
+  components: {
+    UserCount,
+  },
+
   data() {
     return {
       client: null,
       messages: [],
       newMessage: '',
       userId: '',
+      userCount: 0,
     }
   },
 
   methods: {
+    // 임시로 랜덤으로 사용자 아이디 부여
     addUserId() {
       let userId = localStorage.getItem('userId') // 시큐리티 대신 localstorage 로 대체
       if (!userId) {
@@ -46,25 +56,37 @@ export default {
     },
 
     connectWebSocket() {
-      const sockJS = new SockJS('http://localhost:8081/ws')
+      if (this.client) {
+        console.log('이미 클라이언트가 연결됨.')
+        return
+      }
+
+      const sockJS = new SockJS('/ws')
       this.client = new Client({
         webSocketFactory: () => sockJS,
-        debug: (msg) => console.log(msg),
+        //debug: (msg) => console.log(msg),
+        /* ************************************* */
+        /* Connect 영역 */
         onConnect: () => {
           console.log('WebSocket connected!')
-          // /topic/ws1 구독
+          // 메시지 관리 (/topic/ws1, 메시지 구독) 
           this.client.subscribe('/topic/ws1', (message) => {
             const msg = JSON.parse(message.body)
+            // 입장, 퇴장 메시지를 시스템으로 처리 용도 
             if (msg.type === 'notification') {
               this.messages.push({
-                sender: 'system', // 시스템 알림
+                sender: 'system',
                 text: msg.message,
               })
             } else {
-              this.messages.push(msg) // 일반 메시지 처리
+              // 메시지 전달
+              this.messages.push(msg)
             }
+            this.fetchUserCount();
           })
+          this.fetchUserCount();
         },
+        /* ************************************* */
         onStompError: (frame) => {
           console.error('STOMP error: ', frame.headers['message'])
         },
@@ -76,7 +98,7 @@ export default {
             console.error('WebSocket closed error!!')
             console.log(event.code + ' : ' + event.reason || 'No reason provided')
           } else {
-            console.log('WebSocket closed')
+            console.log('WebSocket closed') 
           }
         },
         reconnectDelay: 5000,
@@ -87,6 +109,17 @@ export default {
       this.client.activate()
     },
 
+    fetchUserCount() {
+      axios
+        .get('http://localhost:8081/api/uc') // Spring Boot의 REST API 호출
+        .then((response) => {
+          console.log('Fetched user count:', response.data);
+          this.userCount = response.data.userCount; // 사용자 수 업데이트
+        })
+        .catch((error) => {
+          console.error('Failed to fetch user count:', error);
+        });
+    },
     sendMessage() {
       if (this.newMessage.trim()) {
         const message = {
@@ -102,6 +135,7 @@ export default {
     },
   },
 
+
   mounted() {
     this.addUserId()
     this.connectWebSocket()
@@ -116,10 +150,12 @@ export default {
   },
 }
 </script>
+
 <style>
 /* 전체 채팅 컨테이너 스타일 */
 .ws-chat-container {
   display: flex;
+  width: 100%;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
@@ -127,10 +163,16 @@ export default {
   padding: 20px;
   background-color: #f4f4f9;
   font-family: Arial, sans-serif;
+  
+}
+
+.ws-chat-container div {
+  width: 100%;
+  max-width: 500px;
 }
 
 /* 메시지 리스트 스타일 */
-ul {
+.ws-chat-container ul {
   width: 100%;
   max-width: 500px;
   flex-grow: 1; /* 가변 크기 설정 */
@@ -141,24 +183,26 @@ ul {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 /* 스크롤바 스타일 */
-ul::-webkit-scrollbar {
+.ws-chat-container ul::-webkit-scrollbar {
   width: 6px;
 }
 
-ul::-webkit-scrollbar-thumb {
+.ws-chat-container ul::-webkit-scrollbar-thumb {
   background: #bbb;
   border-radius: 3px;
 }
 
-ul::-webkit-scrollbar-thumb:hover {
+.ws-chat-container ul::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
 
 /* 채팅 메시지 기본 스타일 */
-li {
+.ws-chat-container li {
   max-width: 70%;
   margin: 11px;
   padding: 10px 15px;
@@ -171,7 +215,7 @@ li {
 
 /* **** 내 메시지 스타일 **** */
 .m-me {
-  text-align: right;
+  align-self: flex-end;
   background-color: #d1e7ff;
   margin-left: auto;
   color: #084298;
@@ -190,7 +234,7 @@ li {
 
 /* **** 상대방 메시지 스타일 **** */
 .m-other {
-  text-align: left;
+  align-self: flex-start;
   background-color: #f1f1f1;
   margin-right: auto; /* 왼쪽 정렬 */
   color: #333;
@@ -211,12 +255,11 @@ li {
   text-align: center;
   background-color: transparent;
   color: #000000;
-  margin-left: auto;
-  margin-right: auto;
+  align-self: center;
 }
 
 /* 입력창 스타일 */
-input {
+.ws-chat-container input {
   width: 100%;
   max-width: 500px;
   padding: 12px 15px;
@@ -228,7 +271,7 @@ input {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-input:focus {
+.ws-chat-container input:focus {
   border-color: #007bff;
 }
 </style>

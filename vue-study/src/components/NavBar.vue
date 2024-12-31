@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav class="nav-container">
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
       <li><router-link to="/sub-page1">Page 1</router-link></li>
@@ -15,7 +15,7 @@ export default {
 </script>
 
 <style scoped>
-nav {
+.nav-container {
   background-color: #333;
   color: white;
   padding: 10px;
@@ -23,11 +23,11 @@ nav {
   justify-content: space-between; /* 두 요소 간의 간격을 자동으로 맞춰서 배치 */
 }
 
-h3 {
+.nav-container h3 {
   margin: 0; /* 기본 마진 제거 */
 }
 
-ul {
+.nav-container ul {
   list-style-type: none;
   display: flex;
   gap: 10px;
@@ -35,16 +35,16 @@ ul {
   justify-content: flex-end; /* ul 하위 항목들을 오른쪽 정렬 */
 }
 
-li {
+.nav-container li {
   margin: 0;
 }
 
-a {
+.nav-container a {
   color: white;
   text-decoration: none;
 }
 
-a:hover {
+.nav-container a:hover {
   text-decoration: underline;
 }
 </style>

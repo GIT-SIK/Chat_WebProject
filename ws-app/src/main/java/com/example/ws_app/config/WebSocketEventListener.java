@@ -1,6 +1,5 @@
 package com.example.ws_app.config;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import com.example.ws_app.controller.WebSocketController;
+
 @Component
 public class WebSocketEventListener {
 
@@ -17,25 +18,32 @@ public class WebSocketEventListener {
 
     @Autowired
     private SimpMessagingTemplate smt;
-    
-    
+
+    @Autowired
+    private WebSocketController wsc;
+
+
     String href = "/topic/ws1";
     String type = "notification";
+
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-    	String message = "사용자가 입장했습니다.";
+        String message = "사용자가 입장했습니다.";
+        wsc.incrementUserCnt();
         smt.convertAndSend(href, createMessage(type, message));
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-    	String message = "사용자가 퇴장했습니다.";
+        String message = "사용자가 퇴장했습니다.";
+        wsc.decrementUserCnt();
         smt.convertAndSend(href, createMessage(type, message));
     }
-    
+
     private String createMessage(String type, String message) {
-    	logger.info(message);
+        logger.info(message);
         return String.format("{\"type\":\"%s\",\"message\":\"%s\"}", type, message);
     }
 }
+
 

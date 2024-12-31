@@ -1,12 +1,12 @@
 package com.example.ws_app.dto;
 
-public class Message {
+public class WSMessage {
     private String sender;
     private String text;
 
-    public Message() {}
+    public WSMessage() {}
 
-    public Message(String sender, String text) {
+    public WSMessage(String sender, String text) {
         this.sender = sender;
         this.text = text;
     }
