@@ -3,7 +3,11 @@
     <ul>
       <li
         v-for="(message, index) in messages"
-        :class="{ 'm-me': message.sender === userId, 'm-other': message.sender !== userId }"
+        :class="{
+          'm-me': message.sender === userId,
+          'm-other': message.sender !== userId && message.sender !== 'system',
+          'm-system': message.sender === 'system',
+        }"
         :key="index"
       >
         {{ message.text }}
@@ -50,7 +54,15 @@ export default {
           console.log('WebSocket connected!')
           // /topic/ws1 구독
           this.client.subscribe('/topic/ws1', (message) => {
-            this.messages.push(JSON.parse(message.body))
+            const msg = JSON.parse(message.body)
+            if (msg.type === 'notification') {
+              this.messages.push({
+                sender: 'system', // 시스템 알림
+                text: msg.message,
+              })
+            } else {
+              this.messages.push(msg) // 일반 메시지 처리
+            }
           })
         },
         onStompError: (frame) => {
@@ -193,6 +205,14 @@ li {
   transform: translateY(-50%);
   border: 6px solid transparent;
   border-right-color: #f1f1f1;
+}
+
+.m-system {
+  text-align: center;
+  background-color: transparent;
+  color: #000000;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* 입력창 스타일 */
