@@ -19,4 +19,17 @@ export default defineConfig({
       '@': fileURLToPath(new URL('/src', import.meta.url)),
     },
   },
+  server: {
+    proxy: {
+      '/ws': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        ws: true, // WebSocket 사용 시 설정
+      },
+      '/api': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+      },
+    },
+  },
 })
