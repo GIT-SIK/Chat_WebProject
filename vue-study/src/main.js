@@ -20,12 +20,9 @@ const loadComponents = async () => {
       const module = await loader()
       console.log('path: ', path)
       const componentName = path
-        .split('/')
-        .pop()
-        .replace(/\.\w+$/, '')
-        .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('')
+      .split('/')
+      .pop()
+      .replace(/\.\w+$/, '');
 
       console.log('공통 컴포넌트 등록: ', module.default.name)
 
@@ -36,8 +33,9 @@ const loadComponents = async () => {
   }
 }
 loadComponents().then(() => {
+  app.use(router)
   app.mount('#app')
 })
 
-app.component()
-app.use(router)
+// app.component()
+
