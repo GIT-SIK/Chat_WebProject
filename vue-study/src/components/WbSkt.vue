@@ -2,17 +2,17 @@
   <div class="ws-chat-container">
     <!-- UserCount 컴포넌트 -->
     <user-count :user-count="userCount" />
-    <ul>
-      <li
-        v-for="(message, index) in messages"
+    <ul class="ws-chat-list">
+      <li v-for="(message, index) in messages"
+        :key="index"
         :class="{
           'm-me': message.sender === userId,
           'm-other': message.sender !== userId && message.sender !== 'system',
           'm-system': message.sender === 'system',
         }"
-        :key="index"
       >
-        {{ message.text }}
+        <span> {{ message.text }} </span>
+        <span> {{ message.date }} </span>
       </li>
     </ul>
     <input
@@ -72,6 +72,16 @@ export default {
           // 메시지 관리 (/topic/ws1, 메시지 구독) 
           this.client.subscribe('/topic/ws1', (message) => {
             const msg = JSON.parse(message.body)
+              // 시간 포멧팅
+            if (msg.date) {
+            const date = new Date(msg.date);
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const formattedHours = hours % 12 || 12; 
+            const ampm = hours < 12 ? 'AM' : 'PM';
+            const formattedMinutes = minutes.toString().padStart(2, '0');
+            msg.date = `${ampm} ${formattedHours}:${formattedMinutes}`;
+          }
             // 입장, 퇴장 메시지를 시스템으로 처리 용도 
             if (msg.type === 'notification') {
               this.messages.push({
@@ -113,11 +123,10 @@ export default {
       axios
         .get('http://localhost:8081/api/uc') // Spring Boot의 REST API 호출
         .then((response) => {
-          console.log('Fetched user count:', response.data);
           this.userCount = response.data.userCount; // 사용자 수 업데이트
         })
         .catch((error) => {
-          console.error('Failed to fetch user count:', error);
+          console.error('Failed to fetch UC:', error);
         });
     },
     sendMessage() {
@@ -125,11 +134,14 @@ export default {
         const message = {
           sender: this.userId,
           text: this.newMessage,
+          date: new Date().toISOString(), //UTC 기준
         }
+        
         this.client.publish({
           destination: '/app/ws1',
           body: JSON.stringify(message),
         })
+        
         this.newMessage = ''
       }
     },
@@ -155,9 +167,7 @@ export default {
 /* 전체 채팅 컨테이너 스타일 */
 .ws-chat-container {
   display: flex;
-  width: 100%;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
   height: 70vh;
   padding: 20px;
@@ -166,13 +176,15 @@ export default {
   
 }
 
+
+/* 접속자 수 */
 .ws-chat-container div {
   width: 100%;
   max-width: 500px;
 }
 
 /* 메시지 리스트 스타일 */
-.ws-chat-container ul {
+.ws-chat-list {
   width: 100%;
   max-width: 500px;
   flex-grow: 1; /* 가변 크기 설정 */
@@ -188,23 +200,30 @@ export default {
 }
 
 /* 스크롤바 스타일 */
-.ws-chat-container ul::-webkit-scrollbar {
+.ws-chat-list::-webkit-scrollbar {
   width: 6px;
 }
 
-.ws-chat-container ul::-webkit-scrollbar-thumb {
+.ws-chat-list::-webkit-scrollbar-thumb {
   background: #bbb;
   border-radius: 3px;
 }
 
-.ws-chat-container ul::-webkit-scrollbar-thumb:hover {
+.ws-chat-list::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
 
 /* 채팅 메시지 기본 스타일 */
-.ws-chat-container li {
-  max-width: 70%;
+
+.ws-chat-list li {
+  max-width: 100%;
   margin: 11px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 메시지 스타일 총괄 */
+.ws-chat-list span:nth-child(1) {
   padding: 10px 15px;
   font-size: 14px;
   line-height: 1.4;
@@ -213,8 +232,17 @@ export default {
   position: relative;
 }
 
+/* 메시지 스타일 시간 */
+.ws-chat-list span:nth-child(2) {
+  font-size : 12px;
+}
+
 /* **** 내 메시지 스타일 **** */
-.m-me {
+.m-me span{
+  margin-left: auto;
+}
+
+.m-me span:nth-child(1){
   align-self: flex-end;
   background-color: #d1e7ff;
   margin-left: auto;
@@ -222,7 +250,7 @@ export default {
 }
 
 /* 내 메시지 채팅 버블 꼬리 */
-.m-me::after {
+.m-me span:nth-child(1)::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -232,16 +260,21 @@ export default {
   border-left-color: #d1e7ff;
 }
 
+
 /* **** 상대방 메시지 스타일 **** */
-.m-other {
+
+.m-other span{
+  margin-right: auto;
+}
+
+.m-other span:nth-child(1){
   align-self: flex-start;
   background-color: #f1f1f1;
-  margin-right: auto; /* 왼쪽 정렬 */
   color: #333;
 }
 
 /* 상대방 메시지 채팅 버블 꼬리 */
-.m-other::after {
+.m-other span:nth-child(1)::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -251,7 +284,7 @@ export default {
   border-right-color: #f1f1f1;
 }
 
-.m-system {
+.m-system span:nth-child(1) {
   text-align: center;
   background-color: transparent;
   color: #000000;

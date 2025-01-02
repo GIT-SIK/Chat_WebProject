@@ -2,31 +2,39 @@ package com.example.ws_app.controller;
 
 import com.example.ws_app.dto.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class WebSocketController {
-	
-		@Autowired
-	    private SimpMessagingTemplate smt;
-
-		
+public class WebSocketController {	
 		public AtomicInteger userCount = new AtomicInteger(0);
 	
+		/*
+		 * 메시지 처리
+		 * 시간처리까지 포함
+		 * 
+		 */
 		@MessageMapping("ws1")
 		@SendTo("/topic/ws1")
 		public WSMessage ws1(WSMessage message) {
-			System.out.println("message: " + message.getText());
-	        return message;
+			 
+			/* Time Zone  
+		    / UTC -> KST 변환 
+			*/
+	        LocalDateTime utcToKst = message.getDate()
+									        		.atZone(ZoneId.of("UTC"))
+									        		.withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+									        		.toLocalDateTime();	   
+			message.setDate(utcToKst);
+		    return message;
 	    }
 		
 		/* 
@@ -38,9 +46,7 @@ public class WebSocketController {
 	    @RequestMapping(value = "/api/uc", method = RequestMethod.GET)
 	    @ResponseBody
 		public WSUserCount returnUC() {
-	    	WSUserCount uc = new WSUserCount(userCount.get());
-	    	System.out.println(uc);
-	    	return uc;
+	    	return new WSUserCount(userCount.get());
 	    }
 	    
 	    public void incrementUserCnt() {
