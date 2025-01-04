@@ -63,6 +63,7 @@ export default {
       this.userId = userId
     },
 
+    // 웹소켓 연결 및 메시지 구독, 전송 포함
     connectWebSocket() {
       const sockJS = new SockJS('/ws')
       this.client = new Client({
