@@ -45,7 +45,15 @@ export default {
   },
 
   methods: {
-    // 임시로 랜덤으로 사용자 아이디 부여
+    // 스크롤 자동 스크롤
+    scrollAutoDown(){
+        let lct = document.querySelector(".ws-chat-list");
+        /* 렌더링 완료 후 스크롤 자동 스크롤*/
+        requestAnimationFrame(() => {
+         lct.scrollTop = lct.scrollHeight;
+        });
+    },
+    // 임시 아이디 생성
     addUserId() {
       let userId = localStorage.getItem('userId') // 시큐리티 대신 localstorage 로 대체
       if (!userId) {
@@ -56,11 +64,6 @@ export default {
     },
 
     connectWebSocket() {
-      if (this.client) {
-        console.log('이미 클라이언트가 연결됨.')
-        return
-      }
-
       const sockJS = new SockJS('/ws')
       this.client = new Client({
         webSocketFactory: () => sockJS,
@@ -72,7 +75,7 @@ export default {
           // 메시지 관리 (/topic/ws1, 메시지 구독) 
           this.client.subscribe('/topic/ws1', (message) => {
             const msg = JSON.parse(message.body)
-              // 시간 포멧팅
+            // 시간 포멧팅
             if (msg.date) {
             const date = new Date(msg.date);
             const hours = date.getHours();
@@ -92,6 +95,7 @@ export default {
               // 메시지 전달
               this.messages.push(msg)
             }
+            this.scrollAutoDown();
             this.fetchUserCount();
           })
           this.fetchUserCount();
@@ -121,7 +125,7 @@ export default {
 
     fetchUserCount() {
       axios
-        .get('http://localhost:8081/api/uc') // Spring Boot의 REST API 호출
+        .get('http://localhost:8081/api/uc') // REST API 호출
         .then((response) => {
           this.userCount = response.data.userCount; // 사용자 수 업데이트
         })
