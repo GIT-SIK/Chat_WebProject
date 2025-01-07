@@ -1,4 +1,4 @@
-package com.example.ws_app.config;
+package com.example.ws_back.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.ws_app.controller.WebSocketController;
+import com.example.ws_back.controller.WebSocketController;
 
 @Component
 public class WebSocketEventListener {

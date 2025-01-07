@@ -1,6 +1,6 @@
-package com.example.ws_app.controller;
+package com.example.ws_back.controller;
 
-import com.example.ws_app.dto.*;
+import com.example.ws_back.dto.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

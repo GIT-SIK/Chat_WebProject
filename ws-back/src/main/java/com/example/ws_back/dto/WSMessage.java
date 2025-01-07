@@ -1,4 +1,4 @@
-package com.example.ws_app.dto;
+package com.example.ws_back.dto;
 
 import java.time.LocalDateTime;
 

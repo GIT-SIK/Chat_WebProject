@@ -1,4 +1,4 @@
-package com.example.ws_app.config;
+package com.example.ws_back.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

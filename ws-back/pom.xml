@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>ws-app</artifactId>
+	<artifactId>ws-back</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ws-app</name>
 	<description>A Spring Boot project for testing real-time data streaming using WebSocket</description>

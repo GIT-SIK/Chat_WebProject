@@ -1,4 +1,4 @@
-package com.example.ws_app.controller;
+package com.example.ws_back.controller;
 
 import org.springframework.stereotype.Controller;
 
