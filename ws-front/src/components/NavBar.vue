@@ -2,7 +2,7 @@
   <nav class="nav-container">
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
-      <li><BaseButton @click="$router.push('/wspage')">WS</BaseButton></li>
+      <li><BaseButton class="darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
       <li><BaseButton> Sign up </BaseButton></li>
       <li><BaseButton> Sign in </BaseButton></li>
     </ul>

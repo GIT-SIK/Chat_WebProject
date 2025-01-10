@@ -1,5 +1,5 @@
 <template>
-  <button :class="['base-button']" :disabled="disabled"><slot></slot></button>
+  <button :class="['base-button', color]" :disabled="disabled"> <slot></slot></button>
 </template>
 
 <script>
@@ -10,55 +10,85 @@ export default {
       type: Boolean,
       default: false,
     },
+    color: {
+      type: String,
+      default: '', 
+    },  
   },
 }
 </script>
 
 <style scoped>
 .base-button {
-  width: 100px;
-  height: 40px;
-  font-family: 'Lato', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  display: inline-block;
-  background: #000;
-  color: #fff;
-  line-height: 42px;
-  padding: 0;
-  border: none;
+    color: #444444;
+    background: #F3F3F3;
+    border: 1px #DADADA solid;
+    padding: 5px 10px;
+    border-radius: 2px;
+    font-weight: bold;
+    font-size: 9pt;
+    outline: none;
 }
+
 .base-button:hover {
-  background: transparent;
-  color: #000;
-  box-shadow:
-    -7px -7px 20px 0px #fff9,
-    -4px -4px 5px 0px #fff9,
-    7px 7px 20px 0px #0002,
-    4px 4px 5px 0px #0001;
+    border: 1px #c6c6c6 solid;
+    box-shadow: inset 1px 1px 1px #cdcdcd;
+    color: #333333;
+    background: #F7F7F7;
 }
-.base-button:before,
-.base-button:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 2px;
-  width: 0;
-  background: #000;
-  transition: 400ms ease all;
+
+.base-button:active {
+    box-shadow: inset 1px 1px 1px #c0c0c0;   
 }
-.base-button:after {
-  right: inherit;
-  top: inherit;
-  left: 0;
-  bottom: 0;
+
+/* Blue 스타일 */
+.base-button.blue {
+  color: #FFFFFF;
+  background: #007BFF;
+  border: 1px #0056b3 solid;
 }
-.base-button:hover:before,
-.base-button:hover:after {
-  width: 100%;
-  transition: 800ms ease all;
+
+.base-button.blue:hover {
+  background: #0056b3;
+  border: 1px #003f7f solid;
+}
+
+.base-button.blue:active {
+  background: #004080;
+}
+
+/* Red 스타일 */
+.base-button.red {
+  color: #FFFFFF;
+  background: #FF4B4B;
+  border: 1px #D32F2F solid;
+}
+
+.base-button.red:hover {
+  background: #D32F2F;
+  border: 1px #A00000 solid;
+}
+
+.base-button.red:active {
+  background: #A00000;
+}
+
+/* 기본 반전 색 */
+.base-button.darkgray {
+  color: #F3F3F3; /* 반전된 텍스트 색상 */
+  background: #444444; /* 반전된 배경색 */
+  border: 1px #333333 solid;
+}
+
+.base-button.darkgray:hover {
+  color: #F7F7F7;
+  background: #333333;
+  border: 1px #222222 solid;
+  box-shadow: inset 1px 1px 1px #222222;
+}
+
+.base-button.darkgray:active {
+  background: #222222;
+  box-shadow: inset 1px 1px 1px #1a1a1a;
 }
 </style>
