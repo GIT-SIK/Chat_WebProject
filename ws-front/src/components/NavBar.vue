@@ -2,8 +2,9 @@
   <nav class="nav-container">
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
-      <li><router-link to="/sub-page1">Page 1</router-link></li>
-      <li><router-link to="/sub-page2">Page 2</router-link></li>
+      <li><BaseButton @click="$router.push('/wspage')">WS</BaseButton></li>
+      <li><BaseButton> Sign up </BaseButton></li>
+      <li><BaseButton> Sign in </BaseButton></li>
     </ul>
   </nav>
 </template>
