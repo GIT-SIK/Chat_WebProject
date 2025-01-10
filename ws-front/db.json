@@ -1,6 +1,0 @@
-{
-  "api": [
-  { "id": 1, "title": "titleA", "content": "contentA" },
-	{ "id": 2, "title": "titleB", "content": "contentB" } 
- ]
-}
