@@ -14,35 +14,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class WebSocketController {	
-		public AtomicInteger userCount = new AtomicInteger(0);
+public class WSChatController {	
+
 	
-		/*
-		 * 메시지 처리
-		 * 시간처리까지 포함
+		/** (전체) 메시지 처리
 		 * 
+		 * @return WSMessage | message 반환
 		 */
 		@MessageMapping("ws1")
 		@SendTo("/topic/ws1")
-		public WSMessage ws1(WSMessage message) {
-			 
-			/* Time Zone  
-		    / UTC -> KST 변환 
-			*/
-	        LocalDateTime utcToKst = message.getDate()
-									        		.atZone(ZoneId.of("UTC"))
-									        		.withZoneSameInstant(ZoneId.of("Asia/Seoul"))
-									        		.toLocalDateTime();	   
-			message.setDate(utcToKst);
+		public WSMessage ws1(WSMessage message) {	   
+			message.setDate(UtcToKst(message.getDate()));
 		    return message;
 	    }
 		
-		/* 
-		 * 유저 접속 수
+		/** 유저 접속 수 
 		 * 
+		 * @return WSUserCount | 유저 수 반환 
+		 * 
+		 * ** Use * WebSocketEventListener.java
+		 * @Method incrementUserCnt : 유저수 증가
+		 * @Method decrementUserCnt : 유저수 감소
 		 */
 		// 동시성(동기화) 제어를 위해 Atomic 처리
-	    
+		public AtomicInteger userCount = new AtomicInteger(0);
+		
 	    @RequestMapping(value = "/api/uc", method = RequestMethod.GET)
 	    @ResponseBody
 		public WSUserCount returnUC() {
@@ -55,6 +51,17 @@ public class WebSocketController {
 
 	    public void decrementUserCnt() {
 	        userCount.decrementAndGet();
+	    }
+	    	    
+	    
+	    /* 사용자 지정 함수 */
+	    
+	    /** TimeZone UTC -> KST 변환
+		 * @param LocalDateTime | UTC 시간 입력
+		 * @return LocalDateTime | KST 시간 반환
+	     */
+	    public LocalDateTime UtcToKst(LocalDateTime date) {
+	    	return date.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();	 
 	    }
 	    
 }

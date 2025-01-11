@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.ws_back.controller.WebSocketController;
+import com.example.ws_back.controller.WSChatController;
 
 @Component
 public class WebSocketEventListener {
@@ -20,7 +20,7 @@ public class WebSocketEventListener {
     private SimpMessagingTemplate smt;
 
     @Autowired
-    private WebSocketController wsc;
+    private WSChatController wsc;
 
 
     String href = "/topic/ws1";
