@@ -1,6 +1,9 @@
 package com.example.ws_back.controller;
 
 import com.example.ws_back.dto.*;
+import com.example.ws_back.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@RequiredArgsConstructor
 public class WSChatController {	
 
 	
