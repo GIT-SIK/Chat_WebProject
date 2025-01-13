@@ -1,5 +1,8 @@
 <template>
-  <button :class="['base-button', color]" :disabled="disabled"> <slot></slot></button>
+  <button 
+  :class="['btn', color]" 
+  :style="btnStyle" 
+  :disabled="disabled"> <slot></slot></button>
 </template>
 
 <script>
@@ -14,12 +17,26 @@ export default {
       type: String,
       default: '', 
     },  
+    size: {
+      type: String,
+      default: 'medium',
+    },
+  },
+  computed: {
+    btnStyle() {
+      const size = {
+        small: { width: '80px', height: '30px' },
+        medium: { width: '120px', height: '30px' },
+        large: { width: '160px', height: '30px' },
+      };
+      return size[this.size] || size.medium;
+    },
   },
 }
 </script>
 
 <style scoped>
-.base-button {
+.btn {
     color: #444444;
     background: #F3F3F3;
     border: 1px #DADADA solid;
@@ -30,64 +47,64 @@ export default {
     outline: none;
 }
 
-.base-button:hover {
+.btn:hover {
     border: 1px #c6c6c6 solid;
     box-shadow: inset 1px 1px 1px #cdcdcd;
     color: #333333;
     background: #F7F7F7;
 }
 
-.base-button:active {
+.btn:active {
     box-shadow: inset 1px 1px 1px #c0c0c0;   
 }
 
 /* Blue 스타일 */
-.base-button.blue {
+.btn.btn-blue {
   color: #FFFFFF;
   background: #007BFF;
   border: 1px #0056b3 solid;
 }
 
-.base-button.blue:hover {
+.btn.btn-blue:hover {
   background: #0056b3;
   border: 1px #003f7f solid;
 }
 
-.base-button.blue:active {
+.btn.btn-blue:active {
   background: #004080;
 }
 
 /* Red 스타일 */
-.base-button.red {
+.btn.btn-red {
   color: #FFFFFF;
   background: #FF4B4B;
   border: 1px #D32F2F solid;
 }
 
-.base-button.red:hover {
+.btn.btn-red:hover {
   background: #D32F2F;
   border: 1px #A00000 solid;
 }
 
-.base-button.red:active {
+.btn.btn-red:active {
   background: #A00000;
 }
 
 /* 기본 반전 색 */
-.base-button.darkgray {
+.btn.btn-darkgray {
   color: #F3F3F3; /* 반전된 텍스트 색상 */
   background: #444444; /* 반전된 배경색 */
   border: 1px #333333 solid;
 }
 
-.base-button.darkgray:hover {
+.btn.btn-darkgray:hover {
   color: #F7F7F7;
   background: #333333;
   border: 1px #222222 solid;
   box-shadow: inset 1px 1px 1px #222222;
 }
 
-.base-button.darkgray:active {
+.btn.btn-darkgray:active {
   background: #222222;
   box-shadow: inset 1px 1px 1px #1a1a1a;
 }
