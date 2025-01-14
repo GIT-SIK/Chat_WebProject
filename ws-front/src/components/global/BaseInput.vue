@@ -25,12 +25,12 @@
   <style scoped>
   .base-input {
     width: 100%;
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #aaaaaa;
     border-radius: 5px;
     background-color: #f2f2f2;
     color: #333333;
-    font-size: 16px;
+    font-size: 13px;
     outline: none;
   }
   

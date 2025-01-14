@@ -3,15 +3,35 @@
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
       <li><BaseButton class="darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
-      <li><BaseButton> Sign up </BaseButton></li>
-      <li><BaseButton> Sign in </BaseButton></li>
+      <li><BaseButton > Sign up </BaseButton></li>
+      <li><BaseButton @click="signinOpen"> Sign in </BaseButton></li>
     </ul>
   </nav>
+  <signinModal :isVisible="signinShow" @signin-close="signinClose" />
 </template>
 
 <script>
+import signinModal from "../components/SigninModal.vue";
 export default {
   name: 'NavBar',
+  components: {
+    signinModal
+  },
+  data() {
+    return {
+      signinShow: false,
+    };
+  },
+  methods: {
+    signinOpen() {
+      this.signinShow = true; // 모달 열기
+    },
+    signinClose() {
+      this.signinShow = false; // 모달 닫기
+    },
+  },
+
+
 }
 </script>
 
