@@ -1,11 +1,11 @@
 <template>
     <div v-if="isVisible" class="signin-container">
       <div class="signin-content">
-        <span class="signin-title">Sign In</span>
+        <span class="signin-title">Login</span>
         <BaseInput type="text" placeholder="아이디" />
         <BaseInput type="password" placeholder="비밀번호" />
         <BaseButton  @click="signin">로그인</BaseButton>
-        <BaseButton class="close-btn" @click="signinClose">닫기</BaseButton>
+        <BaseButton class="btn-darkgray" @click="signinClose">닫기</BaseButton>
       </div>
     </div>
   </template>
@@ -66,13 +66,5 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
-  .close-btn {
-    padding: 5px 10px;
-    border: none;
-    background: transparent;
-    color: #888;
-    cursor: pointer;
-    font-size: 12px;
-  }
   </style>
   

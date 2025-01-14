@@ -8,7 +8,7 @@
           <BaseInput type="password" placeholder="비밀번호" />
           <BaseInput type="password" placeholder="비밀번호 확인" />
           <BaseButton @click="signup">가입</BaseButton>
-          <BaseButton class="btn-darkgray" @click="signupClose">닫기</BaseButton>
+          <BaseButton type="button" class="btn-darkgray" @click="signupClose">닫기</BaseButton>
         </form>
       </div>
     </div>
