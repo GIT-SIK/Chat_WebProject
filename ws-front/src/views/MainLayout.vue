@@ -9,7 +9,7 @@
 import NavBar from '../components/NavBar.vue';
 
 export default {
-  name: 'Layout',
+  name: 'MainLayout',
   components: {
     NavBar, // nav-bar 등록
   },

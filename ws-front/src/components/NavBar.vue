@@ -2,32 +2,37 @@
   <nav class="nav-container">
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
-      <li><BaseButton class="darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
-      <li><BaseButton > Sign up </BaseButton></li>
-      <li><BaseButton @click="signinOpen"> Sign in </BaseButton></li>
+      <li><BaseButton class="btn-darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
+      <li><BaseButton @click="modalToggle('signup')"> 회원가입</BaseButton></li>
+      <li><BaseButton @click="modalToggle('signin')"> 로그인</BaseButton></li>
     </ul>
   </nav>
-  <signinModal :isVisible="signinShow" @signin-close="signinClose" />
+  <signinModal :isVisible="modals.signin" @signin-close="modalToggle('signin', false)" />
+  <signupModal :isVisible="modals.signup" @signup-close="modalToggle('signup', false)" />
 </template>
 
 <script>
 import signinModal from "../components/SigninModal.vue";
+import signupModal from "../components/SignupModal.vue";
+
 export default {
   name: 'NavBar',
   components: {
-    signinModal
+    signinModal, signupModal
   },
   data() {
     return {
-      signinShow: false,
+      modals: {
+      signin: false,
+      signup: false,
+      }
     };
   },
   methods: {
-    signinOpen() {
-      this.signinShow = true; // 모달 열기
-    },
-    signinClose() {
-      this.signinShow = false; // 모달 닫기
+    modalToggle (name, state = true) {
+      if(this.modals[name] !== undefined) {
+          this.modals[name] = state;
+      }
     },
   },
 
