@@ -1,4 +1,4 @@
-package com.example.ws_back.dto;
+package com.example.ws_back.chat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

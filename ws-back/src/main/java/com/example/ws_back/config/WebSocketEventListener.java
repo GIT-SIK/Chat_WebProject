@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.ws_back.controller.WSChatController;
+import com.example.ws_back.chat.WSChatController;
 
 @Component
 public class WebSocketEventListener {

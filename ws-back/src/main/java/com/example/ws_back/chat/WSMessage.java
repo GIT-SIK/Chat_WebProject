@@ -1,4 +1,4 @@
-package com.example.ws_back.dto;
+package com.example.ws_back.chat;
 
 import java.time.LocalDateTime;
 

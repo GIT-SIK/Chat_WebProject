@@ -1,4 +1,4 @@
-package com.example.ws_back.controller;
+package com.example.ws_back.chat;
 
 import org.springframework.stereotype.Controller;
 

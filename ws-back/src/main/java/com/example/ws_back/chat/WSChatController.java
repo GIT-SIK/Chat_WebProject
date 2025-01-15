@@ -1,7 +1,7 @@
-package com.example.ws_back.controller;
+package com.example.ws_back.chat;
 
-import com.example.ws_back.dto.*;
-import com.example.ws_back.service.UserService;
+import com.example.ws_back.chat.*;
+import com.example.ws_back.usr.UserService;
 
 import lombok.RequiredArgsConstructor;
 

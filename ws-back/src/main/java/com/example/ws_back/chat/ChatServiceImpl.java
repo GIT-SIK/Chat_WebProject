@@ -1,8 +1,8 @@
-package com.example.ws_back.service;
+package com.example.ws_back.chat;
 
 import org.springframework.stereotype.Service;
 
-import com.example.ws_back.repository.ChatRepository;
+import com.example.ws_back.chat.ChatRepository;
 
 import lombok.RequiredArgsConstructor;
 
