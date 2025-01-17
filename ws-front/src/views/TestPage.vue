@@ -10,8 +10,8 @@
 export default {
   name: 'TestPage',
   mounted() {
+    // API 등록 상태 확인
     console.log(this.$api);
-
   }
 }
 </script>
