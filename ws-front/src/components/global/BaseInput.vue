@@ -1,6 +1,7 @@
 <template>
     <input
       :type="type"
+      :style="inputStyle"
       :placeholder="placeholder"
       @input="$emit('update:modelValue', $event.target.value)"
       v-bind="$attrs"
@@ -20,7 +21,21 @@
         type: String,
         default: "",
       },
+      borderColor : {
+        type: String,
+        default: ""
+      }
     },
+    computed: {
+      inputStyle() {
+      const borderColor = {
+        red: { border: '2px solid red' },
+        green: {border: '2px solid green' },
+        default : {border: '1px solid #aaaaaa'}
+      };
+      return borderColor[this.borderColor] || borderColor.default
+    },
+  },
   };
   </script>
   
