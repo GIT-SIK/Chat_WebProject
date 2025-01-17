@@ -1,5 +1,8 @@
 package com.example.ws_back.usr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,4 +37,29 @@ public class UserController {
 		}
 		
 	}
+	
+	/** 회원가입 아이디, 닉네임 사용 여부
+	 * 
+	 * @param request (userId, userNickName)
+	 * @return ResponseEntity<Map<String, Boolean>> 
+	 */
+	@RequestMapping(value = "/userchk", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Map<String, Boolean>> UserChk(@RequestBody Map<String, String> request) {
+		
+		Map<String, Boolean> response = new HashMap<>();
+		
+        String userId = request.get("userId");
+        String userNickName = request.get("userNickName");
+		if(userId != null ) {
+			response.put("id", us.isIdValid(userId));
+		} else if(userNickName != null ) {
+			response.put("nickname", us.isNickValid(userNickName));
+		}		
+		else {
+			return ResponseEntity.badRequest().build();
+		}
+		return ResponseEntity.ok(response);
+	}
+	
 }
