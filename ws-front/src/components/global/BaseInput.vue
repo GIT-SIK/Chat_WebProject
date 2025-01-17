@@ -2,6 +2,8 @@
     <input
       :type="type"
       :placeholder="placeholder"
+      @input="$emit('update:modelValue', $event.target.value)"
+      v-bind="$attrs"
       class="base-input"
     />
   </template>

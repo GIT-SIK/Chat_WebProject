@@ -3,11 +3,11 @@
       <div class="signup-content">
         <span class="signup-title">회원가입</span>
         <form @submit.prevent="signup">
-          <BaseInput type="text" placeholder="아이디" />
-          <BaseInput type="text" placeholder="닉네임" />
-          <BaseInput type="password" placeholder="비밀번호" />
-          <BaseInput type="password" placeholder="비밀번호 확인" />
-          <BaseButton @click="signup">가입</BaseButton>
+          <BaseInput v-model="signupData.id" type="text" placeholder="아이디" />
+          <BaseInput v-model="signupData.nickname" type="text" placeholder="닉네임" />
+          <BaseInput v-model="signupData.password" type="password" placeholder="비밀번호" />
+          <BaseInput v-model="signupData.cpassword" type="password" placeholder="비밀번호 확인" />
+          <BaseButton>가입</BaseButton>
           <BaseButton type="button" class="btn-darkgray" @click="signupClose">닫기</BaseButton>
         </form>
       </div>
@@ -18,6 +18,16 @@
   
   export default {
     name: "SignupModal",
+    data() {
+      return {
+        signupData: {
+          id : "",
+          nickname : "",
+          password : "",
+          cpassword : "",
+        }
+      };
+    },
     props: {
       isVisible: {
         type: Boolean,
@@ -28,9 +38,41 @@
       signupClose(){
         this.$emit("signup-close");
       },
-      signup() {
-        
-      },
+      async signup() {
+          if(this.signupData.password !== this.signupData.cpassword) {
+            alert ("비밀번호가 일치하지 않습니다.");
+            return ;
+          }
+
+          /* 회원가입 */
+          await this.$api.post("/signup", {
+          userId: this.signupData.id,
+          userNickName: this.signupData.nickname,
+          userPw: this.signupData.password,
+          }).then((response) => {
+            if (response.status === 200) {
+              alert("회원가입이 완료되었습니다.");
+              this.signupData = {
+                id: "",
+                nickname: "",
+                password: "",
+                cpassword: "",
+              };
+              this.signupClose();
+            }
+          })
+          .catch((e) => {
+            if (e.response) {
+              if (e.response.status === 500) {
+                console.error('500 : 회원가입을 실패하였습니다.');
+              } else if (e.response.status === 400) {
+                console.error('400 : ', e.response.data);
+              }
+            } else {
+              console.error('Network error:', e);
+            }
+          });
+      }
     },
   };
   </script>

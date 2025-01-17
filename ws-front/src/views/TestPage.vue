@@ -9,6 +9,10 @@
 <script>
 export default {
   name: 'TestPage',
+  mounted() {
+    console.log(this.$api);
+
+  }
 }
 </script>
 
