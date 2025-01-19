@@ -1,6 +1,6 @@
 package com.example.ws_back.usr;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +18,8 @@ public class UserDto {
     private String userId;
     private String userNickName;
     
-    @JsonIgnore
-    private String userPw;
-    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String userPw;   
     private String userCreatedDt;
     private String isAdmin;
     private String isPublic;
