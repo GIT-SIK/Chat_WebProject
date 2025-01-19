@@ -23,19 +23,13 @@ public class UserController {
 
 	/** 회원가입 처리
 	 * 
-	 * @param user | POST JSON 타입 - User 필드명 매
+	 * @param user | POST JSON 타입 - UserDto 필드명 매핑
 	 * @return ResponseEntity<Boolean> | 회원가입 여부에 따른 true, false 반환
 	 */
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Boolean> SignUp(@RequestBody User user) {
-		try {
-			System.out.println(user);
-		 	return ResponseEntity.ok(true);
-		} catch(Exception e) {
-			return ResponseEntity.status(500).body(false);
-		}
-		
+	public ResponseEntity<Boolean> signup(@RequestBody UserDto userDto) {
+		return us.signup(userDto) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
 	}
 	
 	/** 회원가입 아이디, 닉네임 사용 여부
@@ -45,18 +39,20 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/userchk", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Map<String, Boolean>> UserChk(@RequestBody Map<String, String> request) {
-		
-		Map<String, Boolean> response = new HashMap<>();
-		
-        String userId = request.get("userId");
-        String userNickName = request.get("userNickName");
-		if(userId != null ) {
-			response.put("id", us.isIdValid(userId));
-		} else if(userNickName != null ) {
-			response.put("nickname", us.isNickValid(userNickName));
-		}		
-		else {
+	public ResponseEntity<Map<String, Object>> userChk(@RequestBody Map<String, String> request) {
+	    
+        String type = request.get("type");
+        String data = request.get("data");
+        
+        Map<String, Object> response = new HashMap<>();
+  
+        if (type.equals("id")) {
+            response.put("type", "id");
+            response.put("data", us.isIdValid(data));
+        } else if (type.equals("nickname")) {
+            response.put("type", "nickname");
+            response.put("data", us.isNickValid(data));
+        } else {
 			return ResponseEntity.badRequest().build();
 		}
 		return ResponseEntity.ok(response);

@@ -10,7 +10,7 @@
           </div>
           <div class="signup-sub-container">
           <BaseInput v-model="signupData.nickname" :borderColor="validationColors.nickname" type="text" placeholder="닉네임" />
-          <BaseButton type="button" @click="userChk('nick')">중복 확인</BaseButton>
+          <BaseButton type="button" @click="userChk('nickname')">중복 확인</BaseButton>
           </div>
           <BaseInput v-model="signupData.password" type="password" placeholder="비밀번호" />
           <BaseInput v-model="signupData.cpassword" type="password" placeholder="비밀번호 확인" />
@@ -66,33 +66,18 @@
 
     methods: {
 
-    // 아이디, 닉네임 중복여부  
+    // *** 아이디, 닉네임 중복여부  
       async userChk(cType){
-        let requestData = {};
-        if(cType === 'id' && this.signupData.id != "") {
-          requestData = { userId: this.signupData.id };
-        } else if(cType === 'nick' && this.signupData.nickname != "") {
-          requestData = { userNickName: this.signupData.nickname };
-        }
 
+        /* requestData 가공 및 중복여부 Axios */
+        let requestData = {};
+        this.signupData[cType] != "" ? requestData = {type : cType, data : this.signupData[cType]} : requestData = {}
         if (Object.keys(requestData).length !== 0) {
-        await this.$api.post("/userchk", requestData)
-        .then((response) => {
-          if(response.data.id !== undefined) {
-            if(response.data.id){
-              this.validationColors.id = 'red'
-            } else {
-               this.validationColors.id = 'green'
-            }
-          } else if(response.data.nickname !== undefined) {
-            if(response.data.nickname){
-              this.validationColors.nickname = 'red'
-            } else {
-               this.validationColors.nickname = 'green'
-            }
-          }
-        })
-      }
+          await this.$api.post("/userchk", requestData)
+          .then((response) => {
+            this.validationColors[response.data.type] = response.data.data ? 'red' : 'green';
+          })
+        }
       },
 
       // *** 회원 가입
@@ -104,10 +89,10 @@
 
           if(this.signupData.password !== this.signupData.cpassword) {
             alert ("비밀번호가 일치하지 않습니다.");
-            return ;
+            return;
           }
 
-          /* 회원가입 */
+          /* 회원가입 Axios */
           await this.$api.post("/signup", {
           userId: this.signupData.id,
           userNickName: this.signupData.nickname,
@@ -149,7 +134,6 @@
     display : block;
     margin : 0px 20px 20px 20px;
   }
-
 
   .signup-container {
     position: fixed;
