@@ -3,12 +3,12 @@
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
       <li><BaseButton class="btn-darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
-      <li><BaseButton @click="modalToggle('signup')"> 회원가입</BaseButton></li>
-      <li><BaseButton @click="modalToggle('login')"> 로그인</BaseButton></li>
+      <li><BaseButton @click="toggleModal('signup')"> 회원가입</BaseButton></li>
+      <li><BaseButton @click="toggleModal('login')"> 로그인</BaseButton></li>
     </ul>
   </nav>
-  <loginModal :isVisible="modals.login" @login-close="modalToggle('login', false)" />
-  <signupModal :isVisible="modals.signup" @signup-close="modalToggle('signup', false)" />
+  <loginModal :isVisible="modals.login" @login-close="toggleModal('login', false)" />
+  <signupModal :isVisible="modals.signup" @signup-close="toggleModal('signup', false)" />
 </template>
 
 <script>
@@ -30,7 +30,7 @@ export default {
     }
   },
   methods: {
-    modalToggle(name, state = true) {
+    toggleModal(name, state = true) {
       if (this.modals[name] !== undefined) {
         this.modals[name] = state
       }
