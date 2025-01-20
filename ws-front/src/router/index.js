@@ -3,7 +3,7 @@ import WSPage from '../views/WSPage.vue'
 import MainPage from '../views/MainPage.vue'
 import MainLayout from '../views/MainLayout.vue'
 import SignupPage from '../components/SignupModal.vue'
-
+import LoginPage from '../components/LoginModal.vue'
 import TestPage from '../views/TestPage.vue'
 
 const router = createRouter({
@@ -15,6 +15,7 @@ const router = createRouter({
       children: [
         { path: '', component: MainPage },
         { path: 'signup', component: SignupPage },
+        { path: 'login', component: LoginPage },
         { path: 'wspage', component: WSPage },
       ],
     },
