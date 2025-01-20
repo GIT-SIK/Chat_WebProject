@@ -37,9 +37,9 @@ public class UserController {
 	 * @param request (userId, userNickName)
 	 * @return ResponseEntity<Map<String, Boolean>> 
 	 */
-	@RequestMapping(value = "/userchk", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkuser", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> userChk(@RequestBody Map<String, String> request) {
+	public ResponseEntity<Map<String, Object>> checkUser(@RequestBody Map<String, String> request) {
 	    
         String type = request.get("type");
         String data = request.get("data");

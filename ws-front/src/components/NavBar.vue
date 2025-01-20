@@ -4,39 +4,38 @@
     <ul>
       <li><BaseButton class="btn-darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
       <li><BaseButton @click="modalToggle('signup')"> 회원가입</BaseButton></li>
-      <li><BaseButton @click="modalToggle('signin')"> 로그인</BaseButton></li>
+      <li><BaseButton @click="modalToggle('login')"> 로그인</BaseButton></li>
     </ul>
   </nav>
-  <signinModal :isVisible="modals.signin" @signin-close="modalToggle('signin', false)" />
+  <loginModal :isVisible="modals.login" @login-close="modalToggle('login', false)" />
   <signupModal :isVisible="modals.signup" @signup-close="modalToggle('signup', false)" />
 </template>
 
 <script>
-import signinModal from "../components/SigninModal.vue";
-import signupModal from "../components/SignupModal.vue";
+import loginModal from '../components/LoginModal.vue'
+import signupModal from '../components/SignupModal.vue'
 
 export default {
   name: 'NavBar',
   components: {
-    signinModal, signupModal
+    loginModal,
+    signupModal,
   },
   data() {
     return {
       modals: {
-      signin: false,
-      signup: false,
-      }
-    };
+        login: false,
+        signup: false,
+      },
+    }
   },
   methods: {
-    modalToggle (name, state = true) {
-      if(this.modals[name] !== undefined) {
-          this.modals[name] = state;
+    modalToggle(name, state = true) {
+      if (this.modals[name] !== undefined) {
+        this.modals[name] = state
       }
     },
   },
-
-
 }
 </script>
 
