@@ -21,7 +21,7 @@ axiosInst.interceptors.response.use(
 )
 
 const api = {
-  get: (url, params = {}, config = {}) => axiosInst.get(url, { params, ...config }),
+  get: (url, config = {}) => axiosInst.get(url, config),
 
   post: (url, data = {}, config = {}) => axiosInst.post(url, data, config),
 
