@@ -9,8 +9,11 @@ import com.example.ws_back.usr.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	
 	@Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END FROM TB_USER_MA WHERE UPPER (USER_NICKNAME) LIKE  UPPER(:nickname)", nativeQuery = true)
-	boolean findByUserNickName(String nickname);
+	boolean existsByUserNickName(String nickname);
 	
 	@Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END FROM TB_USER_MA WHERE UPPER (USER_ID) LIKE UPPER(:id)", nativeQuery = true)
-	boolean findByUserId(String id);
+	boolean existsByUserId(String id);
+	
+	@Query(value = "SELECT * FROM TB_USER_MA WHERE UPPER(USER_ID) LIKE UPPER(:id)", nativeQuery = true)
+	User findByUserId(String id);
 }
