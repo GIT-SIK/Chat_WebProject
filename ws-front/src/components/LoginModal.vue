@@ -11,45 +11,47 @@
 </template>
 
 <script>
-// import { router } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { loginApi } from '@/api/login'
+import { useLoginStore } from '@/store/login'
+import { ref } from 'vue'
 
 export default {
   name: 'LoginModal',
-  data() {
-    return {
-      loginData: {
-        userId: '',
-        password: '',
-      },
-    }
-  },
-
   props: {
     isVisible: {
       type: Boolean,
       default: false,
     },
   },
-  methods: {
-    loginClose() {
-      this.$emit('login-close')
-    },
-    async login() {
-      // let requestData = {}
-      // await this.$api
-      //   .post('/login', {
-      //     userId: this.loginData.id,
-      //     password: this.loginData.pw,
-      //   })
-      //   .then((response) => {})
-      //   .catch((e) => {
-      //     if (e.response.status == 200) {
-      //     }
-      //   })
-      // if (true) {
-      //   await router.push({ path: '/' })
-      // }
-    },
+  setup(props, { emit }) {
+    const loginData = ref({ userId: '', password: '' })
+    const router = useRouter()
+    const loginStore = useLoginStore()
+
+    const loginClose = () => {
+      emit('login-close')
+    }
+
+    const login = async () => {
+      await loginApi(loginData.value.id, loginData.value.pw)
+        .then((response) => {
+          loginStore.setToken(response.data.token)
+          localStorage.setItem('access_token', response.data.token)
+          loginStore.getUserInfo()
+          emit('login-success')
+          router.push({ path: '/' })
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
+
+    return {
+      loginData,
+      loginClose,
+      login,
+    }
   },
 }
 </script>

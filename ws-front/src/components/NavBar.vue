@@ -2,16 +2,29 @@
   <nav class="nav-container">
     <h3><router-link to="/"> HOME </router-link></h3>
     <ul>
-      <li><BaseButton class="btn-darkgray" @click="$router.push('/wspage')">WS</BaseButton></li>
-      <li><BaseButton @click="toggleModal('signup')"> 회원가입</BaseButton></li>
-      <li><BaseButton @click="toggleModal('login')"> 로그인</BaseButton></li>
+      <!-- 로그인하지 않은 경우에만 회원가입, 로그인 버튼 표시 -->
+      <template v-if="!loginStore.userId">
+        <li><BaseButton @click="toggleModal('signup')"> 회원가입</BaseButton></li>
+        <li><BaseButton @click="toggleModal('login')"> 로그인</BaseButton></li>
+      </template>
+      <!-- 로그인한 경우 채팅, 로그아웃 버튼 표시 -->
+      <template v-else>
+        <li><BaseButton class="btn-darkgray" @click="$router.push('/wspage')">채팅</BaseButton></li>
+        <li><BaseButton @click="logout"> 로그아웃</BaseButton></li>
+      </template>
     </ul>
   </nav>
-  <loginModal :isVisible="modals.login" @login-close="toggleModal('login', false)" />
+  <loginModal
+    :isVisible="modals.login"
+    @login-close="toggleModal('login', false)"
+    @login-success="loginSuccess"
+  />
   <signupModal :isVisible="modals.signup" @signup-close="toggleModal('signup', false)" />
 </template>
 
 <script>
+import { ref } from 'vue'
+import { useLoginStore } from '@/store/login' // store 경로는 실제 경로에 맞게 수정해주세요
 import loginModal from '../components/LoginModal.vue'
 import signupModal from '../components/SignupModal.vue'
 
@@ -21,20 +34,38 @@ export default {
     loginModal,
     signupModal,
   },
-  data() {
-    return {
-      modals: {
-        login: false,
-        signup: false,
-      },
-    }
-  },
-  methods: {
-    toggleModal(name, state = true) {
-      if (this.modals[name] !== undefined) {
-        this.modals[name] = state
+  setup() {
+    const loginStore = useLoginStore()
+    const modals = ref({
+      login: false,
+      signup: false,
+    })
+
+    const toggleModal = (name, state = true) => {
+      if (modals.value[name] !== undefined) {
+        modals.value[name] = state
       }
-    },
+    }
+
+    const loginSuccess = () => {
+      toggleModal('login', false)
+    }
+
+    const logout = () => {
+      // 로그아웃 처리
+      localStorage.removeItem('access_token')
+      loginStore.token = null
+      loginStore.userId = null
+      loginStore.role = null
+    }
+
+    return {
+      modals,
+      toggleModal,
+      loginStore,
+      logout,
+      loginSuccess,
+    }
   },
 }
 </script>
@@ -44,20 +75,20 @@ export default {
   background-color: #333;
   color: white;
   padding: 10px;
-  display: flex; /* h3와 ul을 한 줄로 출력 */
-  justify-content: space-between; /* 두 요소 간의 간격을 자동으로 맞춰서 배치 */
+  display: flex;
+  justify-content: space-between;
 }
 
 .nav-container h3 {
-  margin: 0; /* 기본 마진 제거 */
+  margin: 0;
 }
 
 .nav-container ul {
   list-style-type: none;
   display: flex;
   gap: 10px;
-  margin: 0; /* 기본 마진 제거 */
-  justify-content: flex-end; /* ul 하위 항목들을 오른쪽 정렬 */
+  margin: 0;
+  justify-content: flex-end;
 }
 
 .nav-container li {

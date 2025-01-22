@@ -2,8 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import api from '@/utils/api'
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min'
+import { createPinia } from 'pinia'
 
 const app = createApp(App)
 
@@ -20,9 +21,9 @@ const loadComponents = async () => {
       const module = await loader()
       console.log('path: ', path)
       const componentName = path
-      .split('/')
-      .pop()
-      .replace(/\.\w+$/, '');
+        .split('/')
+        .pop()
+        .replace(/\.\w+$/, '')
 
       console.log('공통 컴포넌트 등록: ', module.default.name)
 
@@ -34,8 +35,8 @@ const loadComponents = async () => {
 }
 loadComponents().then(() => {
   app.use(router)
+  app.use(createPinia())
   app.mount('#app')
 })
 
 // app.component()
-

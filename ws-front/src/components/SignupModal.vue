@@ -33,99 +33,114 @@
 </template>
 
 <script>
+import { ref, watch } from 'vue'
 import { signupApi, checkUserApi } from '@/api/signup'
+
 export default {
   name: 'SignupModal',
-  data() {
-    return {
-      // 유효성 상태 (red, green, default)
-      validationColors: {
-        id: 'default',
-        nickname: 'default',
-      },
-
-      signupData: {
-        id: '',
-        nickname: '',
-        password: '',
-        cpassword: '',
-      },
-    }
-  },
   props: {
     isVisible: {
       type: Boolean,
       default: false,
     },
   },
+  setup(props, { emit }) {
+    // 유효성 상태
+    const validationColors = ref({
+      id: 'default',
+      nickname: 'default',
+    })
 
-  watch: {
-    // 아이디 입력값 변경 감지
-    'signupData.id'(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.validationColors.id = 'default'
+    // 회원가입 데이터
+    const signupData = ref({
+      id: '',
+      nickname: '',
+      password: '',
+      cpassword: '',
+    })
+
+    // watch
+    watch(
+      () => signupData.value.id,
+      (newVal, oldVal) => {
+        if (newVal !== oldVal) {
+          validationColors.value.id = 'default'
+        }
+      },
+    )
+
+    watch(
+      () => signupData.value.nickname,
+      (newVal, oldVal) => {
+        if (newVal !== oldVal) {
+          validationColors.value.nickname = 'default'
+        }
+      },
+    )
+
+    // 아이디, 닉네임 중복여부 체크
+    const checkUser = async (cType) => {
+      try {
+        const response = await checkUserApi(cType, signupData.value[cType])
+        validationColors.value[response.data.type] = response.data.data ? 'red' : 'green'
+      } catch (error) {
+        console.error('중복 확인 중 오류:', error)
       }
-    },
-    'signupData.nickname'(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.validationColors.nickname = 'default'
-      }
-    },
-  },
+    }
 
-  methods: {
-    // *** 아이디, 닉네임 중복여부 API
-    async checkUser(cType) {
-      /* 중복여부 Axios */
-      console.log(cType, this.signupData[cType])
-
-      await checkUserApi(cType, this.signupData[cType]).then((response) => {
-        this.validationColors[response.data.type] = response.data.data ? 'red' : 'green'
-      })
-    },
-
-    // *** 회원 가입
-    async signup() {
-      if (this.validationColors.id !== 'green' || this.validationColors.nickname !== 'green') {
+    // 회원가입
+    const signup = async () => {
+      if (validationColors.value.id !== 'green' || validationColors.value.nickname !== 'green') {
         alert('아이디와 닉네임을 확인해주세요.')
         return
       }
 
-      if (this.signupData.password !== this.signupData.cpassword) {
+      if (signupData.value.password !== signupData.value.cpassword) {
         alert('비밀번호가 일치하지 않습니다.')
         return
       }
 
-      /* 회원가입 API */
-      await signupApi(this.signupData.id, this.signupData.password, this.signupData.nickname)
-        .then((response) => {
-          if (response.status === 200) {
-            alert('회원가입이 완료되었습니다.')
-            this.signupData = {
-              id: '',
-              nickname: '',
-              password: '',
-              cpassword: '',
-            }
-            this.signupClose()
+      try {
+        const response = await signupApi(
+          signupData.value.id,
+          signupData.value.password,
+          signupData.value.nickname,
+        )
+        if (response.status === 200) {
+          alert('회원가입이 완료되었습니다.')
+          signupData.value = {
+            id: '',
+            nickname: '',
+            password: '',
+            cpassword: '',
           }
-        })
-        .catch((e) => {
-          if (e.response) {
-            if (e.response.status === 500) {
-              console.error('500 : 회원가입을 실패하였습니다.')
-            } else if (e.response.status === 400) {
-              console.error('400 : ', e.response.data)
-            }
-          } else {
-            console.error('Network error:', e)
+          signupClose()
+        }
+      } catch (e) {
+        if (e.response) {
+          if (e.response.status === 500) {
+            console.error('500 : 회원가입을 실패하였습니다.')
+          } else if (e.response.status === 400) {
+            console.error('400 : ', e.response.data)
           }
-        })
-    },
-    // *** 모달 닫기
-    signupClose() {
-      this.$emit('signup-close')
-    },
+        } else {
+          console.error('Network error:', e)
+        }
+      }
+    }
+
+    // 모달 닫기
+    const signupClose = () => {
+      emit('signup-close')
+    }
+
+    return {
+      validationColors,
+      signupData,
+      checkUser,
+      signup,
+      signupClose,
+    }
   },
 }
 </script>
