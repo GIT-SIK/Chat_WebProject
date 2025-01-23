@@ -43,6 +43,7 @@ export default {
           router.push({ path: '/' })
         })
         .catch((e) => {
+          alert(e.data)
           console.log(e)
         })
     }

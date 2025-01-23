@@ -7,7 +7,7 @@ export async function signupApi(userId, password, nickname) {
     userNickName: nickname,
   }
 
-  return await api.post('/signup', data)
+  return await api.post('/api/signup', data)
 }
 
 export async function checkUserApi(type, tData) {
@@ -16,5 +16,5 @@ export async function checkUserApi(type, tData) {
     data: tData,
   }
 
-  return await api.post('/checkuser', data)
+  return await api.post('/api/checkuser', data)
 }

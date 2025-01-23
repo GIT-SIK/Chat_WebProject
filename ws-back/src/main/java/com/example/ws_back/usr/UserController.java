@@ -48,13 +48,13 @@ public class UserController {
         String id = userDto.getUserId();
         String password = userDto.getUserPw();
         /* Token, UserId */
+        try {
         LoginResponse loginResponse = us.login(id, password);
         log.info("로그인 데이터 반환 | USER id : " + loginResponse.getUserDto().getUserId());
-        try {
             return ResponseEntity.ok(loginResponse);
             
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid ID or PWD");
+            return ResponseEntity.status(401).body("아이디와 비밀번호를 확인해주세요.");
         }
 	}
 	
@@ -67,9 +67,10 @@ public class UserController {
     public ResponseEntity<?> UserRefresh(HttpServletRequest request) {
         // Authorization 헤더에서 토큰 추출
         String token = request.getHeader("Authorization");
+        
         log.info("토큰 여부 확인 | TOKEN : " + token);
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(401).body("사용자를 확인할 수 없습니다.");
         }
         
         // "Bearer "를 제외한 실제 토큰 부분만 추출
@@ -80,7 +81,7 @@ public class UserController {
             UserDto userDto = us.findByUserId(userId);  // 유저 정보를 찾기 위한 서비스 호출
             
             if (userDto == null) {
-                return ResponseEntity.status(404).body("User not found");
+                return ResponseEntity.status(404).body("사용자를 확인할 수 없습니다.");
             }
             
             return ResponseEntity.ok(userDto);  // 유저 정보를 반환
@@ -94,7 +95,7 @@ public class UserController {
 	 * @param userDto | POST JSON 타입 - UserDto 필드명 매핑
 	 * @return ResponseEntity<Boolean> | 회원가입 여부에 따른 true, false 반환
 	 */
-	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/signup", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<Boolean> signup(@RequestBody UserDto userDto) {
 		log.info("회원가입 처리 중...");
@@ -106,7 +107,7 @@ public class UserController {
 	 * @param request (userId, userNickName)
 	 * @return ResponseEntity<Map<String, Boolean>> 
 	 */
-	@RequestMapping(value = "/checkuser", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/checkuser", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> checkUser(@RequestBody Map<String, String> request) {
 	    

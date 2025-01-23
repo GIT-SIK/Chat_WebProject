@@ -1,7 +1,7 @@
 import api from '@/utils/api'
 
 /**
- *
+ * 로그인
  *
  * @param userId
  * @param password
@@ -19,7 +19,7 @@ export async function loginApi(userId, password) {
 /**
  * 토큰 -> 유저 정보 api
  * @param token
- * @returns {Promise<void>}
+ * @returns {Promise<void>} (USER DATA)
  */
 export async function getUserInfo(token) {
   const data = {

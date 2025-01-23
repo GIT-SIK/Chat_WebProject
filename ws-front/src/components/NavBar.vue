@@ -9,7 +9,9 @@
       </template>
       <!-- 로그인한 경우 채팅, 로그아웃 버튼 표시 -->
       <template v-else>
-        <li><BaseButton class="btn-darkgray" @click="$router.push('/wspage')">채팅</BaseButton></li>
+        <li>
+          <BaseButton class="btn-darkgray" @click="$router.push('/auth/ws')">채팅</BaseButton>
+        </li>
         <li><BaseButton @click="logout"> 로그아웃</BaseButton></li>
       </template>
     </ul>
@@ -24,6 +26,7 @@
 
 <script>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useLoginStore } from '@/store/login' // store 경로는 실제 경로에 맞게 수정해주세요
 import loginModal from '../components/LoginModal.vue'
 import signupModal from '../components/SignupModal.vue'
@@ -35,6 +38,7 @@ export default {
     signupModal,
   },
   setup() {
+    const router = useRouter()
     const loginStore = useLoginStore()
     const modals = ref({
       login: false,
@@ -52,11 +56,11 @@ export default {
     }
 
     const logout = () => {
-      // 로그아웃 처리
       localStorage.removeItem('access_token')
       loginStore.token = null
       loginStore.userId = null
-      loginStore.role = null
+      loginStore.isAdmin = null
+      router.push({ path: '/' })
     }
 
     return {

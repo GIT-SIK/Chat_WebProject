@@ -32,9 +32,13 @@ public class SecurityConfig {
      * 미인증 사용자까지 허용할 주소 리스트
      */
     private static final String[] AUTH_WHITELIST = {
-            "/logout", "/login", "/api/userinfo"
-    };
+        "/logout", "/login", "/api/userinfo", "/api/checkuser", "/api/signup"
+    };	
 
+    private static final String[] AUTH_REQUIRED_LIST = {
+    	"/api/auth/**"
+    		
+    };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -68,8 +72,8 @@ public class SecurityConfig {
             // 권한 설정
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers(AUTH_REQUIRED_LIST).authenticated()
+                .anyRequest().denyAll() 
                 // .anyRequest().authenticated()
             )
             
