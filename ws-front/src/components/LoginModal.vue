@@ -25,7 +25,7 @@ export default {
     },
   },
   setup(props, { emit }) {
-    const loginData = ref({ userId: '', password: '' })
+    const loginData = ref({ id: '', pw: '' })
     const router = useRouter()
     const loginStore = useLoginStore()
 
