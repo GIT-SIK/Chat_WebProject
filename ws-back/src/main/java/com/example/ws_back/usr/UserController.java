@@ -132,4 +132,22 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 	
+	
+	/* ************************************* */
+	 /**  Test 코드 : 토큰 사용자 확인 용
+	  * (인가된 사용자만 접근) 
+	  * 
+	  * @return USER_ID
+	  */
+	
+	@RequestMapping(value = "/api/auth/info", method = RequestMethod.POST)
+	@ResponseBody
+	public UserDto testpage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+	    // 인증된 사용자 정보 가져오기
+	    String username = userDetails.getUsername();
+	    log.info("인증된 사용자: " + username);
+
+	    // 데이터베이스에서 사용자 정보를 조회하여 반환
+	    return us.findByUserId(username);
+	}
 }
