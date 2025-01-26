@@ -21,8 +21,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TYPE = "Bearer";
     @Override
-    /**
-     * JWT 토큰 검증 필터 수행
+    /** 
+     * Spring Security -> JWT 토큰 검증 필터 수행
      */
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
