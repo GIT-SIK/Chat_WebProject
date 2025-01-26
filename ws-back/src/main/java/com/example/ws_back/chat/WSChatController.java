@@ -1,9 +1,11 @@
 package com.example.ws_back.chat;
 
 import com.example.ws_back.chat.*;
+import com.example.ws_back.security.CustomUserDetails;
 import com.example.ws_back.usr.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,12 +13,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class WSChatController {	
 
@@ -26,9 +30,10 @@ public class WSChatController {
 		 * @return WSMessage | message 반환
 		 */
 		@MessageMapping("ws1")
-		@SendTo("/topic/ws1")
+		@SendTo("/api/topic/ws1")
 		public WSMessage ws1(WSMessage message) {	   
 			message.setDate(UtcToKst(message.getDate()));
+			log.info("TEXT : " + message.getText());
 		    return message;
 	    }
 		
@@ -45,7 +50,7 @@ public class WSChatController {
 		
 	    @RequestMapping(value = "/api/uc", method = RequestMethod.GET)
 	    @ResponseBody
-		public WSUserCount returnUC() {
+		public WSUserCount returnUC(@AuthenticationPrincipal CustomUserDetails userDetails) {
 	    	return new WSUserCount(userCount.get());
 	    }
 	    

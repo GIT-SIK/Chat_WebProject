@@ -23,7 +23,7 @@ public class WebSocketEventListener {
     private WSChatController wsc;
 
 
-    String href = "/topic/ws1";
+    String href = "/api/auth/topic/ws1";
     String type = "notification";
 
     @EventListener

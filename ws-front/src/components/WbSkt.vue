@@ -3,7 +3,8 @@
     <!-- UserCount 컴포넌트 -->
     <user-count :user-count="userCount" />
     <ul class="ws-chat-list">
-      <li v-for="(message, index) in messages"
+      <li
+        v-for="(message, index) in messages"
         :key="index"
         :class="{
           'm-me': message.sender === userId,
@@ -24,145 +25,110 @@
 </template>
 
 <script>
-import SockJS from 'sockjs-client'
-import { Client } from '@stomp/stompjs'
-import UserCount from './WbSktUC.vue'
-import axios from 'axios'; 
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import chatService from '@/api/chat'
+import api from '@/utils/api'
+import UserCount from '@/components/WbSktUC.vue'
 
 export default {
   components: {
     UserCount,
   },
 
-  data() {
-    return {
-      client: null,
-      messages: [],
-      newMessage: '',
-      userId: '',
-      userCount: 0,
-    }
-  },
+  setup() {
+    const messages = ref([])
+    const newMessage = ref('')
+    const userId = ref('')
+    const userCount = ref(0)
 
-  methods: {
     // 스크롤 자동 스크롤
-    scrollAutoDown(){
-        let lct = document.querySelector(".ws-chat-list");
-        /* 렌더링 완료 후 스크롤 자동 스크롤*/
-        requestAnimationFrame(() => {
-         lct.scrollTop = lct.scrollHeight;
-        });
-    },
-    // 임시 아이디 생성
-    addUserId() {
-      let userId = localStorage.getItem('userId') // 시큐리티 대신 localstorage 로 대체
-      if (!userId) {
-        userId = Math.random().toString(36).slice(2, 11)
-        localStorage.setItem('userId', userId)
-      }
-      this.userId = userId
-    },
+    const scrollAutoDown = () => {
+      const lct = document.querySelector('.ws-chat-list')
+      requestAnimationFrame(() => {
+        lct.scrollTop = lct.scrollHeight
+      })
+    }
 
     // 웹소켓 연결 및 메시지 구독, 전송 포함
-    connectWebSocket() {
-      const sockJS = new SockJS('/ws')
-      this.client = new Client({
-        webSocketFactory: () => sockJS,
-        //debug: (msg) => console.log(msg),
-        /* ************************************* */
-        /* Connect 영역 */
-        onConnect: () => {
-          console.log('WebSocket connected!')
-          // 메시지 관리 (/topic/ws1, 메시지 구독) 
-          this.client.subscribe('/topic/ws1', (message) => {
-            const msg = JSON.parse(message.body)
-            // 시간 포멧팅
-            if (msg.date) {
-            const date = new Date(msg.date);
-            const hours = date.getHours();
-            const minutes = date.getMinutes();
-            const formattedHours = hours % 12 || 12; 
-            const ampm = hours < 12 ? 'AM' : 'PM';
-            const formattedMinutes = minutes.toString().padStart(2, '0');
-            msg.date = `${ampm} ${formattedHours}:${formattedMinutes}`;
-          }
-            // 입장, 퇴장 메시지를 시스템으로 처리 용도 
-            if (msg.type === 'notification') {
-              this.messages.push({
-                sender: 'system',
-                text: msg.message,
-              })
-            } else {
-              // 메시지 전달
-              this.messages.push(msg)
-            }
-            this.scrollAutoDown();
-            this.fetchUserCount();
+    const connectWebSocket = () => {
+      const token = localStorage.getItem('access_token') // localStorage에서 토큰을 가져옵니다.
+      if (!token) {
+        console.error('Token not found')
+        return
+      }
+
+      userId.value = localStorage.getItem('id')
+      chatService.connect('/ws', token, 'ws1') // WebSocket 연결
+
+      // 메시지 수신 이벤트 핸들링
+      chatService.addListener('ws1', (msg) => {
+        console.log(`수신 : ${msg}`)
+        if (msg.date) {
+          const date = new Date(msg.date)
+          const hours = date.getHours()
+          const minutes = date.getMinutes()
+          const formattedHours = hours % 12 || 12
+          const ampm = hours < 12 ? 'AM' : 'PM'
+          const formattedMinutes = minutes.toString().padStart(2, '0')
+          msg.date = `${ampm} ${formattedHours}:${formattedMinutes}`
+        }
+        if (msg.type === 'notification') {
+          messages.value.push({
+            sender: 'system',
+            text: msg.message,
           })
-          this.fetchUserCount();
-        },
-        /* ************************************* */
-        onStompError: (frame) => {
-          console.error('STOMP error: ', frame.headers['message'])
-        },
-        onWebSocketError: (error) => {
-          console.error('WebSocket error: ', error)
-        },
-        onWebSocketClose: (event) => {
-          if (!event.wasClean) {
-            console.error('WebSocket closed error!!')
-            console.log(event.code + ' : ' + event.reason || 'No reason provided')
-          } else {
-            console.log('WebSocket closed') 
-          }
-        },
-        reconnectDelay: 5000,
-        heartbeatIncoming: 4000,
-        heartbeatOutgoing: 4000,
+        } else {
+          messages.value.push(msg)
+        }
+        scrollAutoDown()
+        fetchUserCount()
       })
+    }
 
-      this.client.activate()
-    },
-
-    fetchUserCount() {
-      axios
-        .get('http://localhost:8081/api/uc') // REST API 호출
+    const fetchUserCount = () => {
+      api
+        .get('/api/uc') // REST API 호출
         .then((response) => {
-          this.userCount = response.data.userCount; // 사용자 수 업데이트
+          userCount.value = response.data.userCount // 사용자 수 업데이트
         })
         .catch((error) => {
-          console.error('Failed to fetch UC:', error);
-        });
-    },
-    sendMessage() {
-      if (this.newMessage.trim()) {
-        const message = {
-          sender: this.userId,
-          text: this.newMessage,
-          date: new Date().toISOString(), //UTC 기준
-        }
-        
-        this.client.publish({
-          destination: '/app/ws1',
-          body: JSON.stringify(message),
+          console.error('Failed to fetch UC:', error)
         })
-        
-        this.newMessage = ''
+    }
+
+    // 메시지 입력
+    const sendMessage = () => {
+      if (newMessage.value.trim()) {
+        const message = {
+          sender: localStorage.getItem('id'),
+          text: newMessage.value,
+          date: new Date().toISOString(), // UTC 기준
+        }
+
+        chatService.send('ws1', message) // WebSocket을 통한 메시지 전송
+
+        newMessage.value = ''
       }
-    },
-  },
+    }
 
+    // 웹소켓 연결
+    onMounted(() => {
+      connectWebSocket()
+      console.log('mounted : WS Mounted')
+    })
 
-  mounted() {
-    this.addUserId()
-    this.connectWebSocket()
-    console.log('mounted : WS Mounted')
-  },
-
-  beforeUnmount() {
-    if (this.client) {
-      this.client.deactivate()
+    // 컴포넌트 언마운트 시 웹소켓 종료
+    onBeforeUnmount(() => {
+      chatService.close()
       console.log('unmount : WS UnMount')
+    })
+
+    return {
+      messages,
+      newMessage,
+      userId,
+      userCount,
+      sendMessage,
     }
   },
 }
@@ -178,9 +144,7 @@ export default {
   padding: 20px;
   background-color: #f4f4f9;
   font-family: Arial, sans-serif;
-  
 }
-
 
 /* 접속자 수 */
 .ws-chat-container div {
@@ -239,15 +203,15 @@ export default {
 
 /* 메시지 스타일 시간 */
 .ws-chat-list span:nth-child(2) {
-  font-size : 12px;
+  font-size: 12px;
 }
 
 /* **** 내 메시지 스타일 **** */
-.m-me span{
+.m-me span {
   margin-left: auto;
 }
 
-.m-me span:nth-child(1){
+.m-me span:nth-child(1) {
   align-self: flex-end;
   background-color: #d1e7ff;
   margin-left: auto;
@@ -265,14 +229,13 @@ export default {
   border-left-color: #d1e7ff;
 }
 
-
 /* **** 상대방 메시지 스타일 **** */
 
-.m-other span{
+.m-other span {
   margin-right: auto;
 }
 
-.m-other span:nth-child(1){
+.m-other span:nth-child(1) {
   align-self: flex-start;
   background-color: #f1f1f1;
   color: #333;

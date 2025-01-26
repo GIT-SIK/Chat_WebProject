@@ -32,7 +32,7 @@ public class SecurityConfig {
      * 미인증 사용자까지 허용할 주소 리스트
      */
     private static final String[] AUTH_WHITELIST = {
-        "/logout", "/login", "/api/userinfo", "/api/checkuser", "/api/signup"
+        "/logout", "/login", "/api/**"
     };	
 
     private static final String[] AUTH_REQUIRED_LIST = {
@@ -71,8 +71,8 @@ public class SecurityConfig {
             
             // 권한 설정
             .authorizeHttpRequests(authorize -> authorize
+            	.requestMatchers(AUTH_REQUIRED_LIST).authenticated()
                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                .requestMatchers(AUTH_REQUIRED_LIST).authenticated()
                 .anyRequest().denyAll() 
                 // .anyRequest().authenticated()
             )
