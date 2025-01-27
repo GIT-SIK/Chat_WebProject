@@ -9,10 +9,6 @@ class WebSocketService {
   }
 
   connect(endpoint, token, topic) {
-    if (this.socket) {
-      this.socket.close()
-    }
-
     // stomp.js 설정
     this.socket = new Client({
       brokerURL: `${BASE_URL}${endpoint}`,
