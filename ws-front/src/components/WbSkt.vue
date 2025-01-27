@@ -104,10 +104,8 @@ export default {
           text: newMessage.value,
           date: new Date().toISOString(), // UTC 기준
         }
-
-        chatService.send('ws1', message) // WebSocket을 통한 메시지 전송
-
         newMessage.value = ''
+        chatService.send('ws1', message) // WebSocket을 통한 메시지 전송
       }
     }
 
