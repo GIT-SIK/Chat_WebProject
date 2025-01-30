@@ -32,8 +32,8 @@ public class Friend {
 	@Column(name = "SENDER_USER_ID")
 	private String SenderUserId;
 
-	@Column(name = "RECEVIER_USER_ID")
-	private String RecevierUserId;
+	@Column(name = "RECEIVER_USER_ID")
+	private String ReceiverUserId;
 	
 	@Column(name ="FRIEND_STATUS")
 	private String FriendStatus;

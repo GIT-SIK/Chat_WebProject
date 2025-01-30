@@ -14,7 +14,7 @@ import lombok.Setter;
 public class FriendDto {
 	private Long Seq;
 	private String SenderUserId;
-	private String RecevierUserId;
+	private String ReceiverUserId;
 	private String FriendStatus;
 	private String FriendRequestedAt;
 	private String FriendAcceptedAt;
