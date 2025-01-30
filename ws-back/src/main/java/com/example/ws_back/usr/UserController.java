@@ -35,28 +35,15 @@ public class UserController {
 	private final UserService us;
 	private final JwtUtil jwtUtil;
 	
-	/** 
-	 * 로그인 처리
-	 * @param userDto | POST JSON 타입 - UserDto 필드명 매핑
-	 * @return ResponseEntity<?> | userId, token
+	
+	/**
+	 * 
+	 * 
+	 * 
 	 */
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	@ResponseBody
-	public ResponseEntity<?> login(@RequestBody UserDto userDto, @AuthenticationPrincipal UserDetails userDetails) throws JsonProcessingException {
-		
-        String id = userDto.getUserId();
-        String password = userDto.getUserPw();
-        /* Token, UserId */
-        try {
-        LoginResponse loginResponse = us.login(id, password);
-        log.info("로그인 데이터 반환 | USER id : " + loginResponse.getUserDto().getUserId());
-            return ResponseEntity.ok(loginResponse);
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("아이디와 비밀번호를 확인해주세요.");
-        }
-	}
+
+	
 	
 	/**
      * 토큰을 사용하여 유저 정보 반환
@@ -90,6 +77,32 @@ public class UserController {
         }
     }
 
+    
+    /********* 로그인, 회원가입 *************/
+	
+	/** 
+	 * 로그인 처리
+	 * @param userDto | POST JSON 타입 - UserDto 필드명 매핑
+	 * @return ResponseEntity<?> | userId, token
+	 */
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<?> login(@RequestBody UserDto userDto, @AuthenticationPrincipal UserDetails userDetails) throws JsonProcessingException {
+		
+        String id = userDto.getUserId();
+        String password = userDto.getUserPw();
+        /* Token, UserId */
+        try {
+        LoginResponse loginResponse = us.login(id, password);
+        log.info("로그인 데이터 반환 | USER id : " + loginResponse.getUserDto().getUserId());
+            return ResponseEntity.ok(loginResponse);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("아이디와 비밀번호를 확인해주세요.");
+        }
+	}
+    
 	/** 회원가입 처리
 	 * 
 	 * @param userDto | POST JSON 타입 - UserDto 필드명 매핑

@@ -38,6 +38,9 @@ public class Friend {
 	@Column(name ="FRIEND_STATUS")
 	private String FriendStatus;
 	
-	@Column(name = "FRIEND_CREATED_DT")
-	private String FriendCreatedDt;
+	@Column(name = "FRIEND_REQUESTED_AT")
+	private String FriendRequestedAt;
+	
+	@Column(name = "FRIEND_ACCEPTED_AT")
+	private String FriendAcceptedAt;
 }

@@ -32,8 +32,8 @@ public class User {
     @Column(name ="USER_PW")
     private String userPw;
     
-    @Column(name ="USER_CREATED_DT")
-    private String userCreatedDt;
+    @Column(name ="USER_CREATED_AT")
+    private String userCreatedAt;
     
     @Column(name ="IS_ADMIN")
     private String isAdmin;

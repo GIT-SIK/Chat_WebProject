@@ -20,7 +20,7 @@ public class UserDto {
     
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPw;   
-    private String userCreatedDt;
+    private String userCreatedAt;
     private String isAdmin;
     private String isPublic;
     

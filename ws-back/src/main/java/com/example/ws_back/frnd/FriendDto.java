@@ -16,5 +16,6 @@ public class FriendDto {
 	private String SenderUserId;
 	private String RecevierUserId;
 	private String FriendStatus;
-	private String FriendCreatedDt;
+	private String FriendRequestedAt;
+	private String FriendAcceptedAt;
 }
