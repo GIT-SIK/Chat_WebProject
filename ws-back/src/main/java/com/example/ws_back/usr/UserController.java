@@ -44,9 +44,9 @@ public class UserController {
     public ResponseEntity<?> UserRefresh(HttpServletRequest request) {
         // Authorization 헤더에서 토큰 추출
         String token = request.getHeader("Authorization");
-        
-        log.info("토큰 여부 확인 | TOKEN : " + token);
-        if (!token.equals("null") || !token.startsWith("Bearer ")) {
+
+ 
+        if (token == null || token.equals("Bearer null") || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("사용자를 확인할 수 없습니다.");
         }
         

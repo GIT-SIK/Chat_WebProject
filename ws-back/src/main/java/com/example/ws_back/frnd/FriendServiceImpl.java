@@ -20,9 +20,9 @@ public class FriendServiceImpl implements FriendService{
 	
 	
 	/**
-	 * 
-	 * 
-	 * 
+	 * 친구 목록 가져오기
+	 * @param UserId | 유저 아이디
+	 * @return List<Friend> | 친구 목록 반환
 	 */
 	public List<Friend> getFriendList(String UserId) {
 		return fr.findAllByFriend(UserId);

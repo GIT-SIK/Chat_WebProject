@@ -53,7 +53,7 @@ public class FriendController {
 	
 	@RequestMapping(value = "/gfriend", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<?> getFriendList(@RequestBody UserDto userDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+	public ResponseEntity<?> getFriendList(@RequestBody UserDto userDto) {
 		log.info(userDto.getUserId() +"님의 친구 목록을 가져옵니다.");
 		List<Friend> friendList = fs.getFriendList(userDto.getUserId());
 		for (Friend friend : friendList) {

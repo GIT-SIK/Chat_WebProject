@@ -1,8 +1,6 @@
 package com.example.ws_back.chat;
 
-import com.example.ws_back.chat.*;
 import com.example.ws_back.security.CustomUserDetails;
-import com.example.ws_back.usr.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
