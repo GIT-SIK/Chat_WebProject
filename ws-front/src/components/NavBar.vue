@@ -12,6 +12,7 @@
         <li>
           <BaseButton class="btn-darkgray" @click="$router.push('/auth/ws')">채팅</BaseButton>
         </li>
+        <li><BaseButton @click="$router.push('/auth/fl')"> 친구 목록 </BaseButton></li>
         <li><BaseButton @click="logout"> 로그아웃</BaseButton></li>
       </template>
     </ul>

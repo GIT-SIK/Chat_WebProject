@@ -5,6 +5,7 @@ import MainLayout from '../views/MainLayout.vue'
 import SignupPage from '../components/SignupModal.vue'
 import LoginPage from '../components/LoginModal.vue'
 import TestPage from '../views/TestPage.vue'
+import FriendPage from '../components/FriendList.vue'
 import { useLoginStore } from '@/store/login'
 
 const router = createRouter({
@@ -22,7 +23,10 @@ const router = createRouter({
     {
       path: '/auth',
       component: MainLayout,
-      children: [{ path: 'ws', component: WSPage }],
+      children: [
+        { path: 'ws', component: WSPage },
+        { path: 'fl', component: FriendPage },
+      ],
     },
     // *************************
     // CSS 테스트 용도 페이지 라우터

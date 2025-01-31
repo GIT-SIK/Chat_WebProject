@@ -1,6 +1,7 @@
 package com.example.ws_back.frnd;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,6 +13,15 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, Long> {
+	
+	
+	/**
+	 * 친구 목록
+	 */
+	
+	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (SENDER_USER_ID = :userId OR RECEIVER_USER_ID = :userId) AND FRIEND_STATUS = 'ACCEPTED'", nativeQuery = true)
+	List<Friend> findAllByFriend(@Param("userId") String UserId);
+	
 	
 	/**
 	 * 친구 수락, 거절

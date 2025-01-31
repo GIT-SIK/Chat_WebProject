@@ -3,6 +3,7 @@ package com.example.ws_back.frnd;
 import java.time.ZoneId;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,19 @@ public class FriendServiceImpl implements FriendService{
 	
 	private final ModelMapper modelMapper;
 	private final FriendRepository fr;
+	
+	
+	/**
+	 * 
+	 * 
+	 * 
+	 */
+	public List<Friend> getFriendList(String UserId) {
+		return fr.findAllByFriend(UserId);
+		
+	}
+	
+	
 	
 	/**
 	 * 친구 신청 처리
