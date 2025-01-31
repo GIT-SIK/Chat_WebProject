@@ -35,17 +35,7 @@ public class UserController {
 	private final UserService us;
 	private final JwtUtil jwtUtil;
 	
-	
-	/**
-	 * 
-	 * 
-	 * 
-	 */
-	
-
-	
-	
-	/**
+	/** [필수 : 항상 인증된 유저를 검증하기 위해 사용되는 메소드]
      * 토큰을 사용하여 유저 정보 반환
      * @param request
      * @return ResponseEntity<UserDto>
@@ -56,7 +46,7 @@ public class UserController {
         String token = request.getHeader("Authorization");
         
         log.info("토큰 여부 확인 | TOKEN : " + token);
-        if (token == null || !token.startsWith("Bearer ")) {
+        if (!token.equals("null") || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("사용자를 확인할 수 없습니다.");
         }
         
