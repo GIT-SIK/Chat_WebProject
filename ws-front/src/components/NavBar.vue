@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLoginStore } from '@/store/login' // store 경로는 실제 경로에 맞게 수정해주세요
 import loginModal from '../components/LoginModal.vue'
@@ -41,6 +41,7 @@ export default {
   setup() {
     const router = useRouter()
     const loginStore = useLoginStore()
+    const showToast = inject('showToast')
     const modals = ref({
       login: false,
       signup: false,
@@ -57,6 +58,7 @@ export default {
     }
 
     const logout = () => {
+      showToast('다음에 또 만나요!')
       localStorage.removeItem('access_token')
       loginStore.token = null
       loginStore.userId = null

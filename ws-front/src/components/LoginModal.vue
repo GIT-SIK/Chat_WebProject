@@ -14,7 +14,7 @@
 import { useRouter } from 'vue-router'
 import { loginApi } from '@/api/login'
 import { useLoginStore } from '@/store/login'
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 
 export default {
   name: 'LoginModal',
@@ -25,6 +25,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const showToast = inject('showToast')
     const loginData = ref({ id: '', pw: '' })
     const router = useRouter()
     const loginStore = useLoginStore()
@@ -40,10 +41,11 @@ export default {
           localStorage.setItem('access_token', response.data.token)
           loginStore.getUserInfo()
           emit('login-success')
+          showToast(loginData.value.id + `님! 환영합니다.`)
           router.push({ path: '/' })
         })
         .catch((e) => {
-          alert(e.data)
+          showToast(e.data)
           console.log(e)
         })
     }
