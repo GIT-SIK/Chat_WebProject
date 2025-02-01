@@ -1,8 +1,7 @@
 <template>
   <header></header>
   <ToastMessage ref="toast" />
-  <router-view :show-toast="showToast" />
-  <RouterView />
+  <RouterView :show-toast="showToast" />
 </template>
 
 <script>
