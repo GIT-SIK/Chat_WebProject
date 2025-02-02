@@ -45,7 +45,7 @@ export default {
           router.push({ path: '/' })
         })
         .catch((e) => {
-          showToast(e.data)
+          showToast(e.data || '서버와 연결을 확인해주세요.')
           console.log(e)
         })
     }
