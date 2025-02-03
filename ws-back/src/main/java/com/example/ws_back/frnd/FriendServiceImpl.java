@@ -8,6 +8,8 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.example.ws_back.usr.User;
+import com.example.ws_back.usr.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ public class FriendServiceImpl implements FriendService{
 	
 	private final ModelMapper modelMapper;
 	private final FriendRepository fr;
+	private final UserRepository ur;
 	
 	
 	/**
@@ -24,8 +27,13 @@ public class FriendServiceImpl implements FriendService{
 	 * @param UserId | 유저 아이디
 	 * @return List<Friend> | 친구 목록 반환
 	 */
-	public List<Friend> getFriendList(String UserId) {
+	public List<Friend> getUserFriendList(String UserId) {
 		return fr.findAllByFriend(UserId);
+		
+	}
+	
+	public List<User> getSearchFriendList(String UserId) {
+		return ur.findAllByUserId(UserId);
 		
 	}
 	

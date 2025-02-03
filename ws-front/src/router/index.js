@@ -5,7 +5,7 @@ import MainLayout from '../views/MainLayout.vue'
 import SignupPage from '../components/SignupModal.vue'
 import LoginPage from '../components/LoginModal.vue'
 import TestPage from '../views/TestPage.vue'
-import FriendPage from '../components/FriendList.vue'
+import FriendPage from '../views/FriendPage.vue'
 import { useLoginStore } from '@/store/login'
 
 const router = createRouter({
