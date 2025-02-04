@@ -6,15 +6,19 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.example.ws_back.security.CustomUserDetails;
 import com.example.ws_back.usr.User;
 import com.example.ws_back.usr.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FriendServiceImpl implements FriendService{
 	
 	private final ModelMapper modelMapper;
@@ -44,12 +48,24 @@ public class FriendServiceImpl implements FriendService{
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
 	 * @return Boolean | 친구 신청 성공 여부 반환
 	 */
-	public boolean addFriend(FriendDto friendDto) {
+	public String addFriend(String userId, Authentication authentication ) {
 		try {
+			FriendDto friendDto = new FriendDto();
+			friendDto.setSenderUserId(((CustomUserDetails) authentication.getPrincipal()).getUsername());
+			friendDto.setReceiverUserId(userId);
+			friendDto.setFriendStatus("PENDING");
+			
+		
+			if(!fr.findAllByAddFriend(userId)
+					.stream()
+					.anyMatch(friend -> userId.equals(friend.getSenderUserId()) || userId.equals(friend.getReceiverUserId()))) {
 			fr.save(modelMapper.map(friendDto, Friend.class));
-			return true;
+			} else {
+				return "이미 등록된 친구입니다.";
+			}
+			return "친구가 추가되었습니다.";
 		} catch (Exception e) {
-			return false;
+			return "친구 추가 중 오류가 발생되었습니다.";
 		}
 	}
 	

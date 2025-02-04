@@ -16,11 +16,17 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	
 	
 	/**
-	 * 친구 목록
+	 * 친구 등록 목록 (ACCEPTED)
 	 */
 	
 	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (SENDER_USER_ID = :userId OR RECEIVER_USER_ID = :userId) AND FRIEND_STATUS = 'ACCEPTED'", nativeQuery = true)
 	List<Friend> findAllByFriend(@Param("userId") String UserId);
+	
+	/**
+	 * 친구 등록 목록 (전체)
+	 */
+	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (SENDER_USER_ID = :userId OR RECEIVER_USER_ID = :userId)", nativeQuery = true)
+	List<Friend> findAllByAddFriend(@Param("userId") String UserId);
 	
 	
 	/**

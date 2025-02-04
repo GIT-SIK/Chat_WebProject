@@ -3,6 +3,7 @@ package com.example.ws_back.frnd;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,10 +54,10 @@ public class FriendController {
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
 	 * @return Boolean | 친구 신청 성공 여부 반환
 	 */
-	@RequestMapping(value = "/cfriend", method = RequestMethod.POST)
+	@RequestMapping(value = "/cfriend", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Boolean> addFriend(@RequestBody FriendDto friendDto) {
-		return fs.addFriend(friendDto) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
+	public ResponseEntity<String> addFriend(@RequestParam("add") String userId, Authentication authentication) {
+		return ResponseEntity.ok(fs.addFriend(userId, authentication));	
 	}
 	
 	/**
