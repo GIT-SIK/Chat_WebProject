@@ -20,6 +20,9 @@
                 <span>{{ searchfriendItem.userId }}</span>
               </div>
             </div>
+            <div class="friend-search-add" @click="addFriend(searchfriendItem.userId)">
+              <span class="material-icons"> add_circle </span>
+            </div>
           </div>
         </template>
       </template>
@@ -52,6 +55,12 @@ export default {
       searchFriendData.value = ''
     }
 
+    const addFriend = async (userId) => {
+      /* 반환시 모두 OK로 처리하여 Try가 필요 없음. */
+      const response = await friend.addFriendApi(userId)
+      showToast(response.data)
+    }
+
     return {
       hasNoFriends,
       searchFriend,
@@ -59,6 +68,7 @@ export default {
       searchFriendList,
       searchFriendData,
       defaultUserImage,
+      addFriend,
     }
   },
 }
@@ -89,6 +99,7 @@ export default {
   background-color: #fff;
   text-align: center;
   display: flex;
+  position: relative;
   flex-direction: column;
   align-items: center;
 }
@@ -115,5 +126,28 @@ export default {
   list-style-type: none;
   font-weight: bold;
   color: #333;
+}
+
+.friend-search-add {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  border-radius: 7px;
+  top: 0;
+  left: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: 0.5s;
+}
+
+.friend-search-card:hover .friend-search-add {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.friend-search-card:hover .friend-search-card-image img {
+  display: none;
 }
 </style>

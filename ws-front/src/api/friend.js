@@ -11,3 +11,7 @@ export async function getFriendApi(userId) {
 export async function getSearchFriendApi(userId) {
   return await api.get('/api/auth/sfriend', { params: { search: userId } })
 }
+
+export async function addFriendApi(userId) {
+  return await api.get('/api/auth/cfriend', { params: { add: userId } })
+}
