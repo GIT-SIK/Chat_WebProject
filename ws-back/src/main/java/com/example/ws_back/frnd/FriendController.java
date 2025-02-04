@@ -52,12 +52,14 @@ public class FriendController {
 	/**
 	 * 친구 (추가) 신청 처리
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
-	 * @return Boolean | 친구 신청 성공 여부 반환
+	 * @return String | 친구 신청 시 확인 문구 반환 
 	 */
 	@RequestMapping(value = "/cfriend", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> addFriend(@RequestParam("add") String userId, Authentication authentication) {
-		return ResponseEntity.ok(fs.addFriend(userId, authentication));	
+		String response = fs.addFriend(userId, authentication);
+		log.info(response);
+		return ResponseEntity.ok(response);	
 	}
 	
 	/**
@@ -71,10 +73,6 @@ public class FriendController {
 	public ResponseEntity<?> getUserFriendList(@RequestBody UserDto userDto) {
 		log.info(userDto.getUserId() +"님의 친구 목록을 가져옵니다.");
 		List<Friend> friendList = fs.getUserFriendList(userDto.getUserId());
-		for (Friend friend : friendList) {
-		    System.out.println("보낸 사람 ID: " + friend.getSenderUserId() + ", 받는 사람 ID: " + friend.getReceiverUserId());
-		}
-		
 		return !friendList.isEmpty() ? ResponseEntity.ok(friendList) : ResponseEntity.status(500).body(false);
 	}
 }

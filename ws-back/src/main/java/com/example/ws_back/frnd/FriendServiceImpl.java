@@ -46,7 +46,7 @@ public class FriendServiceImpl implements FriendService{
 	/**
 	 * 친구 신청 처리
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
-	 * @return Boolean | 친구 신청 성공 여부 반환
+	 * @return String | 친구 신청 시 확인 문구 반환
 	 */
 	public String addFriend(String userId, Authentication authentication ) {
 		try {
