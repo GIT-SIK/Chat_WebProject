@@ -21,13 +21,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FriendServiceImpl implements FriendService{
 	
+	/* status : 
+					 	ACCEPTED
+						PENDING
+						REJECTED
+	*/
+	
 	private final ModelMapper modelMapper;
 	private final FriendRepository fr;
 	private final UserRepository ur;
 	
 	
 	/**
-	 * 친구 목록 가져오기
+	 * 친구 목록 가져오기 (유저 친구 및 검색)
 	 * @param UserId | 유저 아이디
 	 * @return List<Friend> | 친구 목록 반환
 	 */
@@ -42,24 +48,21 @@ public class FriendServiceImpl implements FriendService{
 	}
 	
 	
-	
 	/**
 	 * 친구 신청 처리
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
 	 * @return String | 친구 신청 시 확인 문구 반환
 	 */
 	public String addFriend(String userId, Authentication authentication ) {
-		try {
-			FriendDto friendDto = new FriendDto();
-			friendDto.setSenderUserId(((CustomUserDetails) authentication.getPrincipal()).getUsername());
-			friendDto.setReceiverUserId(userId);
-			friendDto.setFriendStatus("PENDING");
-			
-		
+		try {		
 			if(!fr.findAllByAddFriend(userId)
-					.stream()
-					.anyMatch(friend -> userId.equals(friend.getSenderUserId()) || userId.equals(friend.getReceiverUserId()))) {
-			fr.save(modelMapper.map(friendDto, Friend.class));
+				  .stream()
+				  .anyMatch(friend -> userId.equals(friend.getSenderUserId()) || userId.equals(friend.getReceiverUserId()))) {
+				FriendDto friendDto = new FriendDto();
+				friendDto.setSenderUserId(((CustomUserDetails) authentication.getPrincipal()).getUsername());
+				friendDto.setReceiverUserId(userId);
+				friendDto.setFriendStatus("PENDING");
+				fr.save(modelMapper.map(friendDto, Friend.class));
 			} else {
 				return "이미 등록된 친구입니다.";
 			}
@@ -79,11 +82,6 @@ public class FriendServiceImpl implements FriendService{
 		try {
 			ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 			Timestamp timestamp = Timestamp.from(now.toInstant());
-			/* status : 
-			 	ACCEPTED
-				PENDING
-				REJECTED
-			 *  */
 	        return fr.updateFriendRequestStatus(
 	                timestamp, friendDto.getSenderUserId(), friendDto.getReceiverUserId(), friendDto.getFriendStatus()
 	            ) > 0;
