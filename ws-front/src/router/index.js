@@ -1,29 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import WSPage from '../views/WSPage.vue'
-import MainPage from '../views/MainPage.vue'
 import MainLayout from '../views/MainLayout.vue'
 import SignupPage from '../components/SignupModal.vue'
-import LoginPage from '../components/LoginModal.vue'
-import TestPage from '../views/TestPage.vue'
 import FriendPage from '../views/FriendPage.vue'
 import { useLoginStore } from '@/store/login'
+import MainPage from '@/views/MainPage.vue'
+
+/* */
+import TestPage from '../views/TestPage.vue'
+import LoginPage from '../views/Login.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      component: MainLayout,
       children: [
-        { path: '', component: MainPage },
+        { path: '', component: LoginPage },
         { path: 'signup', component: SignupPage },
-        { path: 'login', component: LoginPage },
       ],
     },
     {
       path: '/auth',
       component: MainLayout,
       children: [
+        { path: '', component: MainPage },
         { path: 'ws', component: WSPage },
         { path: 'fl', component: FriendPage },
       ],

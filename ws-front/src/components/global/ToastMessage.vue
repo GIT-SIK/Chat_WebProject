@@ -27,6 +27,7 @@ defineExpose({ addToast })
 
 <style scoped>
 .toast-container {
+  z-index: 50;
   position: fixed;
   top: 10px;
   left: 50%;
