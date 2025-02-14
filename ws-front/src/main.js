@@ -2,8 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import api from '@/utils/api'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min'
+import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
 
 const app = createApp(App)
@@ -35,6 +34,7 @@ const loadComponents = async () => {
 }
 loadComponents().then(() => {
   app.use(router)
+  app.use(vuetify)
   app.use(createPinia())
   app.mount('#app')
 })
