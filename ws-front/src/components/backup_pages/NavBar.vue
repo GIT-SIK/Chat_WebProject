@@ -5,7 +5,6 @@
       <!-- 로그인하지 않은 경우에만 회원가입, 로그인 버튼 표시 -->
       <template v-if="!loginStore.userId">
         <li><BaseButton @click="toggleModal('signup')"> 회원가입</BaseButton></li>
-        <li><BaseButton @click="toggleModal('login')"> 로그인</BaseButton></li>
       </template>
       <!-- 로그인한 경우 채팅, 로그아웃 버튼 표시 -->
       <template v-else>
@@ -17,27 +16,16 @@
       </template>
     </ul>
   </nav>
-  <loginModal
-    :isVisible="modals.login"
-    @login-close="toggleModal('login', false)"
-    @login-success="loginSuccess"
-  />
   <signupModal :isVisible="modals.signup" @signup-close="toggleModal('signup', false)" />
 </template>
 
 <script>
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { useLoginStore } from '@/store/login' // store 경로는 실제 경로에 맞게 수정해주세요
-import loginModal from '../components/LoginModal.vue'
-import signupModal from '../components/SignupModal.vue'
+import { useLoginStore } from '@/store/login'
 
 export default {
   name: 'NavBar',
-  components: {
-    loginModal,
-    signupModal,
-  },
   setup() {
     const router = useRouter()
     const loginStore = useLoginStore()
@@ -46,17 +34,6 @@ export default {
       login: false,
       signup: false,
     })
-
-    const toggleModal = (name, state = true) => {
-      if (modals.value[name] !== undefined) {
-        modals.value[name] = state
-      }
-    }
-
-    const loginSuccess = () => {
-      toggleModal('login', false)
-    }
-
     const logout = () => {
       showToast('다음에 또 만나요!')
       localStorage.removeItem('access_token')
@@ -68,10 +45,8 @@ export default {
 
     return {
       modals,
-      toggleModal,
       loginStore,
       logout,
-      loginSuccess,
     }
   },
 }

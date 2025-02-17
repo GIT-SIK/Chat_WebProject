@@ -37,8 +37,9 @@ const router = createRouter({
     },
   ],
 })
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const loginStore = useLoginStore()
+  await loginStore.getUserInfo()
   const authUser =
     loginStore.token == null || loginStore.token != localStorage.getItem('access_token')
       ? true
@@ -46,6 +47,9 @@ router.beforeEach((to, from, next) => {
   if (to.path.startsWith('/auth') && authUser) {
     console.log('[index.js] 사용자 정보를 확인할 수 없습니다.')
     next('/')
+  } else if (loginStore.token && to.path === '/') {
+    console.log('[index.js] 로그인 상태')
+    next('/auth')
   } else {
     console.log('[index.js] 사용자 확인 완료')
     next()

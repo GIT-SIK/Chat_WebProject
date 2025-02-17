@@ -1,23 +1,19 @@
 <template>
-  <div>
-    <NavBar />
-    <RouterView />
-  </div>
+  <v-layout class="rounded rounded-md">
+    <LeftNavBar />
+    <v-main class="align-center justify-center vuetify-content" fluid>
+      <RouterView />
+    </v-main>
+  </v-layout>
 </template>
 
 <script>
-import NavBar from '@/components/NavBar.vue'
-import { useLoginStore } from '@/store/login'
+import LeftNavBar from '@/components/LeftNavBar.vue'
 
 export default {
   name: 'MainLayout',
   components: {
-    NavBar, // nav-bar 등록
-  },
-
-  setup() {
-    const ls = useLoginStore()
-    ls.getUserInfo()
+    LeftNavBar, // nav-bar 등록
   },
 }
 </script>
