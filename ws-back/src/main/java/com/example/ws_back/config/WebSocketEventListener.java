@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.ws_back.chat.WSChatController;
+import com.example.ws_back.chat.ChatController;
 
 @Component
 public class WebSocketEventListener {
@@ -20,12 +20,13 @@ public class WebSocketEventListener {
     private SimpMessagingTemplate smt;
 
     @Autowired
-    private WSChatController wsc;
+    private ChatController wsc;
 
 
     String href = "/api/auth/topic/ws1";
     String type = "notification";
 
+    /* 입장 퇴장 메시지 */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         String message = "사용자가 입장했습니다.";
@@ -40,6 +41,7 @@ public class WebSocketEventListener {
         smt.convertAndSend(href, createMessage(type, message));
     }
 
+    /* 메시지 타입 및 내용 */
     private String createMessage(String type, String message) {
         logger.info(message);
         return String.format("{\"type\":\"%s\",\"message\":\"%s\"}", type, message);

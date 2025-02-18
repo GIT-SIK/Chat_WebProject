@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class WSChatController {	
+public class ChatController {	
 
 	
 		/** (전체) 메시지 처리
@@ -29,7 +29,7 @@ public class WSChatController {
 		 */
 		@MessageMapping("ws1")
 		@SendTo("/api/topic/ws1")
-		public WSMessage ws1(WSMessage message) {	   
+		public ChatMessage ws1(ChatMessage message) {	   
 			message.setDate(UtcToKst(message.getDate()));
 			log.info("TEXT : " + message.getText());
 		    return message;
@@ -48,8 +48,8 @@ public class WSChatController {
 		
 	    @RequestMapping(value = "/api/uc", method = RequestMethod.GET)
 	    @ResponseBody
-		public WSUserCount returnUC(@AuthenticationPrincipal CustomUserDetails userDetails) {
-	    	return new WSUserCount(userCount.get());
+		public ChatUserCount returnUC(@AuthenticationPrincipal CustomUserDetails userDetails) {
+	    	return new ChatUserCount(userCount.get());
 	    }
 	    
 	    public void incrementUserCnt() {

@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Document(collection = "chat")
-public class WSMessage {
+public class ChatMessage {
 	private String sender;
     private String text;
     private LocalDateTime date;

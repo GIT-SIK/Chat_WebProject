@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class WSUserCount {   
+public class ChatUserCount {   
     private int userCount;
 }
