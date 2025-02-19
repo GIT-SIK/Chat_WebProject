@@ -53,14 +53,15 @@ public class FriendServiceImpl implements FriendService{
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
 	 * @return String | 친구 신청 시 확인 문구 반환
 	 */
-	public String addFriend(String userId, Authentication authentication ) {
+	public String addFriend(String receiverUserId, Authentication authentication ) {
 		try {		
-			if(!fr.findAllByAddFriend(userId)
+			String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+			if(!fr.findAllByAddFriend(receiverUserId)
 				  .stream()
 				  .anyMatch(friend -> userId.equals(friend.getSenderUserId()) || userId.equals(friend.getReceiverUserId()))) {
 				FriendDto friendDto = new FriendDto();
-				friendDto.setSenderUserId(((CustomUserDetails) authentication.getPrincipal()).getUsername());
-				friendDto.setReceiverUserId(userId);
+				friendDto.setSenderUserId(userId);
+				friendDto.setReceiverUserId(receiverUserId);
 				friendDto.setFriendStatus("PENDING");
 				fr.save(modelMapper.map(friendDto, Friend.class));
 			} else {

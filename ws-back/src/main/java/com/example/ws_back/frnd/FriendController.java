@@ -51,13 +51,15 @@ public class FriendController {
 	
 	/**
 	 * 친구 (추가) 신청 처리
-	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
+	 * @param friendDto | 상대방 아이디
 	 * @return String | 친구 신청 시 확인 문구 반환 
 	 */
 	@RequestMapping(value = "/cfriend", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> addFriend(@RequestParam("add") String userId, Authentication authentication) {
-		String response = fs.addFriend(userId, authentication);
+	public ResponseEntity<String> addFriend(@RequestParam("add") String receiverUserId, Authentication authentication) {
+		log.info("등록할 친구아이디 : " + receiverUserId);
+		
+		String response = fs.addFriend(receiverUserId, authentication);
 		log.info(response);
 		return ResponseEntity.ok(response);	
 	}

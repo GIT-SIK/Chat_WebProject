@@ -1,3 +1,5 @@
+/* DB : Oracle */
+
 package com.example.ws_back.frnd;
 
 import java.sql.Timestamp;
