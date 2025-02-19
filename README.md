@@ -9,3 +9,7 @@
 <img src="https://img.shields.io/badge/DATABASE-FFFFFF?style=for-the-badge&logo=a&logoColor=black"> &nbsp; <img src="https://img.shields.io/badge/ORACLE-F40D12?style=for-the-badge&logo=oracle&logoColor=white"><img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white"><img src="https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=Redis&logoColor=white">
 
 <!-- <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> -->
+
+## **ERD**
+<img width="551" alt="ERD_0219" src="https://github.com/user-attachments/assets/a7a79f9c-b210-4a71-b427-a0f32ae934a4" />
+
