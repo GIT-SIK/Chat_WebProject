@@ -11,5 +11,4 @@
 <!-- <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> -->
 
 ## **ERD**
-<img width="551" alt="ERD_0219" src="https://github.com/user-attachments/assets/a7a79f9c-b210-4a71-b427-a0f32ae934a4" />
-
+<img width="550" alt="ERD_0219_1921" src="https://github.com/user-attachments/assets/178e7d6f-4ac1-48bf-a54d-ddecd926b800" />
