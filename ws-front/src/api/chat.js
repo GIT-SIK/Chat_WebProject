@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs'
+import api from '@/utils/api'
 
 const BASE_URL = 'http://localhost:8081/api'
 
@@ -74,3 +75,10 @@ class WebSocketService {
 const chatService = new WebSocketService()
 
 export default chatService
+
+
+/* ********** API ********** */
+
+export async function getSearchChatRoomApi(otherUserId) {
+  return await api.get('/api/chat/join', { params: { v : otherUserId }})
+}
