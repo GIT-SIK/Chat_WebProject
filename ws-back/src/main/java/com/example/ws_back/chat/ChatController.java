@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ChatController {	
 
 		private final ChatService cs;
+		
 		/** (전체) 메시지 처리
 		 * 
 		 * @return WSMessage | message 반환
@@ -44,7 +45,7 @@ public class ChatController {
 		
 		/** 채팅방 목록
 		 * 
-		 * 
+		 * [미구현] 
 		 * 
 		 * @return
 		 */
@@ -58,22 +59,15 @@ public class ChatController {
 		
 		/** 채팅 내역, 채팅방 생성
 		 * 
-		 * 
-		 * 
-		 * @return
+		 * @param 상대방 유저 ID
+		 * @return ChatRoom | 1:1 채팅방 유저 목록, 채팅방 ID
+		 * 채팅방 ID는 UUID로 생성됨.
 		 */
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
 		@ResponseBody
-		public ResponseEntity<ChatRoom> getChatMessage(@RequestParam("search") String otherUserId, Authentication authentication) {
-			/* 해당 사용자의 채팅 리스트에서 채팅 선택시 접속 
-			 * 채팅방 찾아서 리턴 / 없으면 방 생성
-			 * return 채팅 내 
-			 * 
-			 * */
+		public ResponseEntity<ChatRoom> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
 			ChatRoom chatRoom = cs.getChatRoom(otherUserId, authentication);
-			log.info("\n채팅방 데이터를 가져옵니다. \n데이터 : " + chatRoom.getRoomId() + " " + chatRoom.getUserIdA() + " " + chatRoom.getUserIdB());
-			
-		
+			log.info("\n채팅방 정보를 가져옵니다. \n데이터 : " + chatRoom.getRoomId() + " " + chatRoom.getUserIdA() + " " + chatRoom.getUserIdB());
 			return ResponseEntity.ok().body(chatRoom);
 		}
 		

@@ -36,24 +36,25 @@ public class ChatServiceImpl implements ChatService{
     	
     	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
     	List<ChatRoom> crList = cor.findAllByChatRoom(userId);
-    	System.out.println("----LIST A----");
-    	System.out.println(crList.stream().collect(Collectors.toList()));
-    	System.out.println("------------");
     	
+    	/* 채팅방 생성 로직 */
     	if(!crList.stream()
     	.anyMatch(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))) {
-    		ChatRoomDto chatRoomDto = new ChatRoomDto();
-    		chatRoomDto.setUserIdA(userId);
-    		chatRoomDto.setUserIdB(otherUserId);
-    		createChatRoom(chatRoomDto);
-    		log.info("채팅방을 생성하였습니다.");
-    		crList = cor.findAllByChatRoom(userId);
+	    		ChatRoomDto chatRoomDto = new ChatRoomDto();
+	    		chatRoomDto.setUserIdA(userId);
+	    		chatRoomDto.setUserIdB(otherUserId);
+	    		if(createChatRoom(chatRoomDto)) {;
+	    		log.info("채팅방을 생성하였습니다.");
+	    		crList = cor.findAllByChatRoom(userId);
+    		} else {
+    			log.info("채팅방 생성도중 오류가 발생습니다.");
+    		}
+    		
     	}
-    	
-    	System.out.println("----LIST B----");
+    	System.out.println(userId + "의 채팅방 전체 목록 가져옵니다. ");
     	System.out.println(crList.stream().collect(Collectors.toList()));
-    	System.out.println("------------");
-    	
+    	System.out.println("---------------------------");
+
     	return crList.stream()
     			.filter(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))
     			.findFirst()

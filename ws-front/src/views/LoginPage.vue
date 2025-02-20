@@ -59,16 +59,6 @@ export default {
       }
     }
 
-    const reserve = () => {
-      loading.value = true
-      setTimeout(
-        () => (
-          (loading.value = false), router.push({ path: '/v', query: { userName: 'props data' } })
-        ),
-        2000,
-      )
-    }
-
     const login = async () => {
       loading.value = true
       await loginApi(loginData.value.id, loginData.value.pw)
@@ -93,7 +83,6 @@ export default {
       login,
       modals,
       loginData,
-      reserve,
       loading,
       router,
     }
