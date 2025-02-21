@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatOracleRepository extends JpaRepository<ChatRoom, Long>{
- 
+  /* ID는 LOWER로 비교할 것.*/
 	/**
 	 * 채팅방 목록 (전체)
 	 */
-	@Query(value = "SELECT * FROM TB_CHATROOM_MA WHERE (USER_ID_A = :userId OR USER_ID_B = :userId)", nativeQuery = true)
+	@Query(value = "SELECT * FROM TB_CHATROOM_MA WHERE (LOWER(USER_ID_A) = LOWER(:userId) OR LOWER(USER_ID_B) = LOWER(:userId))", nativeQuery = true)
 	List<ChatRoom> findAllByChatRoom(@Param("userId") String userId);
 }

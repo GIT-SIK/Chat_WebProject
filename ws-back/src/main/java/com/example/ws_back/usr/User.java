@@ -4,6 +4,8 @@ import org.hibernate.annotations.DynamicInsert;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +42,14 @@ public class User {
     
     @Column(name ="IS_PUBLIC")
     private String isPublic;
+    
+    @PrePersist
+    @PreUpdate
+    private void convertIdToLowerCase() {
+        if (this.userId != null) {
+            this.userId = this.userId.toLowerCase();
+        }
+    }
     
    
 }

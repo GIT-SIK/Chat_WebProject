@@ -15,19 +15,19 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, Long> {
-	/* ID, NICKNAME 은 UPPER 로 처리할 것. */
+	/* ID, NICKNAME은 LOWER 로 처리할 것. */
 	
 	/**
 	 * 친구 등록 목록 (ACCEPTED)
 	 */
 	
-	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (SENDER_USER_ID = UPPER(:userId) OR RECEIVER_USER_ID = UPPER(:userId)) AND FRIEND_STATUS = 'ACCEPTED'", nativeQuery = true)
+	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId)) AND FRIEND_STATUS = 'ACCEPTED'", nativeQuery = true)
 	List<Friend> findAllByFriend(@Param("userId") String UserId);
 	
 	/**
 	 * 친구 등록 목록 (전체)
 	 */
-	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (SENDER_USER_ID = UPPER(:userId) OR RECEIVER_USER_ID = UPPER(:userId))", nativeQuery = true)
+	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId))", nativeQuery = true)
 	List<Friend> findAllByAddFriend(@Param("userId") String UserId);
 	
 	
@@ -37,7 +37,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	@Transactional
 	@Modifying
 	@Query(value = "UPDATE TB_FRIEND_MA SET FRIEND_ACCEPTED_AT = :friendAcceptedAt, FRIEND_STATUS = :friendStatus " +
-	               "WHERE SENDER_USER_ID = UPPER(:senderUserId) AND RECEIVER_USER_ID = UPPER(:receiverUserId)", 
+	               "WHERE LOWER(SENDER_USER_ID) = LOWER(:senderUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:receiverUserId)", 
 	       nativeQuery = true)
 	int updateFriendRequestStatus(@Param("friendAcceptedAt") Timestamp friendAcceptedAt, 
 	                               @Param("senderUserId") String senderUserId, 
