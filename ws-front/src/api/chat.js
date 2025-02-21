@@ -79,6 +79,10 @@ export default chatService
 
 /* ********** API ********** */
 
-export async function getSearchChatRoomApi(otherUserId) {
+export async function getChatRoomInfoApi(otherUserId) {
   return await api.get('/api/chat/join', { params: { v : otherUserId }})
+}
+
+export async function getChatRoomListApi() {
+  return await api.get('/api/chat/list')
 }

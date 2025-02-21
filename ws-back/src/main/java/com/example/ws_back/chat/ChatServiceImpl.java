@@ -1,6 +1,8 @@
 package com.example.ws_back.chat;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ public class ChatServiceImpl implements ChatService{
     private final ChatOracleRepository cor;
     private final ModelMapper modelMapper;
     
+    /* 채팅방 생성 */
     public boolean createChatRoom(ChatRoomDto chatRoomDto) {
     	try {
     		chatRoomDto.setRoomId(UUID.randomUUID().toString());
@@ -32,6 +35,7 @@ public class ChatServiceImpl implements ChatService{
     	}
     }
     
+    /* 채팅방 정보 조회 */
     public ChatRoom getChatRoom(String otherUserId, Authentication authentication) {
     	
     	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
@@ -40,10 +44,10 @@ public class ChatServiceImpl implements ChatService{
     	/* 채팅방 생성 로직 */
     	if(!crList.stream()
     	.anyMatch(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))) {
-	    		ChatRoomDto chatRoomDto = new ChatRoomDto();
-	    		chatRoomDto.setUserIdA(userId);
-	    		chatRoomDto.setUserIdB(otherUserId);
-	    		if(createChatRoom(chatRoomDto)) {;
+    		ChatRoomDto chatRoomDto = new ChatRoomDto();
+    		chatRoomDto.setUserIdA(userId);
+    		chatRoomDto.setUserIdB(otherUserId);
+    		if(createChatRoom(chatRoomDto)) {;
 	    		log.info("채팅방을 생성하였습니다.");
 	    		crList = cor.findAllByChatRoom(userId);
     		} else {
@@ -51,7 +55,7 @@ public class ChatServiceImpl implements ChatService{
     		}
     		
     	}
-    	System.out.println(userId + "의 채팅방 전체 목록 가져옵니다. ");
+    	System.out.println("채팅방 정보 : " + userId + "의 채팅방 전체 목록 가져옵니다. ");
     	System.out.println(crList.stream().collect(Collectors.toList()));
     	System.out.println("---------------------------");
 
@@ -61,9 +65,22 @@ public class ChatServiceImpl implements ChatService{
     			.orElseThrow(() -> new IllegalArgumentException());
     }
     
-//    public List<ChatRoom> getChatRoomList(String UserId) {
-//    	return cor.findAllByChatRoom
-//    	
-//    }
-    
+    /* 채팅방 목록 */
+    public List<Map<String,Object>> getChatRoomList(Authentication authentication) {
+    	
+    	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+    	List<ChatRoom> crList = cor.findAllByChatRoom(userId);
+    	System.out.println("채팅방 목록 : "+userId + "의 채팅방 전체 목록 가져옵니다. ");
+    	crList.stream().collect(Collectors.toList());
+    	System.out.println("---------------------------");
+    	return crList.stream()
+    		.map(chatRoom -> {
+    			Map<String, Object> nrMap = new HashMap<>();
+				nrMap.put("roomId", chatRoom.getRoomId());
+				nrMap.put("otherUserId", !chatRoom.getUserIdA().equals(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
+				nrMap.put("roomUpdatedT", chatRoom.getRoomUpdatedT());
+				return nrMap;
+    		})
+    		.collect(Collectors.toList());
+    }
 }

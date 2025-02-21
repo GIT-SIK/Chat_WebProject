@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -45,22 +47,20 @@ public class ChatController {
 		
 		/** 채팅방 목록
 		 * 
-		 * [미구현] 
-		 * 
-		 * @return
+		 * @return List<Map<String, Object>> | List -> 채팅방 ID, 상대방 ID, 마지막 업데이트일
 		 */
 		
 		@RequestMapping(value = "/api/chat/list", method = RequestMethod.GET)
-		public ResponseEntity<List<?>> getChatList() {
+		public ResponseEntity<List<Map<String, Object>>> getChatList(Authentication authentication) {
 			/* 해당 사용자의 채팅방 리스트 리턴 */
-			List<String> temp = new ArrayList<>();
-			return ResponseEntity.ok().body(temp);
+			List<Map<String, Object>> crList = cs.getChatRoomList(authentication);
+			return ResponseEntity.ok().body(crList);
 		}
 		
 		/** 채팅 내역, 채팅방 생성
 		 * 
 		 * @param 상대방 유저 ID
-		 * @return ChatRoom | 1:1 채팅방 유저 목록, 채팅방 ID
+		 * @return ChatRoom | 채팅방 ID, 본인ID, 상대방ID, 방 생성일, 마지막 업데이트일
 		 * 채팅방 ID는 UUID로 생성됨.
 		 */
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
