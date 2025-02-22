@@ -1,5 +1,7 @@
 package com.example.ws_back.chat;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +72,9 @@ public class ChatServiceImpl implements ChatService{
     	
     	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
     	List<ChatRoom> crList = cor.findAllByChatRoom(userId);
+    	
+    	DateTimeFormatter fmtDateTime = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm");
+    	
     	System.out.println("채팅방 목록 : "+userId + "의 채팅방 전체 목록 가져옵니다. ");
     	crList.stream().collect(Collectors.toList());
     	System.out.println("---------------------------");
@@ -78,7 +83,7 @@ public class ChatServiceImpl implements ChatService{
     			Map<String, Object> nrMap = new HashMap<>();
 				nrMap.put("roomId", chatRoom.getRoomId());
 				nrMap.put("otherUserId", !chatRoom.getUserIdA().equals(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
-				nrMap.put("roomUpdatedT", chatRoom.getRoomUpdatedT());
+				nrMap.put("roomUpdatedT", chatRoom.getRoomUpdatedT().format(fmtDateTime));
 				return nrMap;
     		})
     		.collect(Collectors.toList());

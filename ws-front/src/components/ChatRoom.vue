@@ -28,7 +28,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import chatService from '@/api/chat'
 import api from '@/utils/api'
-import UserCount from '@/components/WbSktUC.vue'
+import UserCount from '../components/ChatRoomUC.vue'
 
 export default {
   components: {
@@ -140,7 +140,6 @@ export default {
   align-items: center;
   height: 70vh;
   padding: 20px;
-  background-color: #f4f4f9;
   font-family: Arial, sans-serif;
 }
 

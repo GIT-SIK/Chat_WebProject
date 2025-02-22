@@ -15,7 +15,8 @@ public interface ChatOracleRepository extends JpaRepository<ChatRoom, Long>{
   /* ID는 LOWER로 비교할 것.*/
 	/**
 	 * 채팅방 목록 (전체)
+	 * 최신 채팅 업데이트 순
 	 */
-	@Query(value = "SELECT * FROM TB_CHATROOM_MA WHERE (LOWER(USER_ID_A) = LOWER(:userId) OR LOWER(USER_ID_B) = LOWER(:userId))", nativeQuery = true)
+	@Query(value = "SELECT * FROM TB_CHATROOM_MA WHERE (LOWER(USER_ID_A) = LOWER(:userId) OR LOWER(USER_ID_B) = LOWER(:userId)) ORDER BY ROOM_UPDATED_T DESC", nativeQuery = true)
 	List<ChatRoom> findAllByChatRoom(@Param("userId") String userId);
 }
