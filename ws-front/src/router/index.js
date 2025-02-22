@@ -3,6 +3,7 @@ import WSPage from '../views/WSPage.vue'
 import MainLayout from '../views/MainLayout.vue'
 import SignupPage from '../components/SignupModal.vue'
 import FriendPage from '../views/FriendPage.vue'
+import ChatPage from '../views/ChatPage.vue'
 import { useLoginStore } from '@/store/login'
 import MainPage from '@/views/MainPage.vue'
 
@@ -26,7 +27,8 @@ const router = createRouter({
       children: [
         { path: '', component: MainPage },
         { path: 'ws', component: WSPage },
-        { path: 'fl', component: FriendPage },
+        { path: 'chat', component: ChatPage },
+        { path: 'friend', component: FriendPage },
       ],
     },
     // *************************

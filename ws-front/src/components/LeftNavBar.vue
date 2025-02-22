@@ -53,7 +53,7 @@ export default {
     const handleClick = (item) => {
       if (item === 'logout') {
         logout()
-      } else if (item === 'friend') router.push({ path: '/auth/fl' })
+      } else if (item === 'friend') router.push({ path: '/auth/friend' })
       else if(item === 'home') router.push({path : '/auth'})
       
       else {
