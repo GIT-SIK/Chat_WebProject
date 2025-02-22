@@ -1,7 +1,7 @@
 <template>
   <div class="ws-chat-container">
     <!-- UserCount 컴포넌트 -->
-    <user-count :user-count="userCount" />
+    <!-- <user-count :user-count="userCount" /> -->
     <ul class="ws-chat-list">
       <li
         v-for="(message, index) in messages"
@@ -139,7 +139,6 @@ export default {
   flex-direction: column;
   align-items: center;
   height: 70vh;
-  padding: 20px;
   font-family: Arial, sans-serif;
 }
 
@@ -160,7 +159,7 @@ export default {
   padding: 0 !important;
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
 }
@@ -210,9 +209,9 @@ export default {
 
 .m-me span:nth-child(1) {
   align-self: flex-end;
-  background-color: #d1e7ff;
+  background-color: #D7CCC8;
   margin-left: auto;
-  color: #084298;
+  color: #3E2723;
 }
 
 /* 내 메시지 채팅 버블 꼬리 */
@@ -223,7 +222,7 @@ export default {
   right: -11px;
   transform: translateY(-50%);
   border: 6px solid transparent;
-  border-left-color: #d1e7ff;
+  border-left-color: #D7CCC8;
 }
 
 /* **** 상대방 메시지 스타일 **** */
@@ -266,10 +265,10 @@ export default {
   border: 1px solid #ccc;
   border-radius: 8px;
   outline: none;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .ws-chat-container input:focus {
-  border-color: #007bff;
+  border-color: #8D6E63;
 }
 </style>
