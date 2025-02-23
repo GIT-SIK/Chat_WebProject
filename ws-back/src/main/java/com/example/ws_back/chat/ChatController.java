@@ -13,13 +13,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,17 +34,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ChatController {	
 
 		private final ChatService cs;
-		
+		 
 		/** (전체) 메시지 처리
 		 * 
 		 * @return WSMessage | message 반환
+		 * 
+		 * 
 		 */
-		@MessageMapping("ws1")
-		@SendTo("/api/topic/ws1")
-		public ChatMessage ws1(ChatMessage message) {	   
-			message.setDate(UtcToKst(message.getDate()));
-			log.info("TEXT : " + message.getText());
-		    return message;
+		
+		@MessageMapping("/api/chat/send")
+		public String sendMessage(ChatDto chatDto) {	   
+			String temp = cs.chatMessage(chatDto);
+			return temp;
 	    }
 		
 		
@@ -64,7 +68,6 @@ public class ChatController {
 		 * 채팅방 ID는 UUID로 생성됨.
 		 */
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
-		@ResponseBody
 		public ResponseEntity<ChatRoom> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
 			ChatRoom chatRoom = cs.getChatRoom(otherUserId, authentication);
 			log.info("\n채팅방 정보를 가져옵니다. \n데이터 : " + chatRoom.getRoomId() + " " + chatRoom.getUserIdA() + " " + chatRoom.getUserIdB());
@@ -84,7 +87,7 @@ public class ChatController {
 		// 동시성(동기화) 제어를 위해 Atomic 처리
 		public AtomicInteger userCount = new AtomicInteger(0);
 		
-	    @RequestMapping(value = "/api/uc", method = RequestMethod.GET)
+	    @RequestMapping(value = "/api/chat/uc", method = RequestMethod.GET)
 	    @ResponseBody
 		public ChatUserCount returnUC(@AuthenticationPrincipal CustomUserDetails userDetails) {
 	    	return new ChatUserCount(userCount.get());
@@ -97,18 +100,7 @@ public class ChatController {
 	    public void decrementUserCnt() {
 	        userCount.decrementAndGet();
 	    }
-	    	    
-	    
-	    /* 사용자 지정 함수 */
-	    
-	    /** TimeZone UTC -> KST 변환
-		 * @param LocalDateTime | UTC 시간 입력
-		 * @return LocalDateTime | KST 시간 반환
-	     */
-	    public LocalDateTime UtcToKst(LocalDateTime date) {
-	    	return date.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();	 
-	    }
-	    
+	    	        
 }
 
 

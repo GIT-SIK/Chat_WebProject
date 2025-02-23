@@ -9,4 +9,6 @@ public interface ChatService {
 
 	public ChatRoom getChatRoom(String otherUserId, Authentication authentication);
 	public List<Map<String,Object>> getChatRoomList(Authentication authentication);
+	public String chatMessage(ChatDto chatDto);
+
 }

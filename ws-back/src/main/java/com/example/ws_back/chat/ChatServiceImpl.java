@@ -1,6 +1,7 @@
 package com.example.ws_back.chat;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,16 @@ public class ChatServiceImpl implements ChatService{
     private final ChatMongoRepository cmr;
     private final ChatOracleRepository cor;
     private final ModelMapper modelMapper;
+	private final SimpMessagingTemplate smt; 
+    
+    /* 채팅 데이터 처리 */
+    public String chatMessage(ChatDto chatDto) {
+    	chatDto.setDate(UtcToKst(chatDto.getDate()));
+        System.out.println("Received chatId: " + chatDto.getRoomId());
+        System.out.println("Received message: " + chatDto.getMessage());
+    	smt.convertAndSend("/api/chat/receive/" + chatDto.getRoomId(), chatDto);
+    	return "OK";
+    }
     
     /* 채팅방 생성 */
     public boolean createChatRoom(ChatRoomDto chatRoomDto) {
@@ -87,5 +100,15 @@ public class ChatServiceImpl implements ChatService{
 				return nrMap;
     		})
     		.collect(Collectors.toList());
+    }
+    
+    /* 사용자 지정 함수 */
+    
+    /** TimeZone UTC -> KST 변환
+	 * @param LocalDateTime | UTC 시간 입력
+	 * @return LocalDateTime | KST 시간 반환
+     */
+    public LocalDateTime UtcToKst(LocalDateTime date) {
+    	return date.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();	 
     }
 }

@@ -7,8 +7,8 @@
         v-for="(message, index) in messages"
         :key="index"
         :class="{
-          'm-me': message.sender === userId,
-          'm-other': message.sender !== userId && message.sender !== 'system',
+          'm-me': message.sender === senderUserId,
+          'm-other': message.sender !== senderUserId && message.sender !== 'system',
           'm-system': message.sender === 'system',
         }"
       >
@@ -36,10 +36,19 @@ export default {
   },
 
   setup() {
+    /*
+    ChatDto
+      private String roomId;
+      private String senderUserId;
+      private String message;
+      private LocalDateTime date;
+    */
     const messages = ref([])
     const newMessage = ref('')
-    const userId = ref('')
     const userCount = ref(0)
+    const roomId = ref('ws1')
+    const senderUserId = ref('admin')
+
 
     // 스크롤 자동 스크롤
     const scrollAutoDown = () => {
@@ -56,12 +65,10 @@ export default {
         console.error('Token not found')
         return
       }
-
-      userId.value = localStorage.getItem('id')
-      chatService.connect('/ws', token, 'ws1') // WebSocket 연결
+      chatService.connect('/ws', token, roomId.value) // WebSocket 연결
 
       // 메시지 수신 이벤트 핸들링
-      chatService.addListener('ws1', (msg) => {
+      chatService.addListener(roomId.value, (msg) => {
         console.log(`수신 : ${msg}`)
         if (msg.date) {
           const date = new Date(msg.date)
@@ -87,7 +94,7 @@ export default {
 
     const fetchUserCount = () => {
       api
-        .get('/api/uc') // REST API 호출
+        .get('/api/chat/uc') // REST API 호출
         .then((response) => {
           userCount.value = response.data.userCount // 사용자 수 업데이트
         })
@@ -100,12 +107,14 @@ export default {
     const sendMessage = () => {
       if (newMessage.value.trim()) {
         const message = {
-          sender: localStorage.getItem('id'),
-          text: newMessage.value,
+          roomId : roomId.value,
+          senderUserId: senderUserId.value,
+          message: newMessage.value,
           date: new Date().toISOString(), // UTC 기준
         }
+
         newMessage.value = ''
-        chatService.send('ws1', message) // WebSocket을 통한 메시지 전송
+        chatService.send(message) // WebSocket을 통한 메시지 전송
       }
     }
 
@@ -124,7 +133,7 @@ export default {
     return {
       messages,
       newMessage,
-      userId,
+      senderUserId,
       userCount,
       sendMessage,
     }

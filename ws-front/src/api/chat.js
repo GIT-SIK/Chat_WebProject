@@ -9,7 +9,7 @@ class WebSocketService {
     this.listeners = {}
   }
 
-  connect(endpoint, token, topic) {
+  connect(endpoint, token, roomId) {
     // stomp.js 설정
     this.socket = new Client({
       brokerURL: `${BASE_URL}${endpoint}`,
@@ -18,7 +18,7 @@ class WebSocketService {
       },
       onConnect: () => {
         console.log(`WebSocket connected to ${BASE_URL}${endpoint}`)
-        this.subscribe(topic)
+        this.subscribe(roomId)
       },
       onDisconnect: () => {
         console.log('Disconnected from WebSocket.')
@@ -35,11 +35,11 @@ class WebSocketService {
   }
 
   // 구독 메시지 처리
-  subscribe(topic) {
-    this.socket.subscribe(`/api/topic/${topic}`, (message) => {
+  subscribe(roomId) {
+    this.socket.subscribe(`/api/chat/receive/${roomId}`, (message) => {
       const msg = JSON.parse(message.body)
-      if (this.listeners[topic]) {
-        this.listeners[topic](msg) // 해당 topic에 msg값 넘김
+      if (this.listeners[roomId]) {
+        this.listeners[roomId](msg) // 해당 topic에 msg값 넘김
       } else {
         console.log('지정된 topic이 없습니다.')
       }
@@ -47,16 +47,16 @@ class WebSocketService {
   }
 
   // 구독자 추가
-  addListener(topic, callback) {
-    this.listeners[topic] = callback
+  addListener(roomId, callback) {
+    this.listeners[roomId] = callback
   }
 
   // 메시지 send
-  send(event, data) {
+  send(data) {
     if (this.socket && this.socket.connected) {
       console.log(data)
       this.socket.publish({
-        destination: `/api/app/${event}`, // 예: /app/ws1
+        destination: `/api/chat/send`,
         body: JSON.stringify(data), // 메시지 데이터
       })
     } else {

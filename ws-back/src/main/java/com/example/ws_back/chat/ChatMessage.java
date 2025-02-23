@@ -6,8 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
-@Data
-@Document(collection = "chat")
+
 public class ChatMessage {
 	private String sender;
     private String text;
