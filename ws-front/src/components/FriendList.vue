@@ -28,12 +28,12 @@
 <script>
 import { onMounted, ref } from 'vue'
 import * as friend from '@/api/friend'
-import { useLoginStore } from '@/store/login'
+import { useUserStore } from '@/store/user'
 import defaultUserImage from '@/assets/default_user.png'
 
 export default {
   setup() {
-    const authUser = useLoginStore()
+    const authUser = useUserStore()
     const friendList = ref([])
 
     const getFriendList = async () => {

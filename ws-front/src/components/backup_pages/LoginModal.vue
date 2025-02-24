@@ -13,7 +13,7 @@
 <script>
 import { useRouter } from 'vue-router'
 import { loginApi } from '@/api/login'
-import { useLoginStore } from '@/store/login'
+import { useUserStore } from '@/store/user'
 import { ref, inject } from 'vue'
 
 export default {
@@ -28,7 +28,7 @@ export default {
     const showToast = inject('showToast')
     const loginData = ref({ id: '', pw: '' })
     const router = useRouter()
-    const loginStore = useLoginStore()
+    const userStore = useUserStore()
 
     const loginClose = () => {
       emit('login-close')
@@ -37,9 +37,9 @@ export default {
     const login = async () => {
       await loginApi(loginData.value.id, loginData.value.pw)
         .then((response) => {
-          loginStore.setToken(response.data.token)
+          userStore.setToken(response.data.token)
           localStorage.setItem('access_token', response.data.token)
-          loginStore.getUserInfo()
+          userStore.getUserInfo()
           emit('login-success')
           showToast(loginData.value.id + `님! 환영합니다.`)
           router.push({ path: '/' })

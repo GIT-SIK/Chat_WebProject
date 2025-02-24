@@ -22,13 +22,13 @@
 <script>
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { useLoginStore } from '@/store/login'
+import { useUserStore } from '@/store/user'
 
 export default {
   name: 'NavBar',
   setup() {
     const router = useRouter()
-    const loginStore = useLoginStore()
+    const userStore = useUserStore()
     const showToast = inject('showToast')
     const modals = ref({
       login: false,
@@ -37,15 +37,15 @@ export default {
     const logout = () => {
       showToast('다음에 또 만나요!')
       localStorage.removeItem('access_token')
-      loginStore.token = null
-      loginStore.userId = null
-      loginStore.isAdmin = null
+      userStore.token = null
+      userStore.userId = null
+      userStore.isAdmin = null
       router.push({ path: '/' })
     }
 
     return {
       modals,
-      loginStore,
+      userStore,
       logout,
     }
   },

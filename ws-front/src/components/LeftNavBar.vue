@@ -31,14 +31,13 @@
 import defaultUserImage from '@/assets/default_user.png'
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { useLoginStore } from '@/store/login'
+import { useUserStore } from '@/store/user'
 
 export default {
   setup() {
     const router = useRouter()
-    const loginStore = useLoginStore()
+    const userStore = useUserStore()
     const showToast = inject('showToast')
-    // loginStore.getUserInfo()
 
     /* 네비 전체 보이기 여부 */
     const drawer = ref(true)
@@ -54,6 +53,7 @@ export default {
       if (item === 'logout') {
         logout()
       } else if (item === 'friend') router.push({ path: '/auth/friend' })
+      else if(item === 'chat') router.push({path : '/auth/chat'})
       else if(item === 'home') router.push({path : '/auth'})
       
       else {
@@ -64,9 +64,9 @@ export default {
     const logout = () => {
       showToast('다음에 또 만나요!')
       localStorage.removeItem('access_token')
-      loginStore.token = null
-      loginStore.userId = null
-      loginStore.isAdmin = null
+      userStore.token = null
+      userStore.userId = null
+      userStore.isAdmin = null
       router.push({ path: '/' })
     }
 
@@ -77,6 +77,7 @@ export default {
       { title: 'Home', icon: 'mdi-home-city', val: 'home' },
       { title: 'My Account', icon: 'mdi-account', val: 'account' },
       { title: 'Friend', icon: 'mdi-account-group-outline', val: 'friend' },
+      { title: 'Chat', icon: 'mdi-account-group-outline', val: 'chat' },
       { title: 'Logout', icon: 'mdi-account-arrow-right', val: 'logout' },
     ]
 
@@ -84,7 +85,7 @@ export default {
       drawer,
       rail,
       openRail,
-      navUserId : loginStore.userId,      
+      navUserId : userStore.userId,      
 
       handleClick,
       logout,

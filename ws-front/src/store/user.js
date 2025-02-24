@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as login from '@/api/login'
 
-export const useLoginStore = defineStore('login', () => {
+export const useUserStore = defineStore('login', () => {
   // 상태
   const token = ref(null)
   const userId = ref(null)

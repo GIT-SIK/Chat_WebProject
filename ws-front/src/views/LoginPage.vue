@@ -37,7 +37,7 @@
 <script>
 import { useRouter } from 'vue-router'
 import { loginApi } from '@/api/login'
-import { useLoginStore } from '@/store/login'
+import { useUserStore } from '@/store/user'
 import signupModal from '../components/SignupModal.vue'
 import { ref, inject } from 'vue'
 
@@ -50,7 +50,7 @@ export default {
     const showToast = inject('showToast')
     const loginData = ref({ id: '', pw: '' })
     const router = useRouter()
-    const loginStore = useLoginStore()
+    const userStore = useUserStore()
     const modals = ref({ signup: false })
 
     const toggleModal = (name, state = true) => {
@@ -63,9 +63,9 @@ export default {
       loading.value = true
       await loginApi(loginData.value.id, loginData.value.pw)
         .then((response) => {
-          loginStore.setToken(response.data.token)
+          userStore.setToken(response.data.token)
           localStorage.setItem('access_token', response.data.token)
-          loginStore.getUserInfo()
+          userStore.getUserInfo()
           showToast(loginData.value.id + `님! 환영합니다.`)
           loading.value = false
           router.push({ path: '/auth' })
