@@ -43,12 +43,14 @@ export default {
       private String message;
       private LocalDateTime date;
     */
+    /* Store Data */
+    const chatStore = useChatStore();
+    const userStore = useUserStore();
+    const {roomId, otherUserId} = storeToRefs(chatStore);
+    /* View Data */
     const messages = ref([])
     const newMessage = ref('')
-    const userCount = ref(0)
-    const roomId = ref('ws1')
-    const senderUserId = ref('admin')
-
+    const senderUserId = ref(null)
 
     // 스크롤 자동 스크롤
     const scrollAutoDown = () => {
@@ -121,20 +123,23 @@ export default {
     // 웹소켓 연결
     onMounted(() => {
       connectWebSocket()
-      console.log('mounted : WS Mounted')
+      userStore.getUserInfo();
+      senderUserId.value = userStore.userId;
+      roomId.value = chatStore.roomId
     })
 
     // 컴포넌트 언마운트 시 웹소켓 종료
     onBeforeUnmount(() => {
       chatService.close()
-      console.log('unmount : WS UnMount')
+      roomId.value = null;
     })
 
     return {
       messages,
+      roomId,
       newMessage,
+      otherUserId,
       senderUserId,
-      userCount,
       sendMessage,
     }
   },

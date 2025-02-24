@@ -7,21 +7,22 @@
       <v-toolbar color="brown-lighten-2" density="compact">
         <!-- <v-btn icon="mdi-menu" variant="text"></v-btn> -->
   
-        <v-toolbar-title>Friend List</v-toolbar-title>
+        <v-toolbar-title>Messages</v-toolbar-title>
   
         <v-spacer></v-spacer>
   
         <v-btn icon="mdi-magnify" variant="text"></v-btn>
       </v-toolbar>
   
-      <v-list
-        :items="items"
-        lines="three"
-        item-props
-      >
-        <template v-slot:subtitle="{ subtitle }">
-          <div v-html="subtitle"></div>
-        </template>
+      <v-list lines="three" item-props>
+        <v-list-item
+          v-for="(item, index) in items"
+          :key="index"
+          :prepend-avatar="item.prependAvatar"
+          @click="$emit('other-user-id', item.title)">
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
+        </v-list-item>
       </v-list>
     </v-card>
   </template>
@@ -40,13 +41,10 @@
         setup(props) {
             const items = computed(() => {
                 const list = [];
-                props.roomListData.forEach((room, i) => {
+                props.roomListData.forEach((room) => {
                     list.push({
                     prependAvatar : defaultUserImage, title : room.otherUserId, subtitle : room.roomUpdatedT
                     })
-                    if(props.roomListData.length - 1 > i ) {
-                      list.push({ type: 'divider', inset: true })
-                    }
                 });    
                 return list;
             }) 

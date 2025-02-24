@@ -1,10 +1,10 @@
 <template class="chat-page-container">
 <v-row no-gutters>
   <v-col class="pa-4">
-    <ChatRoom />
+    <ChatRoom/>
   </v-col>
   <v-col class="pa-4" cols="auto">
-    <ChatRoomList :roomListData="chatRoomList.data"/>
+    <ChatRoomList :roomListData="chatRoomList.data" @other-user-id="chatRoomListEmitData"/>
   </v-col>
 </v-row>
   </template>
@@ -13,6 +13,7 @@
   import ChatRoomList from '../components/ChatRoomList.vue'
   import ChatRoom from '../components/ChatRoom.vue'
   import * as chat from '@/api/chat.js'
+  import {useChatStore} from '@/store/chat'
   import { onMounted, ref } from 'vue'
   
   export default {
@@ -22,7 +23,14 @@
       ChatRoomList
     },
     setup () {
+        const chatStore = useChatStore()
         const chatRoomList = ref({data : []});
+
+        const chatRoomListEmitData = async(data) => {
+          const roomInfo = await chat.getChatRoomInfoApi(data);
+          chatStore.setRoomId(roomInfo.data.roomId)
+          chatStore.setOtherUserId(roomInfo.data.otherUserId)
+        }
 
         const getRoomList = async() => {
             try {
@@ -35,7 +43,8 @@
         onMounted (getRoomList);
 
         return {
-            chatRoomList
+            chatRoomList,
+            chatRoomListEmitData
         }
     }
   }

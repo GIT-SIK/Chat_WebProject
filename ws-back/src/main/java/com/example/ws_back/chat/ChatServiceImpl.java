@@ -51,14 +51,14 @@ public class ChatServiceImpl implements ChatService{
     }
     
     /* 채팅방 정보 조회 */
-    public ChatRoom getChatRoom(String otherUserId, Authentication authentication) {
+    public Map<String, Object> getChatRoom(String otherUserId, Authentication authentication) {
     	
     	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
     	List<ChatRoom> crList = cor.findAllByChatRoom(userId);
     	
     	/* 채팅방 생성 로직 */
     	if(!crList.stream()
-    	.anyMatch(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))) {
+    	.anyMatch(chatRoom -> otherUserId.equalsIgnoreCase(chatRoom.getUserIdA()) || otherUserId.equalsIgnoreCase(chatRoom.getUserIdB()))) {
     		ChatRoomDto chatRoomDto = new ChatRoomDto();
     		chatRoomDto.setUserIdA(userId);
     		chatRoomDto.setUserIdB(otherUserId);
@@ -70,14 +70,18 @@ public class ChatServiceImpl implements ChatService{
     		}
     		
     	}
-    	System.out.println("채팅방 정보 : " + userId + "의 채팅방 전체 목록 가져옵니다. ");
-    	System.out.println(crList.stream().collect(Collectors.toList()));
-    	System.out.println("---------------------------");
-
+    	
     	return crList.stream()
-    			.filter(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))
-    			.findFirst()
-    			.orElseThrow(() -> new IllegalArgumentException());
+		.filter(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))
+		.findFirst()
+    	.map(chatRoom -> {
+    		Map<String,Object> nrMap = new HashMap<>();
+    		nrMap.put("roomId", chatRoom.getRoomId());
+    		nrMap.put("otherUserId", !chatRoom.getUserIdA().equalsIgnoreCase(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
+    		return nrMap;
+    	}).orElseGet(Collections::emptyMap);
+    	
+    	
     }
     
     /* 채팅방 목록 */
@@ -89,13 +93,14 @@ public class ChatServiceImpl implements ChatService{
     	DateTimeFormatter fmtDateTime = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm");
     	
     	System.out.println("채팅방 목록 : "+userId + "의 채팅방 전체 목록 가져옵니다. ");
-    	crList.stream().collect(Collectors.toList());
+    	System.out.println(crList.stream().collect(Collectors.toList()));
     	System.out.println("---------------------------");
+    	
     	return crList.stream()
     		.map(chatRoom -> {
     			Map<String, Object> nrMap = new HashMap<>();
 				nrMap.put("roomId", chatRoom.getRoomId());
-				nrMap.put("otherUserId", !chatRoom.getUserIdA().equals(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
+				nrMap.put("otherUserId", !chatRoom.getUserIdA().equalsIgnoreCase(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
 				nrMap.put("roomUpdatedT", chatRoom.getRoomUpdatedT().format(fmtDateTime));
 				return nrMap;
     		})
