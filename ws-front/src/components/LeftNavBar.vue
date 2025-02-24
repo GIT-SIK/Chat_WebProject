@@ -76,8 +76,8 @@ export default {
     items.value = [
       { title: 'Home', icon: 'mdi-home-city', val: 'home' },
       { title: 'My Account', icon: 'mdi-account', val: 'account' },
-      { title: 'Friend', icon: 'mdi-account-group-outline', val: 'friend' },
-      { title: 'Chat', icon: 'mdi-account-group-outline', val: 'chat' },
+      { title: 'Friends', icon: 'mdi-account-group-outline', val: 'friend' },
+      { title: 'Chat', icon: 'mdi-message-text-outline', val: 'chat' },
       { title: 'Logout', icon: 'mdi-account-arrow-right', val: 'logout' },
     ]
 

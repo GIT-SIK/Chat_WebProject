@@ -58,7 +58,7 @@ public class FriendServiceImpl implements FriendService{
 			String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
 			if(!fr.findAllByAddFriend(receiverUserId)
 				  .stream()
-				  .anyMatch(friend -> userId.equals(friend.getSenderUserId()) || userId.equals(friend.getReceiverUserId()))) {
+				  .anyMatch(friend -> userId.equalsIgnoreCase(friend.getSenderUserId()) || userId.equalsIgnoreCase(friend.getReceiverUserId()))) {
 				FriendDto friendDto = new FriendDto();
 				friendDto.setSenderUserId(userId);
 				friendDto.setReceiverUserId(receiverUserId);

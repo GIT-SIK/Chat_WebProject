@@ -3,7 +3,7 @@ import MainLayout from '../views/MainLayout.vue'
 import SignupPage from '../components/SignupModal.vue'
 import FriendPage from '../views/FriendPage.vue'
 import ChatPage from '../views/ChatPage.vue'
-import { useLoginStore } from '@/store/login'
+import { useUserStore } from '@/store/user'
 import MainPage from '@/views/MainPage.vue'
 
 /* */
@@ -38,16 +38,16 @@ const router = createRouter({
   ],
 })
 router.beforeEach(async (to, from, next) => {
-  const loginStore = useLoginStore()
-  await loginStore.getUserInfo()
+  const userStore = useUserStore()
+  await userStore.getUserInfo()
   const authUser =
-    loginStore.token == null || loginStore.token != localStorage.getItem('access_token')
+  userStore.token == null || userStore.token != localStorage.getItem('access_token')
       ? true
       : false
   if (to.path.startsWith('/auth') && authUser) {
     console.log('[index.js] 사용자 정보를 확인할 수 없습니다.')
     next('/')
-  } else if (loginStore.token && to.path === '/') {
+  } else if (userStore.token && to.path === '/') {
     console.log('[index.js] 로그인 상태')
     next('/auth')
   } else {
