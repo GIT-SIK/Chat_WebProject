@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.ws_back.security.CustomUserDetails;
 
+import io.jsonwebtoken.lang.Collections;
+
 import org.modelmapper.ModelMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -31,12 +33,9 @@ public class ChatServiceImpl implements ChatService{
 	private final SimpMessagingTemplate smt; 
     
     /* 채팅 데이터 처리 */
-    public String chatMessage(ChatDto chatDto) {
+    public void chatMessage(ChatDto chatDto) {
     	chatDto.setDate(UtcToKst(chatDto.getDate()));
-        System.out.println("Received chatId: " + chatDto.getRoomId());
-        System.out.println("Received message: " + chatDto.getMessage());
     	smt.convertAndSend("/api/chat/receive/" + chatDto.getRoomId(), chatDto);
-    	return "OK";
     }
     
     /* 채팅방 생성 */

@@ -7,8 +7,8 @@ import org.springframework.security.core.Authentication;
 
 public interface ChatService {
 
-	public ChatRoom getChatRoom(String otherUserId, Authentication authentication);
+	public Map<String, Object> getChatRoom(String otherUserId, Authentication authentication);
 	public List<Map<String,Object>> getChatRoomList(Authentication authentication);
-	public String chatMessage(ChatDto chatDto);
+	public void chatMessage(ChatDto chatDto);
 
 }

@@ -43,9 +43,9 @@ public class ChatController {
 		 */
 		
 		@MessageMapping("/api/chat/send")
-		public String sendMessage(ChatDto chatDto) {	   
-			String temp = cs.chatMessage(chatDto);
-			return temp;
+		public void sendMessage(ChatDto chatDto) {	
+			
+			cs.chatMessage(chatDto);
 	    }
 		
 		

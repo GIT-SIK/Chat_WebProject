@@ -11,7 +11,10 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.ws_back.chat.ChatController;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class WebSocketEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
@@ -37,6 +40,7 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         String message = "사용자가 퇴장했습니다.";
+        log.info("연결이 끊겼습니다.");
         wsc.decrementUserCnt();
         smt.convertAndSend(href, createMessage(type, message));
     }

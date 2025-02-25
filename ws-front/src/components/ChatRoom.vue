@@ -1,40 +1,48 @@
 <template>
   <div class="ws-chat-container">
-    <!-- UserCount 컴포넌트 -->
-    <!-- <user-count :user-count="userCount" /> -->
+  <template v-if="roomId !== null">
+    <div class="ws-chat-otherid">
+    {{ otherUserId }}
+    </div>
     <ul class="ws-chat-list">
-      <li
-        v-for="(message, index) in messages"
-        :key="index"
-        :class="{
-          'm-me': message.sender === senderUserId,
-          'm-other': message.sender !== senderUserId && message.sender !== 'system',
-          'm-system': message.sender === 'system',
-        }"
-      >
-        <span> {{ message.text }} </span>
-        <span> {{ message.date }} </span>
-      </li>
+        <li
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="{
+            'm-me': message.senderUserId === senderUserId,
+            'm-other': message.senderUserId !== senderUserId && message.sender !== 'system',
+            'm-system': message.senderUserId === 'system',
+          }"
+        >
+          <span> {{ message.message }} </span>
+          <span> {{ message.date }} </span>
+        </li>
     </ul>
-    <input
-      v-model="newMessage"
-      @keyup.enter="sendMessage"
-      placeholder="메시지를 입력 후 엔터를 클릭해주세요."
-    />
+      <input
+        v-model="newMessage"
+        @keyup.enter="sendMessage"
+        placeholder="메시지를 입력 후 엔터를 클릭해주세요."
+      />
+  </template>
+  <template v-else>
+    <div class="ws-chat-noid">
+     채팅방을 선택해주세요.
+    </div>
+  </template>
+    <!-- <template v-else>
+      <input placeholder="채팅방을 선택해주세요.">
+    </template> -->
   </div>
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import chatService from '@/api/chat'
-import api from '@/utils/api'
-import UserCount from '../components/ChatRoomUC.vue'
+import {useChatStore} from '@/store/chat'
+import {useUserStore} from '@/store/user'
+import { storeToRefs } from 'pinia'
 
 export default {
-  components: {
-    UserCount,
-  },
-
   setup() {
     /*
     ChatDto
@@ -68,10 +76,17 @@ export default {
         return
       }
       chatService.connect('/ws', token, roomId.value) // WebSocket 연결
+    }
 
-      // 메시지 수신 이벤트 핸들링
-      chatService.addListener(roomId.value, (msg) => {
-        console.log(`수신 : ${msg}`)
+    // 재 구독
+
+
+    watch(roomId, (newRoomId, oldRoomId) => {
+      if (newRoomId !== oldRoomId) {
+        messages.value = [] 
+        chatService.unsubscribe(oldRoomId) // 기존 구독 제거
+        chatService.subscribe(newRoomId); // 구독 추가
+        chatService.addListener(newRoomId, (msg) => {
         if (msg.date) {
           const date = new Date(msg.date)
           const hours = date.getHours()
@@ -83,27 +98,18 @@ export default {
         }
         if (msg.type === 'notification') {
           messages.value.push({
-            sender: 'system',
-            text: msg.message,
+            senderUserId: 'system',
+            message: msg.message,
           })
         } else {
           messages.value.push(msg)
         }
         scrollAutoDown()
-        fetchUserCount()
-      })
-    }
-
-    const fetchUserCount = () => {
-      api
-        .get('/api/chat/uc') // REST API 호출
-        .then((response) => {
-          userCount.value = response.data.userCount // 사용자 수 업데이트
-        })
-        .catch((error) => {
-          console.error('Failed to fetch UC:', error)
-        })
-    }
+       })
+      }  else {
+          console.log("이미 채팅방에 접속 중 입니다.")
+        }
+    });
 
     // 메시지 입력
     const sendMessage = () => {
@@ -154,12 +160,27 @@ export default {
   align-items: center;
   height: 70vh;
   font-family: Arial, sans-serif;
+  border-radius: 4px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* 접속자 수 */
-.ws-chat-container div {
+.ws-chat-otherid {
+  height : 48px;
   width: 100%;
-  max-width: 500px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: #A1887F;
+  color : white;
+}
+
+.ws-chat-noid {
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  height: 100%
 }
 
 /* 메시지 리스트 스타일 */
@@ -172,8 +193,6 @@ export default {
   margin: 0;
   padding: 0 !important;
   background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
 }
@@ -272,17 +291,12 @@ export default {
 /* 입력창 스타일 */
 .ws-chat-container input {
   width: 100%;
-  max-width: 500px;
   padding: 12px 15px;
   margin-top: 10px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border-top: 1px solid #ccc;
+  border-radius: 4px;
   outline: none;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.ws-chat-container input:focus {
-  border-color: #8D6E63;
-}
 </style>
