@@ -1,5 +1,6 @@
 <template>
   <div>
+    [토큰 인증 확인]
     <base-button class="btn-darkgray" size="large" @click="checkUser"> 토큰 확인 </base-button>
     <v-divider></v-divider>
     <div class="room-info">
@@ -7,6 +8,12 @@
       <base-button class="btn-darkgray" size="large" @click="checkRoomInfo"> 방 생성 및 방 데이터 확인 </base-button>
      </div>
         <base-button class="btn-darkgray" size="large" @click="checkRoomList"> 채팅방 리스트 확인 </base-button>
+    <!-- <v-divider></v-divider>
+    [모든 소켓 비우기]
+    <base-button size="large" @click="clearWebSocket"> 소켓 삭제 </base-button> -->
+    <v-divider></v-divider>
+    [모든 채팅내역 저장 / 관리자 권한 필요] Redis → MongoDB <br>
+    <base-button size="large" @click="saveChatMessages">  </base-button>
     <v-divider></v-divider>
     <base-button size="large" @click="$router.push('/')"> HOME </base-button>
   </div>
@@ -16,15 +23,27 @@
 import { onMounted, inject, ref } from 'vue'
 import api from '@/utils/api'
 import * as chat from '@/api/chat'
+import * as admin from '@/api/admin'
 import { useRouter } from 'vue-router'
+import chatService from '@/api/chat'
 
 export default {
-  name: 'TestPage',
+  name: 'AdminPage',
   setup() {
     const showToast = inject('showToast')
     const router = useRouter();
     const otherUserId = ref('');
 
+    const clearWebSocket = () => {
+      chatService.closeAll()
+
+    }
+
+    const saveChatMessages = async() => {
+      showToast("Redis 모든 채팅 내역을 저장합니다.");
+      const response =await admin.saveAllChatMessagesApi();
+      showToast(response.data);
+    }
 
     const checkRoomInfo = async() => {
       try {
@@ -79,8 +98,10 @@ export default {
 
     return {
       checkUser,
+      clearWebSocket,
       checkRoomInfo,
       checkRoomList,
+      saveChatMessages,
       router,
       otherUserId
     }

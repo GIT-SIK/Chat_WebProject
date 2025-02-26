@@ -36,9 +36,9 @@ public class ChatController {
 
 		private final ChatService cs;
 		 
-		/** (전체) 메시지 처리
+		/** 실시간 메시지 저장, 반환 처리
 		 * 
-		 * @return WSMessage | message 반환
+		 * @param ChatDto | 채팅 메시지, 채팅방 데이터
 		 * 
 		 * 
 		 */
@@ -48,6 +48,15 @@ public class ChatController {
 			cs.chatMessage(chatDto);
 	    }
 		
+		/** (관리자) 메시지 저장 처리 2 (Redis -> MongoDB 전체 저장용 )
+		 * 
+		 * @return String | 저장 여부 메시지
+		 *  */
+		@RequestMapping(value = "/api/admin/save/all/chatmessages", method = RequestMethod.GET)
+		public ResponseEntity<String> saveAllMessagesToMongo(Authentication authentication) {
+			System.out.println(((CustomUserDetails) authentication.getPrincipal()).getAuthorities() +"");
+			return ResponseEntity.ok().body(cs.saveAllMessagesToMongo());
+		}
 		
 		/** 채팅방 목록
 		 * 
@@ -70,7 +79,8 @@ public class ChatController {
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
 		public ResponseEntity<Map<String, Object>> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
 			Map<String, Object> chatRoom = cs.getChatRoom(otherUserId, authentication);
-
+			
+			
 		    Map<String, Object> response = new HashMap<>();
 		    response.put("chatRoomInfo", chatRoom);
 		    response.put("chatRoomMessages", cs.getChatMessage(chatRoom.get("roomId").toString()));

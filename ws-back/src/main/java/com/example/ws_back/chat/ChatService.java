@@ -11,4 +11,5 @@ public interface ChatService {
 	public List<Map<String,Object>> getChatRoomList(Authentication authentication);
 	public void chatMessage(ChatDto chatDto);
 	public List<ChatDto> getChatMessage(String roomId);
+	 public String saveAllMessagesToMongo();
 }

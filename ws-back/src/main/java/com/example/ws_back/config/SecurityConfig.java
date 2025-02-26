@@ -36,8 +36,11 @@ public class SecurityConfig {
     };	
 
     private static final String[] AUTH_REQUIRED_LIST = {
-    	"/api/auth/**"
-    		
+    	"/api/auth/**"		
+    };
+    
+    private static final String[] ADMIN_AUTH_REQUIRED_LIST = {
+    	"/api/admin/**"		
     };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -71,6 +74,7 @@ public class SecurityConfig {
             
             // 권한 설정
             .authorizeHttpRequests(authorize -> authorize
+            	.requestMatchers(ADMIN_AUTH_REQUIRED_LIST).hasAuthority("IsAdmin_true")
             	.requestMatchers(AUTH_REQUIRED_LIST).authenticated()
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().denyAll() 

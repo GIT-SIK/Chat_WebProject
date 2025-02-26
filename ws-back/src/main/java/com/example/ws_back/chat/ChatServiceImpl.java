@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -199,8 +200,43 @@ public class ChatServiceImpl implements ChatService{
         		.map(obj -> modelMapper.map(obj, ChatDto.class))
         		.collect(Collectors.toList());
     }
-    
-    
+    /* Redis 재부팅, OFF시 모든 채팅내역 저장 */
+    /* */
+    public String saveAllMessagesToMongo() {
+        log.info("MongoDB로 모든 채팅 데이터를 저장합니다.");
+        Set<String> keys = redisTemplate.keys("roomid:*");
+        if (keys != null && !keys.isEmpty()) {
+            List<Chat> allMessages = new ArrayList<>();
+            /* Redis -> List<Chat> */
+            for (String key : keys) {
+                List<Object> rMessages = redisTemplate.opsForList().range(key, 0, -1);
+                
+                if (rMessages != null && !rMessages.isEmpty()) {
+                    /* Object -> Chat 변환 */
+                    ObjectMapper om = new ObjectMapper();
+                    om.registerModule(new JavaTimeModule());
+
+                    List<Chat> chatList = rMessages.stream()
+                        .map(obj -> om.convertValue(obj, Chat.class))
+                        .collect(Collectors.toList());
+
+                    allMessages.addAll(chatList);
+                }
+            }
+            /* List<Chat> -> MongoDB */
+            if (!allMessages.isEmpty()) {
+                cmr.saveAll(allMessages);
+                log.info("MongoDB - {}개의 메시지 저장 완료", allMessages.size());
+                redisTemplate.delete(keys);
+                return "Redis → MongoDB : " + allMessages.size() + "개의 메시지 저장 완료";
+            }
+            return "Redis → MongoDB : 저장할 메시지가 없습니다.";
+        } else {
+            log.info("Redis 데이터가 없습니다.");
+            return "Redis → MongoDB : 저장할 메시지가 없습니다.";
+        }
+    }
+
     
     
     /* 사용자 지정 함수 */

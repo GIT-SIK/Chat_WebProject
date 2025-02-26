@@ -21,6 +21,8 @@ public class CustomUserDetails implements UserDetails {
      *
      * @return List<SimpleGrantedAuthority>
      */
+    
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> isAdmin = new ArrayList<>();
@@ -39,6 +41,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return userDto.getUserId();
+    }
+    
+    public String getRole() {
+        return userDto.getIsAdmin();
     }
 
     @Override
