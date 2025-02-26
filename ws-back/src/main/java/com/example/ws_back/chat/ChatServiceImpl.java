@@ -3,6 +3,8 @@ package com.example.ws_back.chat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +12,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.ws_back.security.CustomUserDetails;
+import com.example.ws_back.usr.UserDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.jsonwebtoken.lang.Collections;
 
@@ -27,17 +34,23 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService{
-    private final ChatMongoRepository cmr;
+	/* OracleDB */
     private final ChatOracleRepository cor;
+    
+    /* MongoDB */
+    private final ChatMongoRepository cmr;
+    
+	/* REDIS */
+	private final RedisTemplate<String, Object> redisTemplate;
+	
+	/* DTO <-> Entity */
     private final ModelMapper modelMapper;
+    
+    /* MESSAGE */
 	private final SimpMessagingTemplate smt; 
+	
     
-    /* 채팅 데이터 처리 */
-    public void chatMessage(ChatDto chatDto) {
-    	chatDto.setDate(UtcToKst(chatDto.getDate()));
-    	smt.convertAndSend("/api/chat/receive/" + chatDto.getRoomId(), chatDto);
-    }
-    
+	/* ************************* 채팅방 처리 **************************************** */
     /* 채팅방 생성 */
     public boolean createChatRoom(ChatRoomDto chatRoomDto) {
     	try {
@@ -106,6 +119,90 @@ public class ChatServiceImpl implements ChatService{
     		.collect(Collectors.toList());
     }
     
+    /* ************************* 채팅 데이터 처리 **************************************** */
+    /* 
+     * 처리방향 : ChatDto(DTO) <-> Chat(Entity) <-> Redis <-> MongoDB
+     *  */
+    
+    /* MAX_REDIS_SAVE_MESSAGES : 최근 메시지 저장할 메시지 수 (초과시 Mongo에 저장)
+     * MAX_MESSAGES : 출력할 메시지 수
+     */
+    
+// ※ WARN : MAX_REDIS_SAVE_MESSAGES 기본값보다 낮출 경우 Redis내 데이터를 flushall (삭제)해주거나 MongoDB 저장할 것. 
+    
+    public static final int MAX_REDIS_SAVE_MESSAGES = 20;
+    public static final int MAX_MESSAGES = 20;
+    
+    /* 채팅 데이터 구독자에게 반환  */
+    public void chatMessage(ChatDto chatDto) {
+    	chatDto.setDate(UtcToKst(chatDto.getDate()));
+    	saveMessageToRedis(chatDto.getRoomId(), chatDto);
+    	smt.convertAndSend("/api/chat/receive/" + chatDto.getRoomId(), chatDto);
+    }
+    
+    /* [save] Redis */
+    public void saveMessageToRedis(String roomId, ChatDto message){
+    	log.info("REDIS 데이터를 저장합니다");
+    	 String key = "roomid:" + roomId;
+    	 redisTemplate.opsForList().leftPush(key, modelMapper.map(message, Chat.class));
+    	 
+         if (redisTemplate.opsForList().size(key) >= MAX_REDIS_SAVE_MESSAGES) {
+        	 saveMessageToMongo(roomId);
+         }
+    }
+    
+    /* [get] Redis -> [save] MongoDB  */
+    @Transactional
+    public void saveMessageToMongo(String roomId) {
+    	log.info("MongoDB 데이터를 저장합니다");
+        String key = "roomid:" + roomId;
+        List<Object> rMessages = redisTemplate.opsForList().range(key, 0, -1);
+
+        if (rMessages != null && !rMessages.isEmpty()) {
+        	/* MongoDB 데이터 저장 (Object -> Chat 변환) */
+        	cmr.saveAll(rMessages.stream().map( obj -> {
+    			ObjectMapper om = new ObjectMapper();
+    			om.registerModule(new JavaTimeModule());
+    			return om.convertValue(obj, Chat.class);		
+        	}).collect(Collectors.toList())); 
+        	/* Redis 데이터 삭제 */
+            redisTemplate.delete(key);
+        }
+    }
+    
+    /* [get] Redis, [get] MongoDB */
+    public List<ChatDto> getChatMessage(String roomId){
+    	log.info("REDIS 데이터를 불러옵니다");
+    	String key = "roomid:" + roomId;
+    	/* Redis 데이터 가져오기 (Object -> Chat 변환) */
+    	List<Object> rMessages = redisTemplate.opsForList().range(key, 0, MAX_MESSAGES - 1);  
+    	List<Chat> messages = rMessages.stream().map( obj -> {
+			ObjectMapper om = new ObjectMapper();
+			om.registerModule(new JavaTimeModule());
+			return om.convertValue(obj, Chat.class);		
+    	}).collect(Collectors.toList());
+
+        if (messages.size() < MAX_MESSAGES) {
+        	log.info("MongoDB 데이터를 불러옵니다.");
+            List<Chat> mMessages = cmr.findByRoomIdOrderByDateDesc(roomId);
+            
+            int getMongoChatMessageCount = MAX_MESSAGES - messages.size();
+            if(mMessages != null && !mMessages.isEmpty()) {
+            messages.addAll(mMessages.subList(0,Math.min(mMessages.size(), getMongoChatMessageCount)));
+            }
+        } else {
+        	log.error("MongoDB 데이터가 없습니다.");
+        	return new ArrayList<>();
+        }
+        return messages.stream()
+        		.sorted(Comparator.comparing(Chat::getDate))
+        		.map(obj -> modelMapper.map(obj, ChatDto.class))
+        		.collect(Collectors.toList());
+    }
+    
+    
+    
+    
     /* 사용자 지정 함수 */
     
     /** TimeZone UTC -> KST 변환
@@ -114,5 +211,13 @@ public class ChatServiceImpl implements ChatService{
      */
     public LocalDateTime UtcToKst(LocalDateTime date) {
     	return date.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();	 
+    }
+    
+    /** TimeZone KST -> UTC 변환
+	 * @param LocalDateTime | KST 시간 입력
+	 * @return LocalDateTime | UTC 시간 반환
+     */
+    public LocalDateTime KstToUtc(LocalDateTime date) {
+    	return date.atZone(ZoneId.of("Asia/Seoul")).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();	 
     }
 }

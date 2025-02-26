@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, computed, nextTick } from 'vue'
 import chatService from '@/api/chat'
 import {useChatStore} from '@/store/chat'
 import {useUserStore} from '@/store/user'
@@ -62,8 +62,10 @@ export default {
 
     // 스크롤 자동 스크롤
     const scrollAutoDown = () => {
-      const lct = document.querySelector('.ws-chat-list')
-      requestAnimationFrame(() => {
+      /* DOM 업데이트 후 함수 실행 */
+      nextTick(() => {
+        const lct = document.querySelector('.ws-chat-list')
+        if (!lct) return
         lct.scrollTop = lct.scrollHeight
       })
     }
@@ -78,23 +80,22 @@ export default {
       chatService.connect('/ws', token, roomId.value) // WebSocket 연결
     }
 
-    // 재 구독
+    // 이전 메시지 목록 가져와서 date 포멧팅
+    const olderMessages = computed(() =>
+      chatStore.olderMessages.map((omsg) => ({
+        ...omsg,
+        date: formatDate(omsg.date),
+      }))
+    );
 
-
+    // 구독
     watch(roomId, (newRoomId, oldRoomId) => {
       if (newRoomId !== oldRoomId) {
-        messages.value = [] 
         chatService.unsubscribe(oldRoomId) // 기존 구독 제거
         chatService.subscribe(newRoomId); // 구독 추가
         chatService.addListener(newRoomId, (msg) => {
         if (msg.date) {
-          const date = new Date(msg.date)
-          const hours = date.getHours()
-          const minutes = date.getMinutes()
-          const formattedHours = hours % 12 || 12
-          const ampm = hours < 12 ? 'AM' : 'PM'
-          const formattedMinutes = minutes.toString().padStart(2, '0')
-          msg.date = `${ampm} ${formattedHours}:${formattedMinutes}`
+          msg.date = formatDate(msg.date)
         }
         if (msg.type === 'notification') {
           messages.value.push({
@@ -103,12 +104,14 @@ export default {
           })
         } else {
           messages.value.push(msg)
+          scrollAutoDown()
         }
-        scrollAutoDown()
        })
+       messages.value = olderMessages.value;
+       scrollAutoDown()
       }  else {
           console.log("이미 채팅방에 접속 중 입니다.")
-        }
+      }
     });
 
     // 메시지 입력
@@ -140,6 +143,18 @@ export default {
       roomId.value = null;
     })
 
+    /* 날짜 변환 */
+    const formatDate = (isoDate) => {
+      if (!isoDate) return "";
+      return new Date(isoDate).toLocaleString("ko-KR", {
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true, 
+      });
+    };
+
     return {
       messages,
       roomId,
@@ -165,7 +180,7 @@ export default {
 }
 
 .ws-chat-otherid {
-  height : 48px;
+  min-height : 48px;
   width: 100%;
   display : flex;
   justify-content : center;
@@ -186,7 +201,6 @@ export default {
 /* 메시지 리스트 스타일 */
 .ws-chat-list {
   width: 100%;
-  max-width: 500px;
   flex-grow: 1; /* 가변 크기 설정 */
   overflow-y: auto; /* 스크롤 가능 */
   list-style-type: none;

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,8 +44,7 @@ public class ChatController {
 		 */
 		
 		@MessageMapping("/api/chat/send")
-		public void sendMessage(ChatDto chatDto) {	
-			
+		public void sendMessage(ChatDto chatDto) {		
 			cs.chatMessage(chatDto);
 	    }
 		
@@ -64,13 +64,18 @@ public class ChatController {
 		/** 채팅 내역, 채팅방 생성
 		 * 
 		 * @param 상대방 유저 ID
-		 * @return ChatRoom | 채팅방 ID, 본인ID, 상대방ID, 방 생성일, 마지막 업데이트일
+		 * @return ChatRoomInfo, ChatRoomMessages | 채팅방 ID, 본인ID, 상대방ID, 방 생성일, 마지막 업데이트일 / 채팅 메시지 내
 		 * 채팅방 ID는 UUID로 생성됨.
 		 */
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
 		public ResponseEntity<Map<String, Object>> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
 			Map<String, Object> chatRoom = cs.getChatRoom(otherUserId, authentication);
-			return ResponseEntity.ok().body(chatRoom);
+
+		    Map<String, Object> response = new HashMap<>();
+		    response.put("chatRoomInfo", chatRoom);
+		    response.put("chatRoomMessages", cs.getChatMessage(chatRoom.get("roomId").toString()));
+			
+			return ResponseEntity.ok().body(response);
 		}
 		
 		

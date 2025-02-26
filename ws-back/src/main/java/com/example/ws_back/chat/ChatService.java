@@ -10,5 +10,5 @@ public interface ChatService {
 	public Map<String, Object> getChatRoom(String otherUserId, Authentication authentication);
 	public List<Map<String,Object>> getChatRoomList(Authentication authentication);
 	public void chatMessage(ChatDto chatDto);
-
+	public List<ChatDto> getChatMessage(String roomId);
 }

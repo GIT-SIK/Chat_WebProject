@@ -2,10 +2,11 @@
 
 package com.example.ws_back.chat;
 
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import com.example.ws_back.chat.ChatMessage;
 
-public interface ChatMongoRepository extends MongoRepository<ChatMessage, String> {
+public interface ChatMongoRepository extends MongoRepository<Chat, String> {
+	 List<Chat> findByRoomIdOrderByDateDesc(String roomId);
 
 }
 

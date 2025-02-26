@@ -26,12 +26,15 @@
         const chatStore = useChatStore()
         const chatRoomList = ref({data : []});
 
+        /* 채팅방 정보, 채팅 내역 상태 저장 */
         const chatRoomListEmitData = async(data) => {
           const roomInfo = await chat.getChatRoomInfoApi(data);
-          chatStore.setRoomId(roomInfo.data.roomId)
-          chatStore.setOtherUserId(roomInfo.data.otherUserId)
+          chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
+          chatStore.setOtherUserId(roomInfo.data.chatRoomInfo.otherUserId)
+          chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
         }
 
+        /* 채팅방 리스트 */
         const getRoomList = async() => {
             try {
                 chatRoomList.value = await chat.getChatRoomListApi();
