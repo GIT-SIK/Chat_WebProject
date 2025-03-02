@@ -1,6 +1,5 @@
 package com.example.ws_back.notification;
 
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NotificationServiceImpl {
+public class NotificationServiceImpl implements NotificationService {
 	
 	private final ModelMapper modelMapper;
 	private final NotificationRepository nr;
