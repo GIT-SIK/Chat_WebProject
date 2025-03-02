@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -200,8 +201,14 @@ public class ChatServiceImpl implements ChatService{
         		.map(obj -> modelMapper.map(obj, ChatDto.class))
         		.collect(Collectors.toList());
     }
-    /* Redis 재부팅, OFF시 모든 채팅내역 저장 */
-    /* */
+    /* [자동] Redis 모든 채팅내역 저장 (주기 5분) */
+    @Scheduled(fixedRate = 300000) 
+    public void autoSaveAllMessagesToMongo() {
+    	log.info("[AUTO] 스케줄러");
+        saveAllMessagesToMongo(); 
+    }
+    
+    /* [수동] Redis 모든 채팅내역 저장 */  
     public String saveAllMessagesToMongo() {
         log.info("MongoDB로 모든 채팅 데이터를 저장합니다.");
         Set<String> keys = redisTemplate.keys("roomid:*");
