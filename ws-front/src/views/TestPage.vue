@@ -13,9 +13,12 @@
     <base-button size="large" @click="clearWebSocket"> 소켓 삭제 </base-button> -->
     <v-divider></v-divider>
     [모든 채팅내역 저장 / 관리자 권한 필요] Redis → MongoDB <br>
-    <base-button size="large" @click="saveChatMessages">  </base-button>
+    <base-button size="large" @click="saveChatMessages"> 채팅 백업 </base-button>
     <v-divider></v-divider>
     <base-button size="large" @click="$router.push('/')"> HOME </base-button>
+    <v-divider></v-divider>
+    [친구 알림 테스트]
+    <NotificatioList/>
   </div>
 </template>
 
@@ -27,7 +30,12 @@ import * as admin from '@/api/admin'
 import { useRouter } from 'vue-router'
 import chatService from '@/api/chat'
 
+import NotificatioList from '../components/NotificationList.vue'
+
 export default {
+  components : {
+    NotificatioList
+  },
   name: 'AdminPage',
   setup() {
     const showToast = inject('showToast')

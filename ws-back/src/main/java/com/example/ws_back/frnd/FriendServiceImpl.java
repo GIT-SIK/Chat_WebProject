@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.example.ws_back.notification.NotificationDto;
+import com.example.ws_back.notification.NotificationService;
 import com.example.ws_back.security.CustomUserDetails;
 import com.example.ws_back.usr.User;
 import com.example.ws_back.usr.UserRepository;
@@ -31,7 +33,8 @@ public class FriendServiceImpl implements FriendService{
 	private final FriendRepository fr;
 	private final UserRepository ur;
 	
-	
+	/* 알람 */
+	private final NotificationService noti;
 	/**
 	 * 친구 목록 가져오기 (유저 친구 및 검색)
 	 * @param UserId | 유저 아이디
@@ -67,8 +70,12 @@ public class FriendServiceImpl implements FriendService{
 			} else {
 				return "이미 등록된 친구입니다.";
 			}
+			/* 친구 추가 알람 */
+			NotificationDto nd = noti.createNotification(receiverUserId, userId +"님이 친구 신청하였습니다.", "/friend");
+			noti.sendToClient(receiverUserId, nd);
 			return "친구가 추가되었습니다.";
 		} catch (Exception e) {
+			System.out.println(e);
 			return "친구 추가 중 오류가 발생되었습니다.";
 		}
 	}

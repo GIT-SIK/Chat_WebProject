@@ -1,5 +1,7 @@
 package com.example.ws_back.notification;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.DynamicInsert;
 
 import jakarta.persistence.Column;
@@ -34,7 +36,7 @@ public class Notification {
 	private String notificationMessage;
 	
 	@Column(name="NOTIFICATION_CREATED_AT")
-    private String notiCreatedAt;
+    private LocalDateTime notiCreatedAt;
 	
 	@Column(name="IS_READ")
 	private String isRead;

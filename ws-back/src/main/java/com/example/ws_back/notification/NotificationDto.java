@@ -1,5 +1,7 @@
 package com.example.ws_back.notification;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class NotificationDto {
 	private Long notificationId;
 	private String userId;
 	private String notificationMessage;
-    private String notiCreatedAt;
+    private LocalDateTime notiCreatedAt;
 	private String isRead;
 	private String actionUrl;
 }
