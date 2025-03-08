@@ -1,59 +1,59 @@
-<template class="chat-page-container">
-<v-row no-gutters>
-  <v-col class="pa-4">
-    <ChatRoom/>
-  </v-col>
-  <v-col class="pa-4" cols="auto">
-    <ChatRoomList :roomListData="chatRoomList.data" @other-user-id="chatRoomListEmitData"/>
-  </v-col>
-</v-row>
-  </template>
-  
-  <script>
-  import ChatRoomList from '../components/ChatRoomList.vue'
-  import ChatRoom from '../components/ChatRoom.vue'
-  import * as chat from '@/api/chat.js'
-  import {useChatStore} from '@/store/chat'
-  import { onMounted, ref } from 'vue'
-  
-  export default {
-    name: 'ChatPage',
-    components: {
-      ChatRoom,
-      ChatRoomList
-    },
-    setup () {
-        const chatStore = useChatStore()
-        const chatRoomList = ref({data : []});
+<template>
+  <v-row class="ml-2 chat-container">
+    <v-col cols="4">
+      <ChatRoomList :roomListData="chatRoomList.data" @other-user-id="chatRoomListEmitData" />
+    </v-col>
+    <v-col cols="8">
+      <ChatRoom />
+    </v-col>
+  </v-row>
+</template>
 
-        /* 채팅방 정보, 채팅 내역 상태 저장 */
-        const chatRoomListEmitData = async(data) => {
-          const roomInfo = await chat.getChatRoomInfoApi(data);
-          chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
-          chatStore.setOtherUserId(roomInfo.data.chatRoomInfo.otherUserId)
-          chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
-        }
+<script>
+import ChatRoom from '@/components/chat/ChatRoom.vue'
+import ChatRoomList from '@/components/chat/ChatRoomList.vue'
+import * as chat from '@/api/chat.js'
+import { useChatStore } from '@/store/chat'
+import { onMounted, ref } from 'vue'
 
-        /* 채팅방 리스트 */
-        const getRoomList = async() => {
-            try {
-                chatRoomList.value = await chat.getChatRoomListApi();
-            } catch (e) {
-                console.log("(ChatPage.vue) 채팅방 리스트 불러오는 중 에러 발생 - " + e )
-            }
-        }
+export default {
+  components: {
+    ChatRoom,
+    ChatRoomList,
+  },
+  setup() {
+    const chatStore = useChatStore()
+    const chatRoomList = ref({ data: [] })
 
-        onMounted (getRoomList);
-
-        return {
-            chatRoomList,
-            chatRoomListEmitData
-        }
+    /* 채팅방 정보, 채팅 내역 상태 저장 */
+    const chatRoomListEmitData = async (data) => {
+      const roomInfo = await chat.getChatRoomInfoApi(data)
+      chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
+      chatStore.setOtherUserId(roomInfo.data.chatRoomInfo.otherUserId)
+      chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
     }
-  }
-  </script>
-  <style>
-  .chat-page-container {
-    background-color: #f4f4f9;
-   }
-  </style>
+
+    /* 채팅방 리스트 */
+    const getRoomList = async () => {
+      try {
+        chatRoomList.value = await chat.getChatRoomListApi()
+      } catch (e) {
+        console.log('(ChatPage.vue) 채팅방 리스트 불러오는 중 에러 발생 - ' + e)
+      }
+    }
+
+    onMounted(getRoomList)
+
+    return {
+      chatRoomList,
+      chatRoomListEmitData,
+    }
+  },
+}
+</script>
+
+<style>
+.chat-container {
+  height: calc(100vh - 60px);
+}
+</style>

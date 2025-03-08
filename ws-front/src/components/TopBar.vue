@@ -1,0 +1,37 @@
+<template>
+  <v-toolbar color="transparent">
+    <v-spacer></v-spacer>
+    <div class="toolbar-user-info">
+      <v-avatar size="32">
+        <img :src="userImage" alt="user" />
+      </v-avatar>
+      <div class="ml-4 mr-9 toolbar-username">{{ userName }}</div>
+    </div>
+  </v-toolbar>
+</template>
+
+<script>
+import defaultUserImage from '@/assets/default_user.png'
+import { useUserStore } from '@/store/user'
+
+export default {
+  setup() {
+    const userStore = useUserStore()
+    return {
+      userImage: defaultUserImage,
+      userName: userStore.userId,
+    }
+  },
+}
+</script>
+
+<style>
+.toolbar-username {
+  color: #3e2723 !important;
+}
+
+.toolbar-user-info {
+  display: flex;
+  align-items: center;
+}
+</style>

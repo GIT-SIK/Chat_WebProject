@@ -4,7 +4,7 @@ import SignupPage from '../components/SignupModal.vue'
 import FriendPage from '../views/FriendPage.vue'
 import ChatPage from '../views/ChatPage.vue'
 import { useUserStore } from '@/store/user'
-import MainPage from '@/views/MainPage.vue'
+import MainPage from '../views/MainPage.vue'
 
 /* */
 import TestPage from '../views/TestPage.vue'
@@ -41,7 +41,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   await userStore.getUserInfo()
   const authUser =
-  userStore.token == null || userStore.token != localStorage.getItem('access_token')
+    userStore.token == null || userStore.token != localStorage.getItem('access_token')
       ? true
       : false
   if (to.path.startsWith('/auth') && authUser) {
