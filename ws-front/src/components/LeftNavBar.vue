@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto" max-width="75" variant="text">
     <v-item-group selected-class="left-nav-item">
-      <v-item v-slot="{ isSelected, selectedClass, toggle }" v-for="(item, i) in items" :key="i">
+      <v-item v-slot="{ selectedClass }" v-for="(item, i) in items" :key="i">
         <template v-if="item.icon !== undefined">
           <template v-if="item.tooltip !== undefined">
             <v-tooltip location="right">
@@ -23,27 +23,31 @@
           </template>
 
           <template v-else>
-            <v-btn
-              variant="text"
-              icon
-              :class="['d-flex align-center', selectedClass]"
-              class="my-1"
-              size="large"
-            >
-              <template v-if="item.badge">
-                <v-badge v-model="isNotificationRead" color="red" left overlap dot>
-                  <template v-slot:badge>
-                    <span>6</span>
-                  </template>
-                  <v-icon color="brown-darken-2" @click="toggleNotification">{{
-                    item.icon
-                  }}</v-icon>
+            <template v-if="item.badge">
+              <v-btn
+                variant="text"
+                icon
+                :class="['d-flex align-center', selectedClass]"
+                class="my-1"
+                size="large"
+                @click="notificationStatusUpdate"
+              >
+                <v-badge v-model="badgeStatus" color="red" left overlap dot>
+                  <v-icon color="brown-darken-2">{{ item.icon }}</v-icon>
                 </v-badge>
-              </template>
-              <template v-else>
+              </v-btn>
+            </template>
+            <template v-else>
+              <v-btn
+                variant="text"
+                icon
+                :class="['d-flex align-center', selectedClass]"
+                class="my-1"
+                size="large"
+              >
                 <v-icon color="brown-darken-2">{{ item.icon }}</v-icon>
-              </template>
-            </v-btn>
+              </v-btn>
+            </template>
           </template>
         </template>
 
@@ -53,33 +57,26 @@
       </v-item>
     </v-item-group>
   </v-card>
-
-  <div class="notification-container">
-    <Notification :isVisible="isNotificationVisible" @closeNotification="toggleNotification" />
-  </div>
 </template>
 
 <script>
-import Notification from './NotificationList.vue'
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import { useNotificationStore } from '@/store/notification'
+import { storeToRefs } from 'pinia'
 
 export default {
-  components: {
-    Notification,
-  },
-
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
-    const isNotificationRead = ref(true)
-    const isNotificationVisible = ref(false)
     const showToast = inject('showToast')
+    const notificationStore = useNotificationStore()
+    const { badgeStatus } = storeToRefs(notificationStore)
 
-    const toggleNotification = () => {
-      isNotificationRead.value = !isNotificationRead.value
-      isNotificationVisible.value = !isNotificationVisible.value
+    const notificationStatusUpdate = () => {
+      notificationStore.setBadgeStatus(false)
+      notificationStore.toggle()
     }
 
     const items = [
@@ -98,14 +95,10 @@ export default {
 
     const handleClick = (item) => {
       if (item === 'logout') {
-        console.log(item)
         logout()
       } else if (item === 'friends') router.push({ path: '/auth/friend' })
       else if (item === 'chat') router.push({ path: '/auth/chat' })
       else if (item === 'home') router.push({ path: '/auth' })
-      else {
-        console.log('지정된 값이 없습니다. 값 : ' + item)
-      }
     }
 
     const logout = () => {
@@ -119,10 +112,10 @@ export default {
 
     return {
       items,
+      notificationStatusUpdate,
       handleClick,
-      isNotificationRead,
-      isNotificationVisible,
-      toggleNotification,
+      badgeStatus,
+      notificationStore,
     }
   },
 }
@@ -131,15 +124,5 @@ export default {
 <style>
 .left-nav-item {
   background-color: #efebe9; /* brown-lighten-5 */
-}
-
-.notification-container {
-  max-width: 300px;
-  position: absolute;
-  top: 30px;
-  left: 50px;
-  z-index: 10;
-  margin: 0 auto;
-  padding: 20px;
 }
 </style>

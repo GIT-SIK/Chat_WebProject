@@ -4,21 +4,26 @@
     <base-button class="btn-darkgray" size="large" @click="checkUser"> 토큰 확인 </base-button>
     <v-divider></v-divider>
     <div class="room-info">
-      <v-text-field class= "other-user-id-txt" v-model="otherUserId" label="OTHER USER ID"> </v-text-field>
-      <base-button class="btn-darkgray" size="large" @click="checkRoomInfo"> 방 생성 및 방 데이터 확인 </base-button>
-     </div>
-        <base-button class="btn-darkgray" size="large" @click="checkRoomList"> 채팅방 리스트 확인 </base-button>
+      <v-text-field class="other-user-id-txt" v-model="otherUserId" label="OTHER USER ID">
+      </v-text-field>
+      <base-button class="btn-darkgray" size="large" @click="checkRoomInfo">
+        방 생성 및 방 데이터 확인
+      </base-button>
+    </div>
+    <base-button class="btn-darkgray" size="large" @click="checkRoomList">
+      채팅방 리스트 확인
+    </base-button>
     <!-- <v-divider></v-divider>
     [모든 소켓 비우기]
     <base-button size="large" @click="clearWebSocket"> 소켓 삭제 </base-button> -->
     <v-divider></v-divider>
-    [모든 채팅내역 저장 / 관리자 권한 필요] Redis → MongoDB <br>
+    [모든 채팅내역 저장 / 관리자 권한 필요] Redis → MongoDB <br />
     <base-button size="large" @click="saveChatMessages"> 채팅 백업 </base-button>
     <v-divider></v-divider>
     <base-button size="large" @click="$router.push('/')"> HOME </base-button>
     <v-divider></v-divider>
     [친구 알림 테스트]
-    <NotificatioList/>
+    <NotificatioList />
   </div>
 </template>
 
@@ -30,46 +35,46 @@ import * as admin from '@/api/admin'
 import { useRouter } from 'vue-router'
 import chatService from '@/api/chat'
 
-import NotificatioList from '../components/NotificationList.vue'
+import NotificatioList from '../components/backup_pages/NotificationList.vue'
 
 export default {
-  components : {
-    NotificatioList
+  components: {
+    NotificatioList,
   },
   name: 'AdminPage',
   setup() {
     const showToast = inject('showToast')
-    const router = useRouter();
-    const otherUserId = ref('');
+    const router = useRouter()
+    const otherUserId = ref('')
 
     const clearWebSocket = () => {
       chatService.closeAll()
-
     }
 
-    const saveChatMessages = async() => {
-      showToast("Redis 모든 채팅 내역을 저장합니다.");
-      const response =await admin.saveAllChatMessagesApi();
-      showToast(response.data);
+    const saveChatMessages = async () => {
+      showToast('Redis 모든 채팅 내역을 저장합니다.')
+      const response = await admin.saveAllChatMessagesApi()
+      showToast(response.data)
     }
 
-    const checkRoomInfo = async() => {
+    const checkRoomInfo = async () => {
       try {
-        console.log("채팅방 정보 : " + otherUserId.value + " 회원과의 방 정보를 가져옵니다.")
-        const response = await chat.getChatRoomInfoApi(otherUserId.value);
+        console.log('채팅방 정보 : ' + otherUserId.value + ' 회원과의 방 정보를 가져옵니다.')
+        const response = await chat.getChatRoomInfoApi(otherUserId.value)
 
-        console.log(response);
-        showToast("ROOM ID : " + response.data.roomId)
-      } catch(e) { console.log("(TestPage.vue) 채팅방 체크 중 에러 발생 - " + e )}
+        console.log(response)
+        showToast('ROOM ID : ' + response.data.roomId)
+      } catch (e) {
+        console.log('(TestPage.vue) 채팅방 체크 중 에러 발생 - ' + e)
+      }
     }
 
-
-    const checkRoomList = async() => {
+    const checkRoomList = async () => {
       try {
-        const response = await chat.getChatRoomListApi();
+        const response = await chat.getChatRoomListApi()
         console.log(response)
       } catch (e) {
-        console.log("(TestPage.vue) 채팅방 리스트 불러오는 중 에러 발생 - " + e )
+        console.log('(TestPage.vue) 채팅방 리스트 불러오는 중 에러 발생 - ' + e)
       }
     }
 
@@ -111,7 +116,7 @@ export default {
       checkRoomList,
       saveChatMessages,
       router,
-      otherUserId
+      otherUserId,
     }
   },
 }
@@ -124,11 +129,11 @@ export default {
 }
 
 .room-info {
-  display : flex;
-  width : 300px;
+  display: flex;
+  width: 300px;
 }
 
 .v-divider {
-  padding : 10px 0px 10px 0;
+  padding: 10px 0px 10px 0;
 }
 </style>
