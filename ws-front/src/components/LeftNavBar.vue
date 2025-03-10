@@ -1,4 +1,5 @@
 <template>
+  <!-- 메뉴 -->
   <v-card class="mx-auto" max-width="75" variant="text">
     <v-item-group selected-class="left-nav-item">
       <v-item v-slot="{ selectedClass }" v-for="(item, i) in items" :key="i">
@@ -57,6 +58,10 @@
       </v-item>
     </v-item-group>
   </v-card>
+  <!-- 알림 -->
+  <div v-show="toggleStatus" class="notification-container">
+    <NotificationList />
+  </div>
 </template>
 
 <script>
@@ -65,15 +70,23 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useNotificationStore } from '@/store/notification'
 import { storeToRefs } from 'pinia'
+import NotificationList from '../components/NotificationList.vue'
 
 export default {
+  components: {
+    NotificationList,
+  },
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
     const showToast = inject('showToast')
     const notificationStore = useNotificationStore()
-    const { badgeStatus } = storeToRefs(notificationStore)
 
+    /* 알림, 토글 갱신 상태 */
+    const { badgeStatus } = storeToRefs(notificationStore)
+    const { toggleStatus } = storeToRefs(notificationStore)
+
+    /* 알림 클릭시 뱃지 읽음 처리와 알림창 열기 */
     const notificationStatusUpdate = () => {
       notificationStore.setBadgeStatus(false)
       notificationStore.toggle()
@@ -115,6 +128,7 @@ export default {
       notificationStatusUpdate,
       handleClick,
       badgeStatus,
+      toggleStatus,
       notificationStore,
     }
   },
@@ -124,5 +138,37 @@ export default {
 <style>
 .left-nav-item {
   background-color: #efebe9; /* brown-lighten-5 */
+}
+
+/* 알림 스타일 */
+.notification-container {
+  position: absolute;
+  top: 90px;
+  left: 50px;
+  z-index: 10;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.notification-container::after {
+  content: '';
+  position: absolute;
+  top: 60px;
+  left: 0px;
+  transform: translateY(-50%);
+  border: 10px solid transparent;
+  border-right-color: #ffffff;
+  z-index: 2;
+}
+
+.notification-container::before {
+  content: '';
+  position: absolute;
+  top: 61px;
+  left: -1px;
+  transform: translateY(-50%);
+  border: 10px solid transparent;
+  border-right-color: rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 </style>
