@@ -153,20 +153,30 @@ public class ChatServiceImpl implements ChatService{
          }
     }
     
-    /* [get] Redis -> [save] MongoDB  */
+    /* [get] Redis -> [save] MongoDB / [save] OracleDB  */
     @Transactional
     public void saveMessageToMongo(String roomId) {
     	log.info("MongoDB 데이터를 저장합니다");
         String key = "roomid:" + roomId;
+
         List<Object> rMessages = redisTemplate.opsForList().range(key, 0, -1);
 
         if (rMessages != null && !rMessages.isEmpty()) {
-        	/* MongoDB 데이터 저장 (Object -> Chat 변환) */
-        	cmr.saveAll(rMessages.stream().map( obj -> {
+        	/* (Object -> Chat 변환) */
+        	List<Chat> chatList = rMessages.stream().map( obj -> {
     			ObjectMapper om = new ObjectMapper();
     			om.registerModule(new JavaTimeModule());
     			return om.convertValue(obj, Chat.class);		
-        	}).collect(Collectors.toList())); 
+        	}).collect(Collectors.toList());
+        	
+        	/* Mongo 최신 채팅 저장 */
+        	cmr.saveAll(chatList); 
+        	
+        	/* Oracle 최신 채팅 날짜 저장 */
+        	ChatRoom cr = cor.findById(roomId).orElseThrow();
+        	cr.setRoomUpdatedT(chatList.get(chatList.size() - 1).getDate());
+        	cor.save(cr);
+        	
         	/* Redis 데이터 삭제 */
             redisTemplate.delete(key);
         }
@@ -217,18 +227,27 @@ public class ChatServiceImpl implements ChatService{
             /* Redis -> List<Chat> */
             for (String key : keys) {
                 List<Object> rMessages = redisTemplate.opsForList().range(key, 0, -1);
-                
+                                    
                 if (rMessages != null && !rMessages.isEmpty()) {
-                    /* Object -> Chat 변환 */
-                    ObjectMapper om = new ObjectMapper();
-                    om.registerModule(new JavaTimeModule());
-
-                    List<Chat> chatList = rMessages.stream()
-                        .map(obj -> om.convertValue(obj, Chat.class))
-                        .collect(Collectors.toList());
-
-                    allMessages.addAll(chatList);
+                	/* (Object -> Chat 변환) */
+                	List<Chat> chatList = rMessages.stream().map( obj -> {
+            			ObjectMapper om = new ObjectMapper();
+            			om.registerModule(new JavaTimeModule());
+            			return om.convertValue(obj, Chat.class);		
+                	}).collect(Collectors.toList());
+                	
+                	/* Mongo 최신 채팅 저장 */
+                	cmr.saveAll(chatList); 
+                	
+                	/* Oracle 최신 채팅 날짜 저장 */
+                	ChatRoom cr = cor.findById(key.replaceFirst("^roomid:", "")).orElseThrow();
+                	cr.setRoomUpdatedT(chatList.get(chatList.size() - 1).getDate());           
+                	cor.save(cr);
+                	
+                	allMessages.addAll(chatList);
                 }
+                
+                
             }
             /* List<Chat> -> MongoDB */
             if (!allMessages.isEmpty()) {

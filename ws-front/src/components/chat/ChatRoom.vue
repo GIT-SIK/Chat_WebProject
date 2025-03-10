@@ -4,15 +4,6 @@
       <v-card-title class="d-sm-flex align-sm-center justify-center">
         {{ otherUserId }}
       </v-card-title>
-      <!-- <v-list lines="three" class="pa-0 flex-grow-1 overflow-y-auto right-card-list">
-      <v-list-item
-        v-for="item in items"
-        :key="item.value"
-        :subtitle="item.subtitle"
-        :title="item.title"
-      ></v-list-item>
-    </v-list> -->
-
       <ul class="chatdata-list pa-0 flex-grow-1 overflow-y-auto">
         <li
           v-for="(message, index) in messages"
@@ -31,13 +22,15 @@
       <v-card-actions>
         <v-text-field
           density="compact"
+          v-model="newMessage"
           single-line
           hide-details
           class="chat-message-input pl-2"
           variant="plain"
+          @keyup.enter="sendMessage"
         >
         </v-text-field>
-        <v-btn icon @click="btn_click" size="x-small">
+        <v-btn icon @click="sendMessage" size="x-small">
           <v-avatar color="#FFFFFF" size="small">
             <v-icon icon="mdi-chevron-up" size="x-large"></v-icon>
           </v-avatar>

@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChatOracleRepository extends JpaRepository<ChatRoom, Long>{
+public interface ChatOracleRepository extends JpaRepository<ChatRoom,String>{
   /* ID는 LOWER로 비교할 것.*/
 	/**
 	 * 채팅방 목록 (전체)
