@@ -236,9 +236,6 @@ public class ChatServiceImpl implements ChatService{
             			return om.convertValue(obj, Chat.class);		
                 	}).collect(Collectors.toList());
                 	
-                	/* Mongo 최신 채팅 저장 */
-                	cmr.saveAll(chatList); 
-                	
                 	/* Oracle 최신 채팅 날짜 저장 */
                 	ChatRoom cr = cor.findById(key.replaceFirst("^roomid:", "")).orElseThrow();
                 	cr.setRoomUpdatedT(chatList.get(chatList.size() - 1).getDate());           
