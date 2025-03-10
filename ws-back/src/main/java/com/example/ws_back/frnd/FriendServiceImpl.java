@@ -72,7 +72,7 @@ public class FriendServiceImpl implements FriendService{
 			}
 			/* 친구 추가 알람 */
 			try {
-			NotificationDto nd = noti.createNotification(receiverUserId, userId +"님이 친구 신청하였습니다.", "/friend");
+			NotificationDto nd = noti.createNotification(receiverUserId, userId +"님이 친구 신청하였습니다.", "/auth/friend");
 			noti.sendToClient(receiverUserId, nd);
 			} catch (RuntimeException e) {
 				if(e.getCause() instanceof NullPointerException) {

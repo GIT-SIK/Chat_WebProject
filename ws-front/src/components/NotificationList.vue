@@ -7,7 +7,11 @@
     </v-toolbar>
 
     <v-list class="transparent-bg overflow-y-auto" lines="three" max-height="450">
-      <v-list-item v-for="(notification, index) in notifications" :key="index">
+      <v-list-item
+        v-for="(notification, index) in notifications"
+        :key="index"
+        @click="$router.push(notification.actionUrl)"
+      >
         <!-- <template textv-slot:prepend>
               <v-avatar>
                 <img :src="notification.prependAvatar" alt="Avatar" />
@@ -56,6 +60,7 @@ export default {
     // 알림 받기
     const handleNewNotification = (notification) => {
       notifications.value.push(notification)
+      notificationStore.setBadgeStatus(true)
       console.log(notifications.value)
     }
 
