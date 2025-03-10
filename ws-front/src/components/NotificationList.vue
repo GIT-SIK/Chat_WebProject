@@ -1,76 +1,91 @@
 <template>
-  <template v-if="toggleStatus">
-    <v-card class="mx-auto" width="260">
-      <v-toolbar class="transparent-bg">
-        <v-toolbar-title>Title</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon="mdi-close" @click="closeNotification" variant="text"></v-btn>
-      </v-toolbar>
+  <v-card v-show="toggleStatus" class="mx-auto" width="300">
+    <v-toolbar class="transparent-bg">
+      <v-toolbar-title>알림</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon="mdi-close" @click="closeNotification" variant="text"></v-btn>
+    </v-toolbar>
 
-      <v-list class="transparent-bg" lines="three">
-        <template v-for="(item, index) in items">
-          <template v-if="item.prependAvatar !== undefined">
-            <v-list-item :key="index">
-              <template textv-slot:prepend>
-                <v-avatar>
-                  <img :src="item.prependAvatar" alt="Avatar" />
-                </v-avatar>
-              </template>
+    <v-list class="transparent-bg overflow-y-auto" lines="three" max-height="450">
+      <v-list-item v-for="(notification, index) in notifications" :key="index">
+        <!-- <template textv-slot:prepend>
+              <v-avatar>
+                <img :src="notification.prependAvatar" alt="Avatar" />
+              </v-avatar>
+            </template> -->
 
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-              <v-list-item-subtitle>
-                <div v-html="item.subtitle"></div>
-              </v-list-item-subtitle>
-            </v-list-item>
-          </template>
-          <template v-if="item.type !== undefined">
-            <v-divider></v-divider>
-          </template>
-        </template>
-      </v-list>
-    </v-card>
-  </template>
+        <v-list-item-title>{{ notification.notificationMessage }}</v-list-item-title>
+        <v-list-item-subtitle>
+          {{ notification.notiCreatedAt }}
+        </v-list-item-subtitle>
+      </v-list-item>
+    </v-list>
+  </v-card>
 </template>
 
 <script>
-import { storeToRefs } from 'pinia'
+import { ref, onBeforeUnmount } from 'vue'
 import defaultUserImage from '@/assets/default_user.png'
+
+/* SSE api */
+import { subscribeToSse } from '@/api/notification'
+
+/* pinia */
+import { storeToRefs } from 'pinia'
 import { useNotificationStore } from '@/store/notification'
+import { useUserStore } from '@/store/user'
 
 export default {
   setup() {
     const notificationStore = useNotificationStore()
     const { toggleStatus } = storeToRefs(notificationStore)
-    const items = [
-      {
-        prependAvatar: defaultUserImage,
+    const userStore = useUserStore()
+
+    const notifications = ref([])
+
+    userStore.getUserInfo()
+    const userId = userStore.userId
+
+    let eventSource = null
+
+    // 알림 구독
+    const subscribe = () => {
+      eventSource = subscribeToSse(userId, handleNewNotification, handleSseError)
+    }
+
+    // 알림 받기
+    const handleNewNotification = (notification) => {
+      notifications.value.push(notification)
+      console.log(notifications.value)
+    }
+
+    // SSE 오류 처리
+    const handleSseError = (error) => {
+      console.error('알림 받는 중 오류 발생:', error)
+    }
+
+    onBeforeUnmount(() => {
+      if (eventSource) {
+        eventSource.close()
+      }
+    })
+
+    // 구독 시작
+    subscribe()
+
+    /*
+       prependAvatar: defaultUserImage,
         title: 'List Title 1',
         subtitle: `<span class="text-primary">Subtitle 1</span> &mdash; Text`,
       },
-      {
-        prependAvatar: defaultUserImage,
-        title: 'List Title 2',
-        subtitle: `<span class="text-primary">Subtitle 2</span> &mdash; Text`,
-      },
-      {
-        prependAvatar: defaultUserImage,
-        title: 'List Title 3',
-        subtitle: `<span class="text-primary">Subtitle 3</span> &mdash; Text`,
-      },
-      { type: 'divider', inset: true },
-      {
-        prependAvatar: 'https://picsum.photos/200/200',
-        title: 'List Title 4',
-        subtitle: `<span class="text-primary">Subtitle 4</span> &mdash; Text`,
-      },
-    ]
+    */
 
     const closeNotification = () => {
       notificationStore.toggle()
     }
 
     return {
-      items,
+      notifications,
       toggleStatus,
       closeNotification,
     }

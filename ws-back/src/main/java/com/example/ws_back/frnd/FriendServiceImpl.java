@@ -71,13 +71,18 @@ public class FriendServiceImpl implements FriendService{
 				return "이미 등록된 친구입니다.";
 			}
 			/* 친구 추가 알람 */
+			try {
 			NotificationDto nd = noti.createNotification(receiverUserId, userId +"님이 친구 신청하였습니다.", "/friend");
 			noti.sendToClient(receiverUserId, nd);
+			} catch (RuntimeException e) {
+				if(e.getCause() instanceof NullPointerException) {
+					/* 접속 중이지 않은 친구 알람 처리 로직 */
+				}
+			}
 			return "친구가 추가되었습니다.";
 		} catch (Exception e) {
-			System.out.println(e);
 			return "친구 추가 중 오류가 발생되었습니다.";
-		}
+		} 
 	}
 	
 	
