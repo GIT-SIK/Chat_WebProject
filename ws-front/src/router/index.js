@@ -7,7 +7,7 @@ import { useUserStore } from '@/store/user'
 import MainPage from '../views/MainPage.vue'
 
 /* */
-import TestPage from '../views/TestPage.vue'
+import AdminPage from '../views/AdminPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 
 const router = createRouter({
@@ -19,6 +19,9 @@ const router = createRouter({
         { path: '', component: LoginPage },
         { path: 'signup', component: SignupPage },
       ],
+      meta: {
+        roles: [null],
+      },
     },
     {
       path: '/auth',
@@ -28,32 +31,37 @@ const router = createRouter({
         { path: 'chat', component: ChatPage },
         { path: 'friend', component: FriendPage },
       ],
+      meta: {
+        roles: ['true', 'false'],
+      },
     },
-    // *************************
-    // CSS 테스트 용도 페이지 라우터
     {
-      path: '/testpage',
-      component: TestPage,
+      path: '/admin',
+      component: AdminPage,
+      meta: {
+        roles: ['true'],
+      },
     },
   ],
 })
+
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   await userStore.getUserInfo()
-  const authUser =
-    userStore.token == null || userStore.token != localStorage.getItem('access_token')
-      ? true
-      : false
-  if (to.path.startsWith('/auth') && authUser) {
-    console.log('[index.js] 사용자 정보를 확인할 수 없습니다.')
-    next('/')
-  } else if (userStore.token && to.path === '/') {
-    console.log('[index.js] 로그인 상태')
-    next('/auth')
-  } else {
-    console.log('[index.js] 사용자 확인 완료')
-    next()
+  if (userStore.isAdmin === null) {
+    if (to.path.startsWith('/auth') || to.path.startsWith('/admin')) {
+      return next('/')
+    }
+    return next()
   }
+  if (to.meta.roles && !to.meta.roles.includes(userStore.isAdmin)) {
+    return next('/auth')
+  }
+
+  if (to.path === '/' && userStore.isAdmin !== null) {
+    return next('/auth')
+  }
+  next()
 })
 
 export default router

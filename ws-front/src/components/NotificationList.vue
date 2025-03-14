@@ -38,7 +38,6 @@ export default {
 
     const notifications = ref([])
 
-    userStore.getUserInfo()
     const userId = userStore.userId
 
     let eventSource = null

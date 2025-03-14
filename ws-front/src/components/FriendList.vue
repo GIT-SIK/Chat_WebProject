@@ -37,8 +37,6 @@ export default {
     const friendList = ref([])
 
     const getFriendList = async () => {
-      authUser.getUserInfo()
-      console.log(authUser.userId)
       const response = await friend.getFriendApi(authUser.userId)
       friendList.value = response.data
     }
