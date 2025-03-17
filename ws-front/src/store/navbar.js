@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useNavBarStore = defineStore('common', () => {
+export const useNavBarStore = defineStore('navbar', () => {
   const toggleStatus = ref(false)
 
 

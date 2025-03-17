@@ -1,6 +1,6 @@
 <template>
   <!-- 메뉴 -->
-  <v-card class="d-flex mr-4 justify-end" variant="text">
+  <v-card class="d-flex justify-center" variant="text">
     <v-item-group selected-class="left-nav-item">
       <v-item v-slot="{ selectedClass }" v-for="(item, i) in items" :key="i">
         <template v-if="item.icon !== undefined">

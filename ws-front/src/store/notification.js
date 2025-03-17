@@ -9,6 +9,10 @@ export const useNotificationStore = defineStore('notification', () => {
     badgeStatus.value = bool
   }
 
+  async function setToggleStatus(bool) {
+    toggleStatus.value = bool
+  }
+
   async function toggle() {
     toggleStatus.value = !toggleStatus.value
   }
@@ -17,6 +21,7 @@ export const useNotificationStore = defineStore('notification', () => {
     toggle,
     badgeStatus,
     toggleStatus,
+    setToggleStatus,
     setBadgeStatus,
   }
 })

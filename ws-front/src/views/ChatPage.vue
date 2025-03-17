@@ -1,9 +1,9 @@
 <template>
-  <v-row class="ml-2 chat-container">
-    <v-col cols="4">
+  <v-row class="chat-container">
+    <v-col cols="12" sm="4">
       <ChatRoomList :roomListData="chatRoomList.data" @other-user-id="chatRoomListEmitData" />
     </v-col>
-    <v-col cols="8">
+    <v-col cols="12" sm="8">
       <ChatRoom />
     </v-col>
   </v-row>
