@@ -1,5 +1,6 @@
 package com.example.ws_back.frnd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class FriendController {
 	@ResponseBody
 	public ResponseEntity<?> getSearchFriendList (@RequestParam String search) {
 		List<User> userList = fs.getSearchFriendList(search);
-		return !userList.isEmpty() ? ResponseEntity.ok(userList) : ResponseEntity.status(500).body(false);
+		return ResponseEntity.ok(!userList.isEmpty() ? userList : new ArrayList<>());
 	}
 	
 	/**
@@ -45,7 +46,7 @@ public class FriendController {
 	 */
 	@RequestMapping(value = "/ufriend", method = RequestMethod.POST) 
 	@ResponseBody
-	public ResponseEntity<Boolean> respondToFriendRequest(@RequestBody FriendDto friendDto) {
+	public ResponseEntity<?> respondToFriendRequest(@RequestBody FriendDto friendDto) {
 		return fs.respondToFriendRequest(friendDto) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
 	}
 	
@@ -75,6 +76,7 @@ public class FriendController {
 	public ResponseEntity<?> getUserFriendList(@RequestBody UserDto userDto) {
 		log.info(userDto.getUserId() +"님의 친구 목록을 가져옵니다.");
 		List<Friend> friendList = fs.getUserFriendList(userDto.getUserId());
-		return !friendList.isEmpty() ? ResponseEntity.ok(friendList) : ResponseEntity.status(500).body(false);
+		
+		return ResponseEntity.ok(!friendList.isEmpty() ? friendList : new ArrayList<>());
 	}
 }

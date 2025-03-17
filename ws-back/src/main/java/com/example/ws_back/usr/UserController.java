@@ -44,8 +44,6 @@ public class UserController {
     public ResponseEntity<?> UserRefresh(HttpServletRequest request) {
         // Authorization 헤더에서 토큰 추출
         String token = request.getHeader("Authorization");
-
- 
         if (token == null || token.equals("Bearer null") || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("사용자를 확인할 수 없습니다.");
         }
@@ -63,7 +61,7 @@ public class UserController {
             
             return ResponseEntity.ok(userDto);  // 유저 정보를 반환
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error occurred while retrieving user info");
+            return ResponseEntity.status(500).body("사용자를 확인할 수 없습니다.");
         }
     }
 
@@ -101,7 +99,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/api/signup", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Boolean> signup(@RequestBody UserDto userDto) {
+	public ResponseEntity<?> signup(@RequestBody UserDto userDto) {
 		log.info("회원가입 처리 중...");
 		return us.signup(userDto) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
 	}

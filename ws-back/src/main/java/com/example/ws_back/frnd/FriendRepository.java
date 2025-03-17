@@ -18,10 +18,10 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	/* ID, NICKNAME은 LOWER 로 처리할 것. */
 	
 	/**
-	 * 친구 등록 목록 (ACCEPTED)
+	 * 친구 등록 목록 (전체)
 	 */
 	
-	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId)) AND FRIEND_STATUS = 'ACCEPTED'", nativeQuery = true)
+	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId))", nativeQuery = true)
 	List<Friend> findAllByFriend(@Param("userId") String UserId);
 	
 	/**

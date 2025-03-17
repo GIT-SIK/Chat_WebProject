@@ -35,8 +35,10 @@ public class FriendServiceImpl implements FriendService{
 	
 	/* 알람 */
 	private final NotificationService noti;
+	
+	
 	/**
-	 * 친구 목록 가져오기 (유저 친구 및 검색)
+	 * 친구 목록 가져오기 (유저 친구)(모든 목록 : 친구 신청 여부 X)
 	 * @param UserId | 유저 아이디
 	 * @return List<Friend> | 친구 목록 반환
 	 */
@@ -45,6 +47,11 @@ public class FriendServiceImpl implements FriendService{
 		
 	}
 	
+	/** 
+	 * 친구 검색 목록 가져오기 (검색)
+	 * @param UserId | 검색 유저 아이디
+	 * @return List<User> | 유저 목록 반환 (공개된 유저만)
+	 */
 	public List<User> getSearchFriendList(String UserId) {
 		return ur.findAllByUserId(UserId);
 		

@@ -106,9 +106,7 @@ public class ChatServiceImpl implements ChatService{
     	
     	DateTimeFormatter fmtDateTime = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm");
     	
-    	System.out.println("채팅방 목록 : "+userId + "의 채팅방 전체 목록 가져옵니다. ");
-    	System.out.println(crList.stream().collect(Collectors.toList()));
-    	System.out.println("---------------------------");
+    	log.info("채팅방 목록 : "+userId + "의 채팅방 전체 목록 가져옵니다. ");
     	
     	return crList.stream()
     		.map(chatRoom -> {
