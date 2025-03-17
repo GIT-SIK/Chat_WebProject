@@ -1,10 +1,22 @@
 <template>
+    <v-app>
   <v-row class="layout-container h-screen" no-gutters>
-    <v-col ref="navCol" cols="1" class="d-none d-md-block"></v-col>
-    <v-col cols="auto" class="layout-left-container">
+    <template v-if="$vuetify.display.mdAndUp"> 
+    <v-col cols="1" md="1" offset-md="1" class="layout-left-container">
       <LeftNavBar />
     </v-col>
-    <v-col cols="11" md="9">
+    </template> 
+    <template v-else>
+      <v-navigation-drawer
+      v-model="toggleStatus"
+      :temporary="!$vuetify.display.mdAndUp"
+      vartical="mini"
+      width = "80"
+      >
+      <LeftNavBar />
+    </v-navigation-drawer>
+    </template>
+    <v-col cols="12" md="9">
       <v-row no-gutters>
         <TopBar />
       </v-row>
@@ -13,18 +25,29 @@
       </v-row>
     </v-col>
   </v-row>
+</v-app>
 </template>
 
 <script>
 import TopBar from '../components/TopBar.vue'
 import LeftNavBar from '../components/LeftNavbar.vue'
+import { useNavBarStore } from '@/store/navbar'
+import { storeToRefs } from 'pinia'
 
 export default {
   components: {
     TopBar,
     LeftNavBar,
   },
-  setup() {},
+  setup() {
+    const navBarStore = useNavBarStore();
+    const {toggleStatus} = storeToRefs(navBarStore)
+
+    return {
+      toggleStatus,
+      navBarStore
+    }
+  }, 
 }
 </script>
 
@@ -35,5 +58,6 @@ export default {
 
 .layout-left-container {
   position: relative;
+  
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <!-- 메뉴 -->
-  <v-card class="mx-auto" max-width="75" variant="text">
+  <v-card class="d-flex mr-4 justify-end" variant="text">
     <v-item-group selected-class="left-nav-item">
       <v-item v-slot="{ selectedClass }" v-for="(item, i) in items" :key="i">
         <template v-if="item.icon !== undefined">
@@ -81,6 +81,7 @@ export default {
     const userStore = useUserStore()
     const showToast = inject('showToast')
     const notificationStore = useNotificationStore()
+  
 
     /* 알림, 토글 갱신 상태 */
     const { badgeStatus } = storeToRefs(notificationStore)
