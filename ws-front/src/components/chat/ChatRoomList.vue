@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto d-sm-flex flex-column crl-container">
+  <div class="mx-auto d-sm-flex flex-column h-100">
     <v-card class="w-100 mb-5 pl-4 pr-4" variant="text" style="background-color: #ffffff">
       <v-text-field
         prepend-icon="mdi-magnify"
@@ -60,10 +60,6 @@ export default {
 </script>
 
 <style>
-.crl-container {
-  height: calc(100vh - 80px);
-}
-
 .chat-search-input .v-input__prepend .v-icon,
 .chat-search-input .v-input__control .v-label {
   color: #3e2723 !important;

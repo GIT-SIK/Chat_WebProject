@@ -177,7 +177,7 @@ export default {
 <style>
 .cr-card {
   background-color: #ffffff;
-  height: calc(100vh - 80px);
+  height : 100%
 }
 
 .cr-card .v-card-title {

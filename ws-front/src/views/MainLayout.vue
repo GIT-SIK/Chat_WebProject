@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-row class="layout-container h-screen" no-gutters>
+    <v-row class="h-screen pt-2" style="background-color: #efebe9;">
       <template v-if="$vuetify.display.mdAndUp"> 
         <v-col cols="1" md="1" offset-md="1" class="layout-left-container">
           <LeftNavBar />
@@ -15,11 +15,11 @@
           <LeftNavBar/>
         </v-navigation-drawer>
       </template>
-      <v-col cols="12" sm="10" offset-sm="1" offset-md="0" md="9">
-        <v-row no-gutters>
+      <v-col cols="10" offset="1" offset-md="0" md="9">
+        <v-row>
           <TopBar />
         </v-row>
-        <v-row no-gutters>
+        <v-row class="main-container">
           <RouterView />
         </v-row>
       </v-col>
@@ -68,12 +68,13 @@ export default {
 </script>
 
 <style>
-.layout-container {
-  background-color: #efebe9;
-}
 
 .layout-left-container {
   position: relative;
   
+}
+
+.main-container {
+  height: calc(100vh - 64px);
 }
 </style>

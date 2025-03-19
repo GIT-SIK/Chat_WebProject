@@ -1,9 +1,9 @@
 <template>
-  <v-row class="chat-container">
+  <v-row class="h-100">
     <v-col cols="12" sm="4">
       <ChatRoomList :roomListData="chatRoomList.data" @other-user-id="chatRoomListEmitData" />
     </v-col>
-    <v-col cols="12" sm="8">
+    <v-col cols="12" sm="8" class="h-100">
       <ChatRoom />
     </v-col>
   </v-row>
@@ -53,7 +53,4 @@ export default {
 </script>
 
 <style>
-.chat-container {
-  height: calc(100vh - 60px);
-}
 </style>

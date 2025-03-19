@@ -1,7 +1,7 @@
 <template>
   <header></header>
   <ToastMessage ref="toast" />
-  <RouterView :show-toast="showToast" />
+  <RouterView :show-toast="showToast"/>
 </template>
 
 <script>
@@ -30,4 +30,5 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

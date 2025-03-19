@@ -1,16 +1,18 @@
 <template>
-  <v-toolbar color="transparent">
-    <template v-if="!$vuetify.display.mdAndUp">
-      <v-btn icon="mdi-menu" @click="toggleNavBar"></v-btn>
+  <v-app-bar elevation="0" color="transparent">
+    <template v-slot:prepend v-if="!$vuetify.display.mdAndUp">
+      <!-- <v-btn icon="mdi-menu" @click="toggleNavBar"></v-btn> -->
+      <v-app-bar-nav-icon @click="toggleNavBar"></v-app-bar-nav-icon>
     </template>
-    <v-spacer></v-spacer>
+    <template v-slot:append>
     <div class="toolbar-user-info">
       <v-avatar size="32">
         <img :src="userImage" alt="user" />
       </v-avatar>
-      <div class="ml-4 mr-9 toolbar-username">{{ userName }}</div>
+      <div class="ml-4 mr-9 toolbar-username">{{ userName }}</div> 
     </div>
-  </v-toolbar>
+  </template>
+  </v-app-bar>
 </template>
 
 <script>
@@ -45,5 +47,9 @@ export default {
 .toolbar-user-info {
   display: flex;
   align-items: center;
+}
+
+.v-toolbar {
+  position : static !important
 }
 </style>
