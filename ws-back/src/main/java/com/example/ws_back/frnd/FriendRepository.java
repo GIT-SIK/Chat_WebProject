@@ -24,12 +24,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId))", nativeQuery = true)
 	List<Friend> findAllByFriend(@Param("userId") String UserId);
 	
-	/**
-	 * 친구 등록 목록 (전체)
-	 */
-	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId))", nativeQuery = true)
-	List<Friend> findAllByAddFriend(@Param("userId") String UserId);
-	
 	
 	/**
 	 * 친구 수락, 거절

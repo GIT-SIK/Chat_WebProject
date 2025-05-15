@@ -2,7 +2,7 @@
   <div>
       <v-row>
         <v-col
-          v-for="friend in friendAcceptedList"
+          v-for="friend in friendList"
           :key="friend.id"
           cols="12"
           sm="4"
@@ -22,9 +22,7 @@
             <div class="text-subtitle-2 font-weight-bold">
               <span>
                 {{
-                  friend.senderUserId === userId
-                    ? friend.receiverUserId
-                    : friend.senderUserId
+                  friend.friendId
                 }}
               </span>
             </div>
@@ -38,14 +36,14 @@
 import { onMounted, ref } from 'vue'
 import * as friend from '@/api/friend'
 import { useUserStore } from '@/store/user'
+import { useFriendStore } from '@/store/friend'
 import defaultUserImage from '@/assets/default_user.png'
 import { useRouter } from 'vue-router'
 
 export default {
   setup() {
     const authUser = useUserStore()
-    const friendAcceptedList = ref([])
-    const friendPendingList = ref([]) 
+    const friendStore = useFriendStore()
     const router = useRouter()
 
     /* 채팅방 열기 */
@@ -54,22 +52,14 @@ export default {
     }
 
     /* 친구 목록 가져오기 */
-    const getFriendList = async () => {
-      const response = await friend.getFriendApi(authUser.userId)
-
-      friendAcceptedList.value = response.data.filter(item => item.friendStatus === 'ACCEPTED')
-      friendPendingList.value = response.data.filter(item => item.friendStatus === 'PENDING')
-    }
-
     onMounted(() => {
-      getFriendList()
+      friendStore.fetchFriendList(authUser.userId)
     })
 
     return {
-      friendAcceptedList,
-      friendPendingList,
       userId: authUser.userId,
       defaultUserImage,
+      friendList : friendStore.friendList,
       handleChatRoomClk,
     }
   },

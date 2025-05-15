@@ -20,21 +20,21 @@
           :key="searchfriendItem.id"
           cols="12" sm="4" md="3" lg="3"
         >
-          <v-card class="pa-3" elevation="2">
+          <v-card class="pa-3 d-flex flex-column align-center">
             <v-avatar size="56" class="mb-3">
               <v-img :src="defaultUserImage" alt="유저 이미지" />
             </v-avatar>
             <div class="text-center font-weight-medium mb-2">
               {{ searchfriendItem.userId }}
             </div>
-            <v-btn
-              color="primary"
-              block
-              @click="addFriend(searchfriendItem.userId)"
-            >
-              친구 추가
-              <v-icon right>mdi-account-plus</v-icon>
-            </v-btn>
+            <v-card-actions>
+              <v-btn
+                @click="addFriend(searchfriendItem.userId)"
+              >
+                친구 추가
+                
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -104,9 +104,5 @@ export default {
 <style scoped>
 .v-card {
   transition: 0.3s ease-in-out;
-}
-
-.v-card:hover {
-  transform: translateY(-2px);
 }
 </style>

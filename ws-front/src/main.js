@@ -4,8 +4,13 @@ import router from './router'
 import api from '@/utils/api'
 import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
+import piniaPersistedstate from 'pinia-plugin-persistedstate'
 
 const app = createApp(App)
+
+const pinia = createPinia()
+pinia.use(piniaPersistedstate)
+
 
 /* 공통 Axios 전역 지정 */
 app.config.globalProperties.$api = api
@@ -35,7 +40,7 @@ const loadComponents = async () => {
 loadComponents().then(() => {
   app.use(router)
   app.use(vuetify)
-  app.use(createPinia())
+  app.use(pinia)
   app.mount('#app')
 })
 

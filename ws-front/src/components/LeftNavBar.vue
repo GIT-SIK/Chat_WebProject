@@ -144,8 +144,8 @@ export default {
 /* 알림 스타일 */
 .notification-container {
   position: absolute;
-  top: 90px;
-  left: 50px;
+  top: 105px;
+  left: 65px;
   z-index: 10;
   margin: 0 auto;
   padding: 20px;

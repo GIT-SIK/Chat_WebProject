@@ -30,27 +30,27 @@ public class Friend {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FriendSeq")
 	@SequenceGenerator(sequenceName = "friend_sequence", name = "FriendSeq", allocationSize = 1)
 	@Column(name = "SEQ")
-	private Long Seq;
+	private Long seq;
 	
 	@Column(name = "SENDER_USER_ID")
-	private String SenderUserId;
+	private String senderUserId;
 
 	@Column(name = "RECEIVER_USER_ID")
-	private String ReceiverUserId;
+	private String receiverUserId;
 	
 	@Column(name ="FRIEND_STATUS")
-	private String FriendStatus;
+	private String friendStatus;
 	
 	@Column(name = "FRIEND_REQUESTED_AT")
-	private LocalDateTime FriendRequestedAt;
+	private LocalDateTime friendRequestedAt;
 	
 	@Column(name = "FRIEND_ACCEPTED_AT")
-	private LocalDateTime FriendAcceptedAt;
+	private LocalDateTime friendAcceptedAt;
 	
     @PrePersist
     public void prePersist() {
-        if (this.FriendRequestedAt == null) {
-            this.FriendRequestedAt = LocalDateTime.now();
+        if (this.friendRequestedAt == null) {
+            this.friendRequestedAt = LocalDateTime.now();
         }
     }
 }

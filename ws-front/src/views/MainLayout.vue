@@ -12,7 +12,9 @@
         width = "75"
         vertical="mini"
         >
-          <LeftNavBar/>
+          <div class="mt-3">
+            <LeftNavBar/>
+          </div>
         </v-navigation-drawer>
       </template>
       <v-col cols="10" offset="1" offset-md="0" md="9">
