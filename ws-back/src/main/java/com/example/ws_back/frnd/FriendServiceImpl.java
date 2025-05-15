@@ -52,8 +52,8 @@ public class FriendServiceImpl implements FriendService{
 	 * @param UserId | 검색 유저 아이디
 	 * @return List<User> | 유저 목록 반환 (공개된 유저만)
 	 */
-	public List<User> getSearchFriendList(String UserId) {
-		return ur.findAllByUserId(UserId);
+	public List<User> getSearchFriendList(String searchId, String UserId) {
+		return ur.findAllByUserId(searchId, UserId);
 		
 	}
 	

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +35,8 @@ public class FriendController {
 	 */
 	@RequestMapping(value = "/sfriend", method = RequestMethod.GET) 
 	@ResponseBody
-	public ResponseEntity<?> getSearchFriendList (@RequestParam String search) {
-		List<User> userList = fs.getSearchFriendList(search);
+	public ResponseEntity<?> getSearchFriendList (@RequestParam String search, @AuthenticationPrincipal UserDetails userDetails) {
+		List<User> userList = fs.getSearchFriendList(search, userDetails.getUsername());
 		return ResponseEntity.ok(!userList.isEmpty() ? userList : new ArrayList<>());
 	}
 	

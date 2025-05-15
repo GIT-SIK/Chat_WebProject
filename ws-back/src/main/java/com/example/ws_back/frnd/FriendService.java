@@ -11,5 +11,5 @@ public interface FriendService {
 	public String addFriend(String receiverUserId, Authentication authentication);
 	public boolean respondToFriendRequest(FriendDto friendDto);
 	public List<Friend> getUserFriendList(String UserId);
-	public List<User> getSearchFriendList(String UserId);
+	public List<User> getSearchFriendList(String searchId, String UserId);
 }

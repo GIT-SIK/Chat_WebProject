@@ -10,11 +10,13 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router'
 import ChatRoom from '@/components/chat/ChatRoom.vue'
 import ChatRoomList from '@/components/chat/ChatRoomList.vue'
 import * as chat from '@/api/chat.js'
 import { useChatStore } from '@/store/chat'
 import { onMounted, ref } from 'vue'
+
 
 export default {
   components: {
@@ -22,6 +24,7 @@ export default {
     ChatRoomList,
   },
   setup() {
+    const route = useRoute()
     const chatStore = useChatStore()
     const chatRoomList = ref({ data: [] })
 
@@ -42,11 +45,23 @@ export default {
       }
     }
 
-    onMounted(getRoomList)
+    /* 친구목록 -> 채팅방 열기 */
+    const handleFriendClk = () => {
+      const userId = route.query.userId
+      if (userId) {
+        chatRoomListEmitData(userId)
+      }
+    }
+
+    onMounted(() => {
+      handleFriendClk()
+      getRoomList()
+    })
 
     return {
       chatRoomList,
       chatRoomListEmitData,
+      handleFriendClk,
     }
   },
 }

@@ -1,27 +1,36 @@
 <template>
   <div>
-    <span>{{ userId }} 님의 친구 목록</span>
-    <div class="friend-list">
-      <template v-for="friend in friendList" :key="friend.id">
-        <div class="friend-card">
-          <!-- 유저 기본 이미지 -->
-          <div class="friend-card-image">
-            <img :src="defaultUserImage" alt="유저 이미지" />
-          </div>
-          <!-- 유저 정보 -->
-          <div class="friend-card-info">
-            <div class="friend-card-id">
-              <li v-if="friend.senderUserId == userId">
-                <span>{{ friend.receiverUserId }}</span>
-              </li>
-              <li v-else>
-                <span>{{ friend.senderUserId }}</span>
-              </li>
+      <v-row>
+        <v-col
+          v-for="friend in friendAcceptedList"
+          :key="friend.id"
+          cols="12"
+          sm="4"
+          md="3"
+          lg="3"
+        >
+          <v-card 
+            elevation="2" 
+            class="pa-3 d-flex flex-column align-center"
+            style="cursor: pointer;"
+            @click="handleChatRoomClk(friend.senderUserId === userId ? friend.receiverUserId : friend.senderUserId)"
+            >
+            <v-avatar size="56" class="mb-3">
+              <v-img :src="defaultUserImage" alt="유저 이미지" />
+            </v-avatar>
+
+            <div class="text-subtitle-2 font-weight-bold">
+              <span>
+                {{
+                  friend.senderUserId === userId
+                    ? friend.receiverUserId
+                    : friend.senderUserId
+                }}
+              </span>
             </div>
-          </div>
-        </div>
-      </template>
-    </div>
+          </v-card>
+        </v-col>
+      </v-row>
   </div>
 </template>
 
@@ -30,15 +39,26 @@ import { onMounted, ref } from 'vue'
 import * as friend from '@/api/friend'
 import { useUserStore } from '@/store/user'
 import defaultUserImage from '@/assets/default_user.png'
+import { useRouter } from 'vue-router'
 
 export default {
   setup() {
     const authUser = useUserStore()
-    const friendList = ref([])
+    const friendAcceptedList = ref([])
+    const friendPendingList = ref([]) 
+    const router = useRouter()
 
+    /* 채팅방 열기 */
+    const handleChatRoomClk = (friendId) => {
+      router.push({ path: '/auth/chat', query: { userId: friendId } })
+    }
+
+    /* 친구 목록 가져오기 */
     const getFriendList = async () => {
       const response = await friend.getFriendApi(authUser.userId)
-      friendList.value = response.data
+
+      friendAcceptedList.value = response.data.filter(item => item.friendStatus === 'ACCEPTED')
+      friendPendingList.value = response.data.filter(item => item.friendStatus === 'PENDING')
     }
 
     onMounted(() => {
@@ -46,9 +66,11 @@ export default {
     })
 
     return {
-      friendList,
+      friendAcceptedList,
+      friendPendingList,
       userId: authUser.userId,
       defaultUserImage,
+      handleChatRoomClk,
     }
   },
 }
@@ -56,49 +78,9 @@ export default {
 
 <style scoped>
 /* 친구 목록 스타일 */
-.friend-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-evenly;
-}
-
-/* 카드 스타일 */
-.friend-card {
-  min-width: 100px;
-  max-width: 150px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 유저 이미지 스타일 */
-.friend-card-image {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 10px;
-}
-
-.friend-card-image img {
+.fl-card {
+  background-color: #ffffff;
+  height: calc(100vh - 80px);
   width: 100%;
-  height: 100%;
-  border-radius: 50%; /* 둥근 이미지 */
-}
-
-/* 유저 아이디 스타일 */
-.friend-card-info {
-  font-size: 12px;
-}
-
-.friend-card-id {
-  list-style-type: none;
-  font-weight: bold;
-  color: #333;
 }
 </style>

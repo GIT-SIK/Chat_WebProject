@@ -35,6 +35,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * 사용 : 친구 목록 검색
 	 */
 	
-	@Query (value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_ID) LIKE LOWER(:id%) AND IS_PUBLIC = 'true'", nativeQuery = true)
-	List<User> findAllByUserId(@Param("id") String id);
+	@Query(
+			  value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_ID) LIKE LOWER('%' || :searchId || '%') AND IS_PUBLIC = 'true' AND LOWER(USER_ID) NOT LIKE LOWER(:userId)",
+			  nativeQuery = true
+			)
+	List<User> findAllByUserId(@Param("searchId") String searchId, @Param("userId") String userId);
 }

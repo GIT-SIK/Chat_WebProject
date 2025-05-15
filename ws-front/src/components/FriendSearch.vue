@@ -1,34 +1,57 @@
 <template>
-  <div>
-    <span>친구 찾기</span>
-    <div class="search-sub-container">
-      <BaseInput type="text" v-model="searchFriendData"> </BaseInput>
-      <BaseButton @click="searchFriend()"> 찾기 </BaseButton>
-    </div>
-    <div class="friend-search-list">
-      <template v-if="hasNoFriends"> <span> 검색된 친구가 없습니다. </span> </template>
-      <template v-else>
-        <template v-for="searchfriendItem in searchFriendList" :key="searchfriendItem.id">
-          <div class="friend-search-card">
-            <!-- 유저 기본 이미지 -->
-            <div class="friend-search-card-image">
-              <img :src="defaultUserImage" alt="유저 이미지" />
+      <v-card class="w-100 mb-3 ml-2 pl-4 h-auto" variant="text" style="background-color: #ffffff;">
+      <v-text-field
+        prepend-icon="mdi-magnify"
+        single-line
+        label="Search"
+        class="mb-3"
+        variant="plain"
+        hide-details
+        v-model="searchFriendData"
+        @keyup.enter="searchFriend"
+      ></v-text-field>
+    </v-card>
+
+    <!-- 친구 목록 영역 -->
+    <v-card variant="text" class="w-100">
+      <v-row class="pa-2" v-if="!hasNoFriends && searchFriendList.length">
+        <v-col
+          v-for="searchfriendItem in searchFriendList"
+          :key="searchfriendItem.id"
+          cols="12" sm="4" md="3" lg="3"
+        >
+          <v-card class="pa-3" elevation="2">
+            <v-avatar size="56" class="mb-3">
+              <v-img :src="defaultUserImage" alt="유저 이미지" />
+            </v-avatar>
+            <div class="text-center font-weight-medium mb-2">
+              {{ searchfriendItem.userId }}
             </div>
-            <!-- 유저 정보 -->
-            <div class="friend-search-card-info">
-              <div class="friend-search-card-id">
-                <span>{{ searchfriendItem.userId }}</span>
-              </div>
-            </div>
-            <div class="friend-search-add" @click="addFriend(searchfriendItem.userId)">
-              <span class="material-icons"> add_circle </span>
-            </div>
-          </div>
-        </template>
-      </template>
-    </div>
-  </div>
+            <v-btn
+              color="primary"
+              block
+              @click="addFriend(searchfriendItem.userId)"
+            >
+              친구 추가
+              <v-icon right>mdi-account-plus</v-icon>
+            </v-btn>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row v-else class="pa-4">
+        <v-col cols="12" class="text-center">
+          <span>검색된 친구가 없습니다.</span>
+        </v-col>
+      </v-row>
+    </v-card>
 </template>
+
+<!-- 
+
+친구 찾기 @click="searchFriend()"
+친구 추가 @click="addFriend(searchfriendItem.userId)"
+-->
 
 <script>
 import { ref, inject } from 'vue'
@@ -44,7 +67,11 @@ export default {
     const searchFriend = async () => {
       try {
         const response = await friend.getSearchFriendApi(searchFriendData.value)
-        showToast(response.data.length + `명의 친구를 찾았습니다.`)
+        if(response.data.length > 0){
+          showToast(response.data.length + `명의 친구를 찾았습니다.`)
+        } else {
+          showToast(`검색된 친구가 없습니다.`)
+        }
         searchFriendList.value = response.data
         hasNoFriends.value = false
       } catch (e) {
@@ -75,79 +102,11 @@ export default {
 </script>
 
 <style scoped>
-.search-sub-container {
-  max-width: 30%;
-  display: flex;
+.v-card {
+  transition: 0.3s ease-in-out;
 }
 
-/* 친구 목록 스타일 */
-.friend-search-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-evenly;
-}
-
-/* 카드 스타일 */
-.friend-search-card {
-  min-width: 100px;
-  max-width: 150px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  text-align: center;
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 유저 이미지 스타일 */
-.friend-search-card-image {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 10px;
-}
-
-.friend-search-card-image img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%; /* 둥근 이미지 */
-}
-
-/* 유저 아이디 스타일 */
-.friend-search-card-info {
-  font-size: 12px;
-}
-
-.friend-search-card-id {
-  list-style-type: none;
-  font-weight: bold;
-  color: #333;
-}
-
-.friend-search-add {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  position: absolute;
-  border-radius: 7px;
-  top: 0;
-  left: 0;
-  padding: 20px;
-  box-sizing: border-box;
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.friend-search-card:hover .friend-search-add {
-  opacity: 1;
-  cursor: pointer;
-}
-
-.friend-search-card:hover .friend-search-card-image img {
-  display: none;
+.v-card:hover {
+  transform: translateY(-2px);
 }
 </style>
