@@ -47,8 +47,8 @@ public class FriendController {
 	 */
 	@RequestMapping(value = "/ufriend", method = RequestMethod.POST) 
 	@ResponseBody
-	public ResponseEntity<?> respondToFriendRequest(@RequestBody FriendDto friendDto) {
-		return fs.respondToFriendRequest(friendDto) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
+	public ResponseEntity<?> respondToFriendRequest(@RequestBody FriendDto friendDto, @AuthenticationPrincipal UserDetails userDetails) {
+		return fs.respondToFriendRequest(friendDto, userDetails.getUsername()) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
 	}
 	
 	/**

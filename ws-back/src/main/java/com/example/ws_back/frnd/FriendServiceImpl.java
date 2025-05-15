@@ -52,8 +52,8 @@ public class FriendServiceImpl implements FriendService{
 	 * @param UserId | 검색 유저 아이디
 	 * @return List<User> | 유저 목록 반환 (공개된 유저만)
 	 */
-	public List<User> getSearchFriendList(String searchId, String UserId) {
-		return ur.findAllByUserId(searchId, UserId);
+	public List<User> getSearchFriendList(String searchId, String userId) {
+		return ur.findAllByUserId(searchId, userId);
 		
 	}
 	
@@ -66,7 +66,7 @@ public class FriendServiceImpl implements FriendService{
 	public String addFriend(String receiverUserId, Authentication authentication ) {
 		try {		
 			String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-			if(!fr.findAllByAddFriend(receiverUserId)
+			if(!fr.findAllByFriend(receiverUserId)
 				  .stream()
 				  .anyMatch(friend -> userId.equalsIgnoreCase(friend.getSenderUserId()) || userId.equalsIgnoreCase(friend.getReceiverUserId()))) {
 				FriendDto friendDto = new FriendDto();
@@ -98,12 +98,12 @@ public class FriendServiceImpl implements FriendService{
 	 * @param friendDto
 	 * @return Boolean | 친구 수락, 거절 여부 반환
 	 */
-	public boolean respondToFriendRequest(FriendDto friendDto) {
+	public boolean respondToFriendRequest(FriendDto friendDto, String userId) {
 		try {
 			ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 			Timestamp timestamp = Timestamp.from(now.toInstant());
 	        return fr.updateFriendRequestStatus(
-	                timestamp, friendDto.getSenderUserId(), friendDto.getReceiverUserId(), friendDto.getFriendStatus()
+	                timestamp, friendDto.getSenderUserId(), userId, friendDto.getFriendStatus()
 	            ) > 0;
 		} catch (Exception e) {
 			return false;
