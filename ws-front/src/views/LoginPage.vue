@@ -9,7 +9,7 @@
       ></v-progress-linear>
     </template>
 
-    <v-card-title color="brown-darken-2"> Login </v-card-title>
+    <v-card-title class="mt-4" style="text-align: center;" color="brown-darken-2"> Chat APP </v-card-title>
     <v-container>
       <v-text-field
         color="brown-darken-4"

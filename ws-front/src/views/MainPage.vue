@@ -1,99 +1,98 @@
 <template>
-  <div>
-    <!-- 카드 -->
-    <div class="container" style="margin: 50px; text-align: center">
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Card1</h5>
-              <p class="card-text">Text1</p>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Card2</h5>
-              <p class="card-text">Text2</p>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Card3</h5>
-              <p class="card-text">Text3</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <v-container>
 
-    <!-- 슬라이드 -->
-    <div id="carouselExample" class="carousel slide mb-5" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <!-- <img
-            src="https://via.placeholder.com/1920x500/f8f9fa/000000"
-            class="d-block w-100"
-            alt="Slide 1"
-          /> -->
-          <div class="d-flex justify-content-center align-items-center">
-            <h1 style="font-size: 30px">슬라이드 텍스트1</h1>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="d-flex justify-content-center align-items-center">
-            <h1 style="font-size: 30px">슬라이드 텍스트2</h1>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="d-flex justify-content-center align-items-center">
-            <h1 style="font-size: 30px">슬라이드 텍스트3</h1>
-          </div>
-        </div>
-      </div>
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#carouselExample"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#carouselExample"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>
+    <v-row>
+      <v-col cols="12" sm="4">
+        <v-card class="pa-4" style="background-color: #ADC178;" flat >
+          <v-card-title>친구 수</v-card-title>
+          <v-card-text class="text-h5">{{ friendCount }}명</v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" sm="4">
+        <v-card class="pa-4" style="background-color: #D4A373;" flat>
+          <v-card-title>친구 요청</v-card-title>
+          <v-card-text class="text-h5">{{ requestCount }}건</v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" sm="4">
+        <v-card class="pa-4" style="background-color: #A98467;" flat>
+          <v-card-title>대화 수</v-card-title>
+          <v-card-text class="text-h5">{{ chatRoomCount }}개</v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row class="mt-4">
+      <v-col cols="12">
+        <v-card variant="flat">
+          <v-card-title>최근 대화 목록</v-card-title>
+          <v-divider></v-divider>
+          <v-list v-if="recentMessages.length">
+            <v-list-item
+              v-for="(msg, i) in recentMessages"
+              :key="i"
+              @click="goToChatRoom(msg.user)"
+            >
+                <v-list-item-title>
+                  {{ msg.user }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ msg.text }}
+                </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+          <v-card-text v-else>최근 대화가 없습니다.</v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
-<script>
-export default {
-  name: 'MainPage',
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
+import { useFriendStore } from '@/store/friend'
+import * as chat from '@/api/chat'
+import * as friend from '@/api/friend'
+
+const router = useRouter()
+const userStore = useUserStore()
+const friendStore = useFriendStore()
+
+const userId = userStore.userId
+const friendCount = ref(0)
+const requestCount = ref(0)
+const chatRoomCount = ref(0)
+const recentMessages = ref([])
+
+const fetchDashboardData = async () => {
+  /* 친구 수 */
+  await friendStore.fetchFriendList(userId)
+  friendCount.value = friendStore.friendList.length
+
+  /* 받은 요청 수 */
+  const response = await friend.getFriendApi(userId)
+  requestCount.value = response.data.filter(
+    (f) => f.friendStatus === 'PENDING' && f.receiverUserId === userId
+  ).length
+
+  /* 채팅방 */
+  const chatResponse = await chat.getChatRoomListApi()
+  chatRoomCount.value = chatResponse.data.length
+
+  /* 최근 대화내역 */
+  recentMessages.value = chatResponse.data.slice(0, 3).map((room) => ({
+    user: room.otherUserId,
+    text: room.lastMessage,
+  }))
 }
+
+const goToChatRoom = (friendId) => {
+  router.push({ path: '/auth/chat', query: { userId : friendId } })
+}
+
+onMounted(fetchDashboardData)
 </script>
-
-<style scoped>
-.carousel-item div {
-  height: 500px;
-  background-color: #f8f9fa;
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-.card-text {
-  font-size: 1rem;
-  color: #6c757d;
-}
-</style>

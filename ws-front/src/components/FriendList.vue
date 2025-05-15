@@ -10,7 +10,7 @@
           lg="3"
         >
           <v-card 
-            elevation="2" 
+          flat
             class="pa-3 d-flex flex-column align-center"
             style="cursor: pointer;"
             @click="handleChatRoomClk(friend.senderUserId === userId ? friend.receiverUserId : friend.senderUserId)"

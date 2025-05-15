@@ -20,7 +20,7 @@
           :key="searchfriendItem.id"
           cols="12" sm="4" md="3" lg="3"
         >
-          <v-card class="pa-3 d-flex flex-column align-center">
+          <v-card class="pa-3 d-flex flex-column align-center" flat>
             <v-avatar size="56" class="mb-3">
               <v-img :src="defaultUserImage" alt="유저 이미지" />
             </v-avatar>

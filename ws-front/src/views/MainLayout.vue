@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-row class="h-screen pt-2" style="background-color: #efebe9;">
+    <v-row class="h-screen pt-5" style="background-color: #efebe9;">
       <template v-if="$vuetify.display.mdAndUp"> 
         <v-col cols="1" md="1" offset-md="1" class="layout-left-container">
           <LeftNavBar />
