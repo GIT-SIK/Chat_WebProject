@@ -43,6 +43,9 @@ public class User {
     @Column(name ="IS_PUBLIC")
     private String isPublic;
     
+    @Column(name ="USER_CHAT_RECEIVE_SCOPE")
+    private String userChatReceiveScope;
+    
     @PrePersist
     @PreUpdate
     private void convertIdToLowerCase() {

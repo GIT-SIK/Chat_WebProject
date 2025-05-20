@@ -20,8 +20,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.ws_back.frnd.Friend;
+import com.example.ws_back.frnd.FriendRepository;
 import com.example.ws_back.security.CustomUserDetails;
+import com.example.ws_back.usr.User;
 import com.example.ws_back.usr.UserDto;
+import com.example.ws_back.usr.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -36,11 +40,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService{
-	/* OracleDB */
+	/* OracleDB CHAT */
     private final ChatOracleRepository cor;
     
     /* MongoDB */
     private final ChatMongoRepository cmr;
+    
+    /* OracleDB USER */
+    private final UserRepository ur;
+    
+    /* OracleDB Friend */
+    private final FriendRepository fr;
     
 	/* REDIS */
 	private final RedisTemplate<String, Object> redisTemplate;
@@ -55,6 +65,30 @@ public class ChatServiceImpl implements ChatService{
 	/* ************************* 채팅방 처리 **************************************** */
     /* 채팅방 생성 */
     public boolean createChatRoom(ChatRoomDto chatRoomDto) {
+    	
+    	User otherUserData = ur.findByUserId(chatRoomDto.getUserIdB());
+    	System.out.println(otherUserData.getIsPublic());
+    	System.out.println(otherUserData.getIsPublic().equals("false"));
+    	String userChatReceiveScope = otherUserData.getUserChatReceiveScope();
+    	
+    	/* 메시지 수신 여부 처리 */    	
+    	if(!userChatReceiveScope.equalsIgnoreCase("all")) {
+			List<Friend> fl = fr.findAllByFriend(chatRoomDto.getUserIdA());	
+			
+    		if(!fl.stream().anyMatch(f ->
+            						f.getSenderUserId().equalsIgnoreCase(chatRoomDto.getUserIdB()) ||
+            						f.getReceiverUserId().equalsIgnoreCase(chatRoomDto.getUserIdB())
+    							   )){
+    			return false;
+    		}
+
+    	} else {
+    		if(otherUserData.getIsPublic().equals("false")) {
+    			return false;
+    		}
+    	}
+   
+    	/* 채팅방 생성 */
     	try {
     		chatRoomDto.setRoomId(UUID.randomUUID().toString());
     		cor.save(modelMapper.map(chatRoomDto ,ChatRoom.class));

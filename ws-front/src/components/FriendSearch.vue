@@ -32,8 +32,14 @@
                 @click="addFriend(searchfriendItem.userId)"
               >
                 친구 추가
-                
+     
               </v-btn>
+              <v-btn
+                @click="handleChatRoomClk(searchfriendItem.userId)"
+              >
+              메시지 보내기
+              </v-btn>
+
             </v-card-actions>
           </v-card>
         </v-col>
@@ -57,6 +63,7 @@
 import { ref, inject } from 'vue'
 import * as friend from '@/api/friend'
 import defaultUserImage from '@/assets/default_user.png'
+import { useRouter } from 'vue-router'
 
 export default {
   setup() {
@@ -64,6 +71,7 @@ export default {
     const searchFriendList = ref([])
     const searchFriendData = ref()
     const hasNoFriends = ref(false)
+    const router = useRouter()
     const searchFriend = async () => {
       try {
         const response = await friend.getSearchFriendApi(searchFriendData.value)
@@ -82,6 +90,11 @@ export default {
       searchFriendData.value = ''
     }
 
+    /* 채팅방 열기 */
+    const handleChatRoomClk = (friendId) => {
+      router.push({ path: '/auth/chat', query: { userId: friendId } })
+    }
+
     const addFriend = async (userId) => {
       /* 반환시 모두 OK로 처리하여 Try가 필요 없음. */
       const response = await friend.addFriendApi(userId)
@@ -89,6 +102,7 @@ export default {
     }
 
     return {
+      handleChatRoomClk,
       hasNoFriends,
       searchFriend,
       showToast,

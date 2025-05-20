@@ -23,5 +23,6 @@ public class UserDto {
     private String userCreatedAt;
     private String isAdmin;
     private String isPublic;
+    private String userChatReceiveScope;
     
 }
