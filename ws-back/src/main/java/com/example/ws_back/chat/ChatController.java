@@ -77,14 +77,19 @@ public class ChatController {
 		 * 채팅방 ID는 UUID로 생성됨.
 		 */
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
-		public ResponseEntity<Map<String, Object>> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
+		public ResponseEntity<?> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
 			Map<String, Object> chatRoom = cs.getChatRoom(otherUserId, authentication);
+			Map<String, Object> response = new HashMap<>();
 			
-			
-		    Map<String, Object> response = new HashMap<>();
-		    response.put("chatRoomInfo", chatRoom);
-		    response.put("chatRoomMessages", cs.getChatMessage(chatRoom.get("roomId").toString()));
-			
+			if(!chatRoom.isEmpty()) {
+				response.put("error", false);
+				response.put("chatRoomInfo", chatRoom);
+			    response.put("chatRoomMessages", cs.getChatMessage(chatRoom.get("roomId").toString()));
+			} else {
+				response.put("error", true);
+				response.put("message","채팅을 열 수 없습니다.");
+			}
+		    
 			return ResponseEntity.ok().body(response);
 		}
 		

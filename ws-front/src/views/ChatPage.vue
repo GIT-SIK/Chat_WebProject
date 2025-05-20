@@ -15,7 +15,7 @@ import ChatRoom from '@/components/chat/ChatRoom.vue'
 import ChatRoomList from '@/components/chat/ChatRoomList.vue'
 import * as chat from '@/api/chat.js'
 import { useChatStore } from '@/store/chat'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, inject } from 'vue'
 
 
 export default {
@@ -24,6 +24,7 @@ export default {
     ChatRoomList,
   },
   setup() {
+    const showToast = inject('showToast')
     const route = useRoute()
     const chatStore = useChatStore()
     const chatRoomList = ref({ data: [] })
@@ -31,9 +32,13 @@ export default {
     /* 채팅방 정보, 채팅 내역 상태 저장 */
     const chatRoomListEmitData = async (data) => {
       const roomInfo = await chat.getChatRoomInfoApi(data)
-      chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
-      chatStore.setOtherUserId(roomInfo.data.chatRoomInfo.otherUserId)
-      chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
+      if(!roomInfo.data.error) {
+        chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
+        chatStore.setOtherUserId(roomInfo.data.chatRoomInfo.otherUserId)
+        chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
+      } else {
+        showToast(roomInfo.data.message)
+      }
     }
 
     /* 채팅방 리스트 */
