@@ -15,12 +15,10 @@ export function subscribeToSse(userId, onMessageCallback, onErrorCallback) {
 
 
     sse.onopen = () => {
-      console.log("SSE 연결 성공");
     };
   
     sse.onmessage = (event) => {
       const notification = JSON.parse(event.data);
-      console.log(notification)
       if (onMessageCallback) {
         onMessageCallback(notification);
       }

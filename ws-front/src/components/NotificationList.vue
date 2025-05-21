@@ -58,7 +58,13 @@ export default {
 
     // SSE 오류 처리
     const handleSseError = (error) => {
-      console.error('알림 받는 중 오류 발생:', error)
+      // 45초마다 끊길 경우 재 연결 시도
+      const errorMessage = error.error?.message;
+      if(errorMessage.includes("45000")) {
+        setTimeout(() => {
+        subscribe();
+      }, 1000);
+      }
     }
 
     onBeforeUnmount(() => {

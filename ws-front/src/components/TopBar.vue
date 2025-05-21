@@ -25,9 +25,9 @@ export default {
     const userStore = useUserStore()
     const navBarStore = useNavBarStore();
 
+    /* 좌측 네비 토글 */
     const toggleNavBar = () =>{
       navBarStore.toggle();
-      console.log(navBarStore.toggleStatus);
     }
 
     return {
