@@ -30,11 +30,25 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	 */
 	@Transactional
 	@Modifying
-	@Query(value = "UPDATE TB_FRIEND_MA SET FRIEND_ACCEPTED_AT = :friendAcceptedAt, FRIEND_STATUS = :friendStatus " +
-	               "WHERE LOWER(SENDER_USER_ID) = LOWER(:senderUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:receiverUserId)", 
-	       nativeQuery = true)
-	int updateFriendRequestStatus(@Param("friendAcceptedAt") Timestamp friendAcceptedAt, 
-	                               @Param("senderUserId") String senderUserId, 
-	                               @Param("receiverUserId") String receiverUserId,
-	                               @Param("friendStatus") String status );
+	@Query(value = """
+	    UPDATE TB_FRIEND_MA
+	    SET 
+	        FRIEND_ACCEPTED_AT = :friendAcceptedAt,
+	        FRIEND_STATUS = :friendStatus,
+	        SENDER_USER_ID = CASE 
+	            WHEN LOWER(SENDER_USER_ID) = LOWER(:receiverUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:senderUserId)
+	            THEN :senderUserId ELSE SENDER_USER_ID END,
+	        RECEIVER_USER_ID = CASE 
+	            WHEN LOWER(SENDER_USER_ID) = LOWER(:receiverUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:senderUserId)
+	            THEN :receiverUserId ELSE RECEIVER_USER_ID END
+	    WHERE 
+	        (LOWER(SENDER_USER_ID) = LOWER(:senderUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:receiverUserId)) 
+	        OR 
+	        (LOWER(SENDER_USER_ID) = LOWER(:receiverUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:senderUserId))
+	""", nativeQuery = true)
+	int updateFriendRequestStatus(@Param("friendAcceptedAt") Timestamp friendAcceptedAt,
+	                              @Param("senderUserId") String senderUserId,
+	                              @Param("receiverUserId") String receiverUserId,
+	                              @Param("friendStatus") String status);
+
 }

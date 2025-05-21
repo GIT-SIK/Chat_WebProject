@@ -64,16 +64,26 @@ public class FriendServiceImpl implements FriendService{
 	 * @return String | 친구 신청 시 확인 문구 반환
 	 */
 	public String addFriend(String receiverUserId, Authentication authentication ) {
+		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+		Timestamp timestamp = Timestamp.from(now.toInstant());
 		try {		
 			String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-			if(!fr.findAllByFriend(receiverUserId)
-				  .stream()
-				  .anyMatch(friend -> userId.equalsIgnoreCase(friend.getSenderUserId()) || userId.equalsIgnoreCase(friend.getReceiverUserId()))) {
+			List<Friend> friendList = fr.findAllByFriend(userId);
+			Friend friend = friendList.stream()
+					.filter(f -> receiverUserId.equalsIgnoreCase(f.getSenderUserId()) ||
+		                      receiverUserId.equalsIgnoreCase(f.getReceiverUserId()))
+				    .findFirst()
+				    .orElse(null);
+			
+			if(friend == null) {
 				FriendDto friendDto = new FriendDto();
 				friendDto.setSenderUserId(userId);
 				friendDto.setReceiverUserId(receiverUserId);
 				friendDto.setFriendStatus("PENDING");
 				fr.save(modelMapper.map(friendDto, Friend.class));
+			} else if(friend.getFriendStatus().equalsIgnoreCase("REJECTED")) {
+				fr.updateFriendRequestStatus(timestamp, userId, receiverUserId, "PENDING");
+				
 			} else {
 				return "이미 등록된 친구입니다.";
 			}
