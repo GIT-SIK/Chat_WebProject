@@ -21,6 +21,14 @@
 
 <!-- <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> -->
 
+<div align="center">
+ 
+
+<img width="600" src="https://github.com/user-attachments/assets/dd69b2d4-c1ea-49d3-8467-6398fed2b91c" />
+
+</div>
+
+
 <br>
 
 ---
@@ -41,4 +49,4 @@
 
 ### :open_file_folder: ERD
 
-<img width="550" alt="스크린샷 2025-05-21 오전 9 02 45" src="https://github.com/user-attachments/assets/d6dc824a-e188-4988-bf5d-58e1a0d92206" />
+<img width="550" src="https://github.com/user-attachments/assets/d6dc824a-e188-4988-bf5d-58e1a0d92206" />
