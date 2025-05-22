@@ -5,8 +5,10 @@
         prepend-icon="mdi-magnify"
         single-line
         label="Search"
+        v-model="search"
         class="chat-search-input mb-3"
         variant="plain"
+        clearable
         hide-details
       ></v-text-field>
     </v-card>
@@ -18,7 +20,7 @@
       <v-list lines="three">
         <v-list-subheader> 대화 목록 </v-list-subheader>
         <v-list-item
-          v-for="item in items"
+          v-for="item in searchItems"
           :key="item.value"
           :subtitle="item.roomUpdatedT"
           :title="item.otherUserId"
@@ -30,7 +32,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import defaultUserImage from '@/assets/default_user.png'
 export default {
   props: {
@@ -40,19 +42,44 @@ export default {
     },
   },
   setup(props) {
-    const items = computed(() => {
-      const list = []
-      props.roomListData.forEach((room) => {
-        list.push({
-          prependAvatar: defaultUserImage,
-          otherUserId: room.otherUserId,
-          roomUpdatedT: room.roomUpdatedT,
-        })
-      })
-      return list
+    const search = ref('')
+    const items = computed(() =>
+    props.roomListData.map(room => ({
+      prependAvatar: defaultUserImage,
+      otherUserId: room.otherUserId,
+      roomUpdatedT: room.roomUpdatedT,
+    }))
+  )
+  
+
+    const searchItems = ref([...items.value]);
+
+    /*  
+    items → SearchItems
+    비동기 방식 데이터 처리를 위한 watch 
+    */
+
+    watch(items, () => {
+      const keyword = (search.value || '').toLowerCase()
+      searchItems.value = items.value.filter(item =>
+        item.otherUserId.toLowerCase().includes(keyword)
+      )
+    }, { immediate: true })
+
+    /*
+    검색 (실시간 반영)
+    */
+    watch(search, (newVal) => {
+      const keyword = (newVal || '').toLowerCase()
+      searchItems.value = items.value.filter(item =>
+        item.otherUserId.toLowerCase().includes(keyword)
+      )
     })
+  
+  
     return {
-      items,
+      search,
+      searchItems,
       defaultUserImage,
     }
   },

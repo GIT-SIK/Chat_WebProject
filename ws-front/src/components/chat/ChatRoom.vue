@@ -1,7 +1,7 @@
 <template>
-  <v-card class="mx-auto d-sm-flex flex-column cr-card" variant="text">
+  <v-card class="mx-auto d-flex flex-column cr-card" variant="text">
     <template v-if="roomId !== null">
-      <v-card-title class="d-sm-flex align-sm-center justify-center">
+      <v-card-title class="d-flex align-center justify-center">
         {{ otherUserId }}
       </v-card-title>
       <ul class="chatdata-list pa-0 flex-grow-1 overflow-y-auto">
