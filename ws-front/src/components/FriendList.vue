@@ -39,19 +39,22 @@ import { useUserStore } from '@/store/user'
 import { useFriendStore } from '@/store/friend'
 import defaultUserImage from '@/assets/default_user.png'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 export default {
   setup() {
     const authUser = useUserStore()
     const friendStore = useFriendStore()
     const router = useRouter()
+    /* 친구목록 데이터 갱신 감지 */
+    const { friendList } = storeToRefs(friendStore)
 
     /* 채팅방 열기 */
     const handleChatRoomClk = (friendId) => {
       router.push({ path: '/auth/chat', query: { userId: friendId } })
     }
 
-    /* 친구 목록 가져오기 */
+    /* 친구 목록 가져오기 (최초 1회) */
     onMounted(() => {
       friendStore.fetchFriendList(authUser.userId)
     })
@@ -59,7 +62,7 @@ export default {
     return {
       userId: authUser.userId,
       defaultUserImage,
-      friendList : friendStore.friendList,
+      friendList,
       handleChatRoomClk,
     }
   },

@@ -38,6 +38,7 @@ import FriendList from '../components/FriendList.vue'
 import FriendSearch from '../components/FriendSearch.vue'
 import FriendRequestList from '../components/FriendRequestList.vue'
 import { useFriendStore } from '@/store/friend' 
+import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
 
 export default {
@@ -48,13 +49,20 @@ export default {
   },
   setup () {
     const friendStore = useFriendStore();
+    const authUser = useUserStore()
     const { tabStatus } = storeToRefs(friendStore);
 
 
     const tab = ref(tabStatus.value)
 
-    watch(tab, (newTabValue) => {
-      friendStore.setTabStatus(newTabValue);  // tab 값 변경 시 tabStatus 갱신
+    watch(tab, async (newTabValue) => {
+      friendStore.setTabStatus(newTabValue);
+
+      /* 친구 목록 데이터 갱신 로직 */
+      if(newTabValue === '친구 목록' && friendStore.isUpdated) {
+        await friendStore.fetchFriendList(authUser.userId)
+        friendStore.setIsUpdated(false)
+      }
     });
 
     const items = [

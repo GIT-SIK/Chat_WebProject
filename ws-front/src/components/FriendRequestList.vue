@@ -64,10 +64,11 @@
         }
     })
 
+    /* 친구 요청 수락에 따른 목록 데이터 갱신 로직 */
     const friendRequestData = async(senderUserId, status) => {
         await friend.friendRequestApi(senderUserId, status);
         requestList.value = requestList.value.filter(req => req.senderUserId !== senderUserId)
-        await friendStore.fetchFriendList(authUser.userId)
+        friendStore.setIsUpdated(true); 
     }
 
 

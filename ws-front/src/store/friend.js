@@ -8,10 +8,15 @@ import { useUserStore } from '@/store/user'
 export const useFriendStore = defineStore('friend', () => {
   const tabStatus = ref("")
   const friendList = ref([])
-  const authUser = useUserStore() 
+  const authUser = useUserStore()
+  const isUpdated = ref(false);
 
   const setTabStatus = (newTabStatus) => {
     tabStatus.value = newTabStatus
+  }
+
+  const setIsUpdated = (bool) => {
+    isUpdated.value = bool;
   }
 
   const fetchFriendList = async (userId) => {
@@ -28,10 +33,14 @@ export const useFriendStore = defineStore('friend', () => {
   }
 
   return {
+    isUpdated,
     tabStatus,
-    setTabStatus,
-    friendList,       
-    fetchFriendList   
+
+    setIsUpdated,
+    setTabStatus,     
+    fetchFriendList,
+
+    friendList,  
   }
 }, {
   persist: true
