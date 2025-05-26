@@ -31,13 +31,29 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	User findByUserId(String id);
 	
 	/*
+	 * 유저 정보 
+	 * 사용 : UUID (기본 사용자 정보)
+	 */
+	
+	@Query(value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_UUID) LIKE LOWER(:userUuid)", nativeQuery = true)
+	User findByUserUuid(String userUuid);
+	
+	/*
+	 * 유저 정보 
+	 * 사용 : 닉네임 (기본 사용자 정보)
+	 */
+	
+	@Query(value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_NICKNAME) LIKE LOWER(:userNickname)", nativeQuery = true)
+	User findByNickName(String userNickname);
+	
+	/*
 	 * 유저 정보 (공개 여부 확인) 
 	 * 사용 : 친구 목록 검색
 	 */
 	
 	@Query(
-			  value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_ID) LIKE LOWER('%' || :searchId || '%') AND IS_PUBLIC = 'true' AND LOWER(USER_ID) NOT LIKE LOWER(:userId)",
+			  value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_NICKNAME) LIKE LOWER('%' || :searchNickName || '%') AND IS_PUBLIC = 'true' AND LOWER(USER_UUID) NOT LIKE LOWER(:userUuid)",
 			  nativeQuery = true
 			)
-	List<User> findAllByUserId(@Param("searchId") String searchId, @Param("userId") String userId);
+	List<User> findAllByUserUuid(@Param("searchNickName") String searchNickName, @Param("userUuid") String userUuid);
 }

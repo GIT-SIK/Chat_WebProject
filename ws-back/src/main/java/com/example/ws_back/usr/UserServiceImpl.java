@@ -1,5 +1,7 @@
 package com.example.ws_back.usr;
 
+import java.util.UUID;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,12 +25,12 @@ public class UserServiceImpl implements UserService {
 	
 	/**
      * 유저 데이터 반환
-     * @Param : id
+     * @Param : userUuid
      * @Return : User -> UserDto
      */
 
-    public UserDto findByUserId(String id){
-        return modelMapper.map(ur.findByUserId(id),UserDto.class);
+    public UserDto findByUserUuid(String userUuid){
+        return modelMapper.map(ur.findByUserUuid(userUuid),UserDto.class);
     }
 
     /**
@@ -37,9 +39,9 @@ public class UserServiceImpl implements UserService {
      * @Return : AccessToken, User -> UserDto
      */
 
-    public LoginResponse login(String id, String password){
+    public LoginResponse login(String userId, String password){
 
-        User user = ur.findByUserId(id);
+        User user = ur.findByUserId(userId);
         if(user == null) {
             throw new UsernameNotFoundException("아이디가 존재하지 않습니다.");
         }
@@ -88,6 +90,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	public boolean signup(UserDto userDto) {	
 		try {
+			userDto.setUserUuid("user-" + UUID.randomUUID().toString());
 			ur.save(modelMapper.map(userDto, User.class));
 			return true;
 		} catch (Exception e) {
@@ -104,7 +107,7 @@ public class UserServiceImpl implements UserService {
 	public boolean isNickValid(String nickname) {
 		return ur.existsByUserNickName(nickname);
 	}
-	public boolean isIdValid(String id) {
-		return ur.existsByUserId(id);
+	public boolean isIdValid(String chkId) {
+		return ur.existsByUserId(chkId);
 	}
 }

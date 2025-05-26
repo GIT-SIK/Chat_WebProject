@@ -30,6 +30,9 @@ public class User {
     
     @Column(name = "USER_NICKNAME")
     private String userNickName;
+    
+    @Column(name = "USER_UUID")
+    private String userUuid;
 
     @Column(name ="USER_PW")
     private String userPw;

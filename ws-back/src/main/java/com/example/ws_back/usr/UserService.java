@@ -6,8 +6,8 @@ public interface UserService {
 
 	public boolean signup(UserDto userDto);
 	public boolean isNickValid(String nickname);
-	public boolean isIdValid(String id);
-	public UserDto findByUserId(String id);
-	public LoginResponse login(String id, String password);
+	public boolean isIdValid(String userId);
+	public UserDto findByUserUuid(String uuid);
+	public LoginResponse login(String userId, String password);
 	
 }
