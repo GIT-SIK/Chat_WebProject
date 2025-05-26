@@ -3,7 +3,9 @@ package com.example.ws_back.frnd;
 import java.time.ZoneId;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -39,23 +41,66 @@ public class FriendServiceImpl implements FriendService{
 	
 	/**
 	 * 친구 목록 가져오기 (유저 친구)(모든 목록 : 친구 신청 여부 X)
-	 * @param UserId | 유저 아이디
-	 * @return List<Friend> | 친구 목록 반환
+	 * @param userUuid | 유저 UUID
+	 * @return List<FriendInfoDto> | 친구 목록 반환
 	 */
-	public List<Friend> getUserFriendList(String UserId) {
-		return fr.findAllByFriend(UserId);
-		
+	
+	public List<FriendInfoDto> getUserFriendList(String userUuid) {
+	    List<Friend> friends = fr.findAllByFriend(userUuid);
+	    return friends.stream()
+	            .map(friend -> {
+	                // 상대방 UUID 추출
+	                String friendUuid = friend.getSenderUserUuid().equalsIgnoreCase(userUuid)
+	                        ? friend.getReceiverUserUuid()
+	                        : friend.getSenderUserUuid();
+	                
+	                boolean isSender = friend.getSenderUserUuid().equalsIgnoreCase(userUuid)
+	                        ? true
+	                        : false;
+	                
+	                // 상대방 닉네임 조회
+	                String friendNickname = ur.findByUserUuid(friendUuid).getUserNickname();
+
+	                // 날짜 -> 문자열
+	                String requestedAt = friend.getFriendRequestedAt() != null
+	                        ? friend.getFriendRequestedAt().toString()
+	                        : null;
+
+	                String acceptedAt = friend.getFriendAcceptedAt() != null
+	                        ? friend.getFriendAcceptedAt().toString()
+	                        : null;
+
+	                return new FriendInfoDto(
+	                        friendUuid,
+	                        friendNickname,
+	                        isSender,
+	                        friend.getFriendStatus(),
+	                        requestedAt,
+	                        acceptedAt
+	                );
+	            })
+	            .toList();
 	}
+
 	
 	/** 
 	 * 친구 검색 목록 가져오기 (검색)
-	 * @param UserId | 검색 유저 아이디
+	 * @param userUuid | 검색 유저 닉네임
 	 * @return List<User> | 유저 목록 반환 (공개된 유저만)
 	 */
-	public List<User> getSearchFriendList(String searchId, String userId) {
-		return ur.findAllByUserId(searchId, userId);
-		
+	
+	public List<Map<String, Object>> getSearchFriendList(String searchNickName, String userUuid) {
+	    return ur.findAllByVisibleUserNickname(searchNickName, userUuid).stream()
+	            .map(user -> {
+	                Map<String, Object> map = new HashMap<>();
+	                map.put("userNickname", user.getUserNickname());
+	                map.put("userUuid", user.getUserUuid());
+	                map.put("userCreatedAt", user.getUserCreatedAt());
+	                return map;
+	            })
+	            .toList();
 	}
+
 	
 	
 	/**
@@ -63,34 +108,38 @@ public class FriendServiceImpl implements FriendService{
 	 * @param FriendDto | FriendDto -> Friend 변환 후 Friend 저장
 	 * @return String | 친구 신청 시 확인 문구 반환
 	 */
-	public String addFriend(String receiverUserId, Authentication authentication ) {
+	public String addFriend(String userUuid, Authentication authentication ) {
 		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 		Timestamp timestamp = Timestamp.from(now.toInstant());
+		System.out.println(userUuid);
 		try {		
+			User friendData = ur.findByUserUuid(userUuid);
+			String receiverUserUuid = friendData.getUserUuid();
 			String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+			
 			List<Friend> friendList = fr.findAllByFriend(userId);
 			Friend friend = friendList.stream()
-					.filter(f -> receiverUserId.equalsIgnoreCase(f.getSenderUserId()) ||
-		                      receiverUserId.equalsIgnoreCase(f.getReceiverUserId()))
+					.filter(f -> receiverUserUuid.equalsIgnoreCase(f.getSenderUserUuid()) ||
+							receiverUserUuid.equalsIgnoreCase(f.getReceiverUserUuid()))
 				    .findFirst()
 				    .orElse(null);
 			
 			if(friend == null) {
-				FriendDto friendDto = new FriendDto();
-				friendDto.setSenderUserId(userId);
-				friendDto.setReceiverUserId(receiverUserId);
-				friendDto.setFriendStatus("PENDING");
-				fr.save(modelMapper.map(friendDto, Friend.class));
+				FriendRequestDto friendRequestDto = new FriendRequestDto();
+				friendRequestDto.setSenderUserUuid(userId);
+				friendRequestDto.setReceiverUserUuid(receiverUserUuid);
+				friendRequestDto.setFriendStatus("PENDING");
+				fr.save(modelMapper.map(friendRequestDto, Friend.class));
 			} else if(friend.getFriendStatus().equalsIgnoreCase("REJECTED")) {
-				fr.updateFriendRequestStatus(timestamp, userId, receiverUserId, "PENDING");
+				fr.updateFriendRequestStatus(timestamp, userId, receiverUserUuid, "PENDING");
 				
 			} else {
 				return "이미 등록된 친구입니다.";
 			}
 			/* 친구 추가 알람 */
 			try {
-			NotificationDto nd = noti.createNotification(receiverUserId, userId +"님이 친구 신청하였습니다.", "/auth/friend");
-			noti.sendToClient(receiverUserId, nd);
+			NotificationDto nd = noti.createNotification(receiverUserUuid, ((CustomUserDetails) authentication.getPrincipal()).getUserNickName() +"님이 친구 신청하였습니다.", "/auth/friend");
+			noti.sendToClient(receiverUserUuid, nd);
 			} catch (RuntimeException e) {
 				if(e.getCause() instanceof NullPointerException) {
 					/* 접속 중이지 않은 친구 알람 처리 로직 */
@@ -108,12 +157,12 @@ public class FriendServiceImpl implements FriendService{
 	 * @param friendDto
 	 * @return Boolean | 친구 수락, 거절 여부 반환
 	 */
-	public boolean respondToFriendRequest(FriendDto friendDto, String userId) {
+	public boolean respondToFriendRequest(FriendRequestDto friendRequestDto, String userUuid) {
 		try {
 			ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 			Timestamp timestamp = Timestamp.from(now.toInstant());
 	        return fr.updateFriendRequestStatus(
-	                timestamp, friendDto.getSenderUserId(), userId, friendDto.getFriendStatus()
+	                timestamp, friendRequestDto.getSenderUserUuid(), userUuid, friendRequestDto.getFriendStatus()
 	            ) > 0;
 		} catch (Exception e) {
 			return false;

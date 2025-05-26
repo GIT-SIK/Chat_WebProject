@@ -11,10 +11,10 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendDto {
+public class FriendRequestDto {
 	private Long seq;
-	private String senderUserId;
-	private String receiverUserId;
+	private String senderUserUuid;
+	private String receiverUserUuid;
 	private String friendStatus;
 	private String friendRequestedAt;
 	private String friendAcceptedAt;

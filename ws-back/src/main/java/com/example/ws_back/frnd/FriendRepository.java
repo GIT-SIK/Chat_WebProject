@@ -21,8 +21,8 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	 * 친구 등록 목록 (전체)
 	 */
 	
-	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_ID) = LOWER(:userId) OR LOWER(RECEIVER_USER_ID) = LOWER(:userId))", nativeQuery = true)
-	List<Friend> findAllByFriend(@Param("userId") String UserId);
+	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_UUID) = LOWER(:userUuid) OR LOWER(RECEIVER_USER_UUID) = LOWER(:userUuid))", nativeQuery = true)
+	List<Friend> findAllByFriend(@Param("userUuid") String userUuid);
 	
 	
 	/**
@@ -35,20 +35,20 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	    SET 
 	        FRIEND_ACCEPTED_AT = :friendAcceptedAt,
 	        FRIEND_STATUS = :friendStatus,
-	        SENDER_USER_ID = CASE 
-	            WHEN LOWER(SENDER_USER_ID) = LOWER(:receiverUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:senderUserId)
-	            THEN :senderUserId ELSE SENDER_USER_ID END,
-	        RECEIVER_USER_ID = CASE 
-	            WHEN LOWER(SENDER_USER_ID) = LOWER(:receiverUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:senderUserId)
-	            THEN :receiverUserId ELSE RECEIVER_USER_ID END
+	        SENDER_USER_UUID = CASE 
+	            WHEN LOWER(SENDER_USER_UUID) = LOWER(:receiverUserUuid) AND LOWER(RECEIVER_USER_UUID) = LOWER(:senderUserUuid)
+	            THEN :senderUserUuid ELSE SENDER_USER_UUID END,
+	        RECEIVER_USER_UUID = CASE 
+	            WHEN LOWER(SENDER_USER_UUID) = LOWER(:receiverUserUuid) AND LOWER(RECEIVER_USER_UUID) = LOWER(:senderUserUuid)
+	            THEN :receiverUserUuid ELSE RECEIVER_USER_UUID END
 	    WHERE 
-	        (LOWER(SENDER_USER_ID) = LOWER(:senderUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:receiverUserId)) 
+	        (LOWER(SENDER_USER_UUID) = LOWER(:senderUserUuid) AND LOWER(RECEIVER_USER_UUID) = LOWER(:receiverUserUuid)) 
 	        OR 
-	        (LOWER(SENDER_USER_ID) = LOWER(:receiverUserId) AND LOWER(RECEIVER_USER_ID) = LOWER(:senderUserId))
+	        (LOWER(SENDER_USER_UUID) = LOWER(:receiverUserUuid) AND LOWER(RECEIVER_USER_UUID) = LOWER(:senderUserUuid))
 	""", nativeQuery = true)
 	int updateFriendRequestStatus(@Param("friendAcceptedAt") Timestamp friendAcceptedAt,
-	                              @Param("senderUserId") String senderUserId,
-	                              @Param("receiverUserId") String receiverUserId,
+	                              @Param("senderUserUuid") String senderUserUuid,
+	                              @Param("receiverUserUuid") String receiverUserUuid,
 	                              @Param("friendStatus") String status);
 
 }

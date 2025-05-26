@@ -29,7 +29,7 @@ public class User {
     private String userId;
     
     @Column(name = "USER_NICKNAME")
-    private String userNickName;
+    private String userNickname;
     
     @Column(name = "USER_UUID")
     private String userUuid;

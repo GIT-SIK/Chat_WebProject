@@ -47,7 +47,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	User findByNickName(String userNickname);
 	
 	/*
-	 * 유저 정보 (공개 여부 확인) 
+	 * 공개된 유저 목록
 	 * 사용 : 친구 목록 검색
 	 */
 	
@@ -55,5 +55,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			  value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_NICKNAME) LIKE LOWER('%' || :searchNickName || '%') AND IS_PUBLIC = 'true' AND LOWER(USER_UUID) NOT LIKE LOWER(:userUuid)",
 			  nativeQuery = true
 			)
-	List<User> findAllByUserUuid(@Param("searchNickName") String searchNickName, @Param("userUuid") String userUuid);
+	List<User> findAllByVisibleUserNickname(@Param("searchNickName") String searchNickName, @Param("userUuid") String userUuid);
 }

@@ -32,11 +32,11 @@ public class Friend {
 	@Column(name = "SEQ")
 	private Long seq;
 	
-	@Column(name = "SENDER_USER_ID")
-	private String senderUserId;
+	@Column(name = "SENDER_USER_UUID")
+	private String senderUserUuid;
 
-	@Column(name = "RECEIVER_USER_ID")
-	private String receiverUserId;
+	@Column(name = "RECEIVER_USER_UUID")
+	private String receiverUserUuid;
 	
 	@Column(name ="FRIEND_STATUS")
 	private String friendStatus;
