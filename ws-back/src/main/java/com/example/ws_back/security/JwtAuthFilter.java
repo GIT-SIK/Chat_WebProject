@@ -30,10 +30,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_TYPE)) {
             String token = authorizationHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
-                String userId = jwtUtil.getUserId(token);
+                String userUuid = jwtUtil.getUserUuid(token);
 
                 //유저와 토큰이 같을 경우 userDetails 생성
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userUuid);
 
                 if (userDetails != null) {
                     //인증된 Token 생성

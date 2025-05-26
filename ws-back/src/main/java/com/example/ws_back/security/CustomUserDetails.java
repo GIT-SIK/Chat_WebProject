@@ -37,9 +37,13 @@ public class CustomUserDetails implements UserDetails {
     public String getPassword() {
         return userDto.getUserPw();
     }
-
+    
     @Override
     public String getUsername() {
+        return userDto.getUserUuid();
+    }
+
+    public String getUserId() {
         return userDto.getUserId();
     }
     
