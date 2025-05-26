@@ -1,34 +1,25 @@
 <template>
   <div>
-      <v-row>
-        <v-col
-          v-for="friend in friendList"
-          :key="friend.id"
-          cols="12"
-          sm="4"
-          md="3"
-          lg="3"
-        >
-          <v-card 
+    <v-row>
+      <v-col v-for="friend in friendList" :key="friend.id" cols="12" sm="4" md="3" lg="3">
+        <v-card
           flat
-            class="pa-3 d-flex flex-column align-center"
-            style="cursor: pointer;"
-            @click="handleChatRoomClk(friend.friendId)"
-            >
-            <v-avatar size="56" class="mb-3">
-              <v-img :src="defaultUserImage" alt="유저 이미지" />
-            </v-avatar>
+          class="pa-3 d-flex flex-column align-center"
+          style="cursor: pointer"
+          @click="handleChatRoomClk(friend.friendUuid)"
+        >
+          <v-avatar size="56" class="mb-3">
+            <v-img :src="defaultUserImage" alt="유저 이미지" />
+          </v-avatar>
 
-            <div class="text-subtitle-2 font-weight-bold">
-              <span>
-                {{
-                  friend.friendId
-                }}
-              </span>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
+          <div class="text-subtitle-2 font-weight-bold">
+            <span>
+              {{ friend.friendNickname }}
+            </span>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -50,17 +41,16 @@ export default {
     const { friendList } = storeToRefs(friendStore)
 
     /* 채팅방 열기 */
-    const handleChatRoomClk = (friendId) => {
-      router.push({ path: '/auth/chat', query: { userId: friendId } })
+    const handleChatRoomClk = (friendUuid) => {
+      router.push({ path: '/auth/chat', query: { fu: friendUuid } })
     }
 
     /* 친구 목록 가져오기 (최초 1회) */
     onMounted(() => {
-      friendStore.fetchFriendList(authUser.userId)
+      friendStore.fetchFriendList(authUser.userUuid)
     })
 
     return {
-      userId: authUser.userId,
       defaultUserImage,
       friendList,
       handleChatRoomClk,

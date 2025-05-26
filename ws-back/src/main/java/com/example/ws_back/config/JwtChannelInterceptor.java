@@ -40,8 +40,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             }
 
             // 사용자 정보 가져오기
-            String userId = jwtUtil.getUserId(token);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+            String userUuid = jwtUtil.getUserUuid(token);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userUuid);
 
             // 인증 객체 생성 및 SecurityContext 설정
             UsernamePasswordAuthenticationToken authentication =

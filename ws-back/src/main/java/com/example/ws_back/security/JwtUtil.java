@@ -51,7 +51,7 @@ public class JwtUtil {
         ZonedDateTime tokenValidity = now.plusSeconds(expireTime / 1000); // Convert milliseconds to seconds
 
         return Jwts.builder()
-                .claim("userId", userDto.getUserId())
+                .claim("uuid", userDto.getUserUuid())
                 .claim("isAdmin", userDto.getIsAdmin())
                 .claim("issuedAt", now.toInstant().toEpochMilli())
                 .claim("expiration", tokenValidity.toInstant().toEpochMilli())
@@ -60,12 +60,12 @@ public class JwtUtil {
     }
 
     /**
-     * Token에서 User ID 추출
+     * Token에서 UserUUID 추출
      * @param token
-     * @return User ID
+     * @return getUserUuid
      */
-    public String getUserId(String token) {
-        return parseClaims(token).get("userId", String.class);
+    public String getUserUuid(String token) {
+        return parseClaims(token).get("uuid", String.class);
     }
 
     /**

@@ -52,8 +52,8 @@ public class UserController {
         String jwtToken = token.substring(7);
         // 토큰을 이용하여 유저 정보를 가져오는 로직
         try {
-            String userId = jwtUtil.getUserId(jwtToken); // jwtUtil에서 토큰에서 userId 추출 (예: userId, email 등)
-            UserDto userDto = us.findByUserId(userId);  // 유저 정보를 찾기 위한 서비스 호출
+            String userUuid = jwtUtil.getUserUuid(jwtToken); // jwtUtil에서 토큰에서 userId 추출 (예: userId, email 등)
+            UserDto userDto = us.findByUserUuid(userUuid);  // 유저 정보를 찾기 위한 서비스 호출
             
             if (userDto == null) {
                 return ResponseEntity.status(404).body("사용자를 확인할 수 없습니다.");
@@ -150,6 +150,6 @@ public class UserController {
 	    log.info("인증된 사용자: " + username);
 
 	    // 데이터베이스에서 사용자 정보를 조회하여 반환
-	    return us.findByUserId(username);
+	    return us.findByUserUuid(username);
 	}
 }

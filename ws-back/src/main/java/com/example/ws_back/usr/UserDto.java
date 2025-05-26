@@ -16,8 +16,8 @@ import lombok.Setter;
 public class UserDto {
 
     private String userId;
-    private String userNickName;
-    
+    private String userNickname;
+    private String userUuid;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPw;   
     private String userCreatedAt;
