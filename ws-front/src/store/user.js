@@ -6,6 +6,7 @@ export const useUserStore = defineStore('login', () => {
   // 상태
   const token = ref(null)
   const userId = ref(null)
+  const userNickname = ref(null)
   const isAdmin = ref(null)
 
   async function setToken(nToken) {
@@ -21,6 +22,7 @@ export const useUserStore = defineStore('login', () => {
       token.value = localToken
       userId.value = response.data.userId
       isAdmin.value = response.data.isAdmin
+      userNickname.value = response.data.userNickName
     } catch (e) {
       localStorage.removeItem('access_token')
     }
@@ -30,6 +32,7 @@ export const useUserStore = defineStore('login', () => {
     token,
     userId,
     isAdmin,
+    userNickname,
     setToken,
     getUserInfo,
   }

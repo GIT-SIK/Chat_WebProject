@@ -5,13 +5,13 @@
       <v-app-bar-nav-icon @click="toggleNavBar"></v-app-bar-nav-icon>
     </template>
     <template v-slot:append>
-    <div class="toolbar-user-info">
-      <v-avatar size="32">
-        <img :src="userImage" alt="user" />
-      </v-avatar>
-      <div class="ml-4 mr-9 toolbar-username">{{ userName }}</div> 
-    </div>
-  </template>
+      <div class="toolbar-user-info">
+        <v-avatar size="32">
+          <img :src="userImage" alt="user" />
+        </v-avatar>
+        <div class="ml-4 mr-9 toolbar-username">{{ userName }}</div>
+      </div>
+    </template>
   </v-app-bar>
 </template>
 
@@ -23,16 +23,16 @@ import { useNavBarStore } from '@/store/navbar'
 export default {
   setup() {
     const userStore = useUserStore()
-    const navBarStore = useNavBarStore();
+    const navBarStore = useNavBarStore()
 
     /* 좌측 네비 토글 */
-    const toggleNavBar = () =>{
-      navBarStore.toggle();
+    const toggleNavBar = () => {
+      navBarStore.toggle()
     }
 
     return {
       userImage: defaultUserImage,
-      userName: userStore.userId,
+      userName: userStore.userNickname,
       toggleNavBar,
     }
   },
@@ -50,6 +50,6 @@ export default {
 }
 
 .v-toolbar {
-  position : static !important
+  position: static !important;
 }
 </style>
