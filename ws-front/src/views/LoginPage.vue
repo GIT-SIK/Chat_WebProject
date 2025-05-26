@@ -9,7 +9,9 @@
       ></v-progress-linear>
     </template>
 
-    <v-card-title class="mt-4" style="text-align: center;" color="brown-darken-2"> Chat APP </v-card-title>
+    <v-card-title class="mt-4" style="text-align: center" color="brown-darken-2">
+      Chat APP
+    </v-card-title>
     <v-container>
       <v-text-field
         color="brown-darken-4"
@@ -62,11 +64,11 @@ export default {
     const login = async () => {
       loading.value = true
       await loginApi(loginData.value.id, loginData.value.pw)
-        .then((response) => {
+        .then(async (response) => {
           userStore.setToken(response.data.token)
           localStorage.setItem('access_token', response.data.token)
-          userStore.getUserInfo()
-          showToast(loginData.value.id + `님! 환영합니다.`)
+          await userStore.getUserInfo()
+          showToast(userStore.userNickname + `님! 환영합니다.`)
           loading.value = false
           router.push({ path: '/auth' })
         })

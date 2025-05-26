@@ -43,8 +43,8 @@ public class CustomUserDetails implements UserDetails {
         return userDto.getUserUuid();
     }
     
-    public String getUserNickName() {
-    	return userDto.getUserNickName();
+    public String getUserNickname() {
+    	return userDto.getUserNickname();
     }
 
     public String getUserId() {
