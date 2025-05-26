@@ -14,7 +14,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	/**
 	 * 알림 목록 
 	 */
-	@Query(value = "SELECT * FROM TB_NOTIFICATION_MA WHERE (LOWER(USER_ID) = LOWER(:userId)", nativeQuery = true)
-	List<Notification> findAllByUserId(@Param("userId") String UserId);
+	@Query(value = "SELECT * FROM TB_NOTIFICATION_MA WHERE (LOWER(USER_UUID) = LOWER(:userUuid)", nativeQuery = true)
+	List<Notification> findAllByUserUuid(@Param("userUuid") String userUuid);
 	
 }

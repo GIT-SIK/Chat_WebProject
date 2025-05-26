@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class NotificationDto {
 	private Long notificationId;
-	private String userId;
+	private String userUuid;
 	private String notificationMessage;
     private LocalDateTime notiCreatedAt;
 	private String isRead;

@@ -29,8 +29,8 @@ public class Notification {
 	@Column(name="NOTIFICATION_ID")
 	private Long notificationId;
 	
-	@Column(name="USER_ID")
-	private String userId;
+	@Column(name="USER_UUID")
+	private String userUuid;
 	
 	@Column(name="NOTIFICATION_MESSAGE")
 	private String notificationMessage;

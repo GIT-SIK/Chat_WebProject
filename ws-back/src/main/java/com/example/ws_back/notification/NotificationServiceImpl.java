@@ -25,8 +25,8 @@ public class NotificationServiceImpl implements NotificationService {
 	
 	/* * * * * * * * 비로그인 상태 : 알람 저장, 가져오기 * * * * * * * */
 	
-	public List<NotificationDto> getNotificationList(String userId) {
-		return nr.findAllByUserId(userId).stream()
+	public List<NotificationDto> getNotificationList(String userUuid) {
+		return nr.findAllByUserUuid(userUuid).stream()
 										 .map(entity -> modelMapper.map(entity, NotificationDto.class))
 									     .collect(Collectors.toList());
 	}
@@ -44,14 +44,14 @@ public class NotificationServiceImpl implements NotificationService {
 	
 	/* sse */
 	
-    public SseEmitter sseSubscribe(String id) {
+    public SseEmitter sseSubscribe(String userUuid) {
         long timeout = 1000L * 60 * 60; // 연결 시간 : 1시간
 
         SseEmitter sseEmitter = new SseEmitter(timeout);
-        sseEmitterMap.put(id, sseEmitter);
+        sseEmitterMap.put(userUuid, sseEmitter);
         
         sseEmitter.onCompletion(() -> {
-            sseEmitterMap.remove(id);
+            sseEmitterMap.remove(userUuid);
         });
         sseEmitter.onTimeout(() -> {
             sseEmitter.complete();
@@ -63,13 +63,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
 	
 	
-    public void sendToClient(String id, Object data) {
-        SseEmitter sseEmitter = sseEmitterMap.get(id);
+    public void sendToClient(String userUuid, Object data) {
+        SseEmitter sseEmitter = sseEmitterMap.get(userUuid);
         try {
             sseEmitter.send(
                     SseEmitter
                             .event()
-                            .id(id)
+                            .id(userUuid)
                             /* eventName 추가할 경우 
                               js에서 onmessage((event) => ...) 로 받는게 아닌 
                               addEventListener("evnetName", (e) => ...)로 받아야
@@ -83,10 +83,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
     
    /* 알람 DTO 생성용 메소드 */
-    public NotificationDto createNotification(String userId, String notificationMessage, String url) {
+    public NotificationDto createNotification(String userUuid, String notificationMessage, String url) {
     	NotificationDto nd = new NotificationDto();    
     	nd.setNotificationId(null);
-    	nd.setUserId(userId);
+    	nd.setUserUuid(userUuid);
     	nd.setActionUrl(url);
     	nd.setIsRead("false");
     	nd.setNotiCreatedAt(LocalDateTime.now());

@@ -28,8 +28,8 @@ public class NotificationController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<?> getNotis(Authentication authentication) {
-    	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-        return ResponseEntity.ok(noti.getNotificationList(userId));
+    	String userUuid = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+        return ResponseEntity.ok(noti.getNotificationList(userUuid));
     }
     
     /** 알림 구독
@@ -37,14 +37,14 @@ public class NotificationController {
      * @return SseEmitter
      */
     @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
-    public SseEmitter sseSubscribe(@RequestParam String userId, Authentication authentication) {
-    	String authUserId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+    public SseEmitter sseSubscribe(@RequestParam String userUuid, Authentication authentication) {
+    	String authUserUuid = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
     	
-        if (!userId.equals(authUserId)) {
+        if (!userUuid.equals(authUserUuid)) {
             throw new IllegalArgumentException("[SSE] 사용자가 일치하지 않습니다.");
         }
     	
-    	return noti.sseSubscribe(authUserId);
+    	return noti.sseSubscribe(authUserUuid);
     }
     
 }
