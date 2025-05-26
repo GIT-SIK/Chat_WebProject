@@ -10,7 +10,7 @@
       <v-list-item
         v-for="(notification, index) in notifications"
         :key="index"
-        @click="$router.push(notification.actionUrl)"
+        @click="handleActionUrl(notification.actionUrl, 'friend')"
       >
         <v-list-item-title>{{ notification.notificationMessage }}</v-list-item-title>
         <v-list-item-subtitle>
@@ -30,21 +30,32 @@ import { subscribeToSse } from '@/api/notification'
 /* pinia */
 import { useNotificationStore } from '@/store/notification'
 import { useUserStore } from '@/store/user'
+import { useFriendStore } from '@/store/friend'
+import { useRouter } from 'vue-router'
 
 export default {
   setup() {
     const notificationStore = useNotificationStore()
     const userStore = useUserStore()
+    const router = useRouter()
+    const friendStore = useFriendStore()
 
     const notifications = ref([])
+    const userUuid = userStore.userUuid
 
-    const userId = userStore.userId
+    // 알람 URL
+    const handleActionUrl = (url, type) => {
+      if (type === 'friend') {
+        friendStore.setTabStatus('받은 친구 요청')
+      }
+      router.push(url)
+    }
 
     let eventSource = null
 
     // 알림 구독
     const subscribe = () => {
-      eventSource = subscribeToSse(userId, handleNewNotification, handleSseError)
+      eventSource = subscribeToSse(userUuid, handleNewNotification, handleSseError)
     }
 
     // 알림 받기
@@ -59,11 +70,11 @@ export default {
     // SSE 오류 처리
     const handleSseError = (error) => {
       // 45초마다 끊길 경우 재 연결 시도
-      const errorMessage = error.error?.message;
-      if(errorMessage.includes("45000")) {
+      const errorMessage = error.error?.message
+      if (errorMessage.includes('45000')) {
         setTimeout(() => {
-        subscribe();
-      }, 1000);
+          subscribe()
+        }, 1000)
       }
     }
 
@@ -93,6 +104,7 @@ export default {
     }
 
     return {
+      handleActionUrl,
       notifications,
       closeNotification,
     }
