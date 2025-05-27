@@ -39,6 +39,7 @@
   * 신청
   * 수락, 거절
 * 채팅 기능
+  * 검색
   * 실시간 채팅 
 * 알림 기능
   * 실시간 알림
@@ -48,5 +49,4 @@
 ---
 
 ### :open_file_folder: ERD
-
-<img width="550" src="https://github.com/user-attachments/assets/d6dc824a-e188-4988-bf5d-58e1a0d92206" />
+<img width="550" alt="20250527_2200" src="https://github.com/user-attachments/assets/c26606b3-9983-4f19-adab-74891f2ab3ac" />
