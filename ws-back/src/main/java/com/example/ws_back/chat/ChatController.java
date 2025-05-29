@@ -77,8 +77,8 @@ public class ChatController {
 		 * 채팅방 ID는 UUID로 생성됨.
 		 */
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
-		public ResponseEntity<?> getChatMessage(@RequestParam("v") String otherUserId, Authentication authentication) {
-			Map<String, Object> chatRoom = cs.getChatRoom(otherUserId, authentication);
+		public ResponseEntity<?> getChatMessage(@RequestParam("v") String otherUserUuid, Authentication authentication) {
+			Map<String, Object> chatRoom = cs.getChatRoom(otherUserUuid, authentication);
 			Map<String, Object> response = new HashMap<>();
 			
 			if(!chatRoom.isEmpty()) {
