@@ -23,8 +23,13 @@
           v-for="item in searchItems"
           :key="item.value"
           :subtitle="item.roomUpdatedT"
-          :title="item.otherUserId"
-          @click="$emit('other-user-id', item.otherUserId)"
+          :title="item.otherUserNickname"
+          @click="
+            $emit('other-user-data', {
+              ouUuid: item.otherUserUuid,
+              ouNickname: item.otherUserNickname,
+            })
+          "
         ></v-list-item>
       </v-list>
     </v-card>
@@ -44,39 +49,42 @@ export default {
   setup(props) {
     const search = ref('')
     const items = computed(() =>
-    props.roomListData.map(room => ({
-      prependAvatar: defaultUserImage,
-      otherUserId: room.otherUserId,
-      roomUpdatedT: room.roomUpdatedT,
-    }))
-  )
-  
+      props.roomListData.map((room) => ({
+        prependAvatar: defaultUserImage,
+        otherUserNickname: room.otherUserNickname,
+        otherUserUuid: room.otherUserUuid,
+        roomUpdatedT: room.roomUpdatedT,
+      })),
+    )
 
-    const searchItems = ref([...items.value]);
+    const searchItems = ref([...items.value])
 
     /*  
     items → SearchItems
     비동기 방식 데이터 처리를 위한 watch 
     */
 
-    watch(items, () => {
-      const keyword = (search.value || '').toLowerCase()
-      searchItems.value = items.value.filter(item =>
-        item.otherUserId.toLowerCase().includes(keyword)
-      )
-    }, { immediate: true })
+    watch(
+      items,
+      () => {
+        const keyword = (search.value || '').toLowerCase()
+        searchItems.value = items.value.filter((item) =>
+          item.otherUserNickname.toLowerCase().includes(keyword),
+        )
+      },
+      { immediate: true },
+    )
 
     /*
     검색 (실시간 반영)
     */
     watch(search, (newVal) => {
       const keyword = (newVal || '').toLowerCase()
-      searchItems.value = items.value.filter(item =>
-        item.otherUserId.toLowerCase().includes(keyword)
+      searchItems.value = items.value.filter((item) =>
+        item.otherUserNickname.toLowerCase().includes(keyword),
       )
     })
-  
-  
+
     return {
       search,
       searchItems,

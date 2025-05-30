@@ -2,16 +2,16 @@
   <v-card class="mx-auto d-flex flex-column cr-card" variant="text">
     <template v-if="roomId !== null">
       <v-card-title class="d-flex align-center justify-center">
-        {{ otherUserId }}
+        {{ otherUserNickname }}
       </v-card-title>
       <ul class="chatdata-list pa-0 flex-grow-1 overflow-y-auto">
         <li
           v-for="(message, index) in messages"
           :key="index"
           :class="{
-            'm-me': message.senderUserId === senderUserId,
-            'm-other': message.senderUserId !== senderUserId && message.sender !== 'system',
-            'm-system': message.senderUserId === 'system',
+            'm-me': message.senderUserUuid === senderUserUuid,
+            'm-other': message.senderUserUuid !== senderUserUuid && message.sender !== 'system',
+            'm-system': message.senderUserUuid === 'system',
           }"
         >
           <span> {{ message.message }} </span>
@@ -62,11 +62,12 @@ export default {
     /* Store Data */
     const chatStore = useChatStore()
     const userStore = useUserStore()
-    const { roomId, otherUserId } = storeToRefs(chatStore)
+    const { roomId, otherUserUuid, otherUserNickname } = storeToRefs(chatStore)
     /* View Data */
     const messages = ref([])
     const newMessage = ref('')
-    const senderUserId = ref(null)
+    const senderUserUuid = ref(null)
+    const senderUserNickname = ref(null)
 
     // 스크롤 자동 스크롤
     const scrollAutoDown = () => {
@@ -82,7 +83,6 @@ export default {
     const connectWebSocket = () => {
       const token = localStorage.getItem('access_token') // localStorage에서 토큰을 가져옵니다.
       if (!token) {
-        console.error('Token not found')
         return
       }
       chatService.connect('/ws', token, roomId.value) // WebSocket 연결
@@ -107,7 +107,7 @@ export default {
           }
           if (msg.type === 'notification') {
             messages.value.push({
-              senderUserId: 'system',
+              senderUserUuid: 'system',
               message: msg.message,
             })
           } else {
@@ -127,7 +127,7 @@ export default {
       if (newMessage.value.trim()) {
         const message = {
           roomId: roomId.value,
-          senderUserId: senderUserId.value,
+          senderUserUuid: senderUserUuid.value,
           message: newMessage.value,
           date: new Date().toISOString(), // UTC 기준
         }
@@ -141,8 +141,8 @@ export default {
     onMounted(() => {
       connectWebSocket()
       userStore.getUserInfo()
-      senderUserId.value = userStore.userId
-      roomId.value = chatStore.roomId
+      senderUserNickname.value = userStore.userNickname
+      senderUserUuid.value = userStore.userUuid
     })
 
     // 컴포넌트 언마운트 시 웹소켓 종료
@@ -167,8 +167,10 @@ export default {
       messages,
       roomId,
       newMessage,
-      otherUserId,
-      senderUserId,
+      otherUserNickname,
+      otherUserUuid,
+      senderUserNickname,
+      senderUserUuid,
       sendMessage,
     }
   },
@@ -177,7 +179,7 @@ export default {
 <style>
 .cr-card {
   background-color: #ffffff;
-  height : 100%
+  height: 100%;
 }
 
 .cr-card .v-card-title {

@@ -1,7 +1,7 @@
 <template>
   <v-row class="h-100">
     <v-col cols="12" sm="4">
-      <ChatRoomList :roomListData="chatRoomList.data" @other-user-id="chatRoomListEmitData" />
+      <ChatRoomList :roomListData="chatRoomList.data" @other-user-data="chatRoomListEmitData" />
     </v-col>
     <v-col cols="12" sm="8" class="h-100">
       <ChatRoom />
@@ -17,7 +17,6 @@ import * as chat from '@/api/chat.js'
 import { useChatStore } from '@/store/chat'
 import { onMounted, ref, inject } from 'vue'
 
-
 export default {
   components: {
     ChatRoom,
@@ -31,10 +30,11 @@ export default {
 
     /* 채팅방 정보, 채팅 내역 상태 저장 */
     const chatRoomListEmitData = async (data) => {
-      const roomInfo = await chat.getChatRoomInfoApi(data)
-      if(!roomInfo.data.error) {
+      const roomInfo = await chat.getChatRoomInfoApi(data.ouUuid)
+      if (!roomInfo.data.error) {
         chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
-        chatStore.setOtherUserId(roomInfo.data.chatRoomInfo.otherUserId)
+        chatStore.setOtherUserUuid(roomInfo.data.chatRoomInfo.otherUserUuid)
+        chatStore.setOtherUserNickname(data.ouNickname)
         chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
       } else {
         showToast(roomInfo.data.message)
@@ -52,9 +52,9 @@ export default {
 
     /* 친구목록 -> 채팅방 열기 */
     const handleFriendClk = () => {
-      const userId = route.query.userId
-      if (userId) {
-        chatRoomListEmitData(userId)
+      const userUuid = route.query.userUuid
+      if (userUuid) {
+        chatRoomListEmitData(userUuid)
       }
     }
 
@@ -72,5 +72,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>
