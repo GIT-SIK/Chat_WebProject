@@ -10,7 +10,7 @@ import lombok.Data;
 @Document(collection = "chat")
 public class Chat {
 	private String roomId;
-	private String senderUserId;
+	private String senderUserUuid;
 	private String message;
 	private LocalDateTime date;
 }

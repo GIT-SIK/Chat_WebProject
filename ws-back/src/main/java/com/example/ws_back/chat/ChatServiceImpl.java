@@ -66,18 +66,16 @@ public class ChatServiceImpl implements ChatService{
     /* 채팅방 생성 */
     public boolean createChatRoom(ChatRoomDto chatRoomDto) {
     	
-    	User otherUserData = ur.findByUserId(chatRoomDto.getUserIdB());
-    	System.out.println(otherUserData.getIsPublic());
-    	System.out.println(otherUserData.getIsPublic().equals("false"));
+    	User otherUserData = ur.findByUserUuid(chatRoomDto.getUserUuidB());
     	String userChatReceiveScope = otherUserData.getUserChatReceiveScope();
     	
     	/* 메시지 수신 여부 처리 */    	
     	if(!userChatReceiveScope.equalsIgnoreCase("all")) {
-			List<Friend> fl = fr.findAllByFriend(chatRoomDto.getUserIdA());	
+			List<Friend> fl = fr.findAllByFriend(chatRoomDto.getUserUuidA());	
 			
     		if(!fl.stream().anyMatch(f ->
-            						f.getSenderUserId().equalsIgnoreCase(chatRoomDto.getUserIdB()) ||
-            						f.getReceiverUserId().equalsIgnoreCase(chatRoomDto.getUserIdB())
+            						f.getSenderUserUuid().equalsIgnoreCase(chatRoomDto.getUserUuidB()) ||
+            						f.getReceiverUserUuid().equalsIgnoreCase(chatRoomDto.getUserUuidB())
     							   )){
     			return false;
     		}
@@ -90,7 +88,7 @@ public class ChatServiceImpl implements ChatService{
    
     	/* 채팅방 생성 */
     	try {
-    		chatRoomDto.setRoomId(UUID.randomUUID().toString());
+    		chatRoomDto.setRoomId("chat-" + UUID.randomUUID().toString());
     		cor.save(modelMapper.map(chatRoomDto ,ChatRoom.class));
     		return true;
     	} catch (Exception e) {
@@ -99,20 +97,20 @@ public class ChatServiceImpl implements ChatService{
     }
     
     /* 채팅방 정보 조회 */
-    public Map<String, Object> getChatRoom(String otherUserId, Authentication authentication) {
+    public Map<String, Object> getChatRoom(String otherUserUuid, Authentication authentication) {
     	
-    	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-    	List<ChatRoom> crList = cor.findAllByChatRoom(userId);
+    	String userUuid = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+    	List<ChatRoom> crList = cor.findAllByChatRoom(userUuid);
     	
     	/* 채팅방 생성 로직 */
     	if(!crList.stream()
-    	.anyMatch(chatRoom -> otherUserId.equalsIgnoreCase(chatRoom.getUserIdA()) || otherUserId.equalsIgnoreCase(chatRoom.getUserIdB()))) {
+    	.anyMatch(chatRoom -> otherUserUuid.equalsIgnoreCase(chatRoom.getUserUuidA()) || otherUserUuid.equalsIgnoreCase(chatRoom.getUserUuidB()))) {
     		ChatRoomDto chatRoomDto = new ChatRoomDto();
-    		chatRoomDto.setUserIdA(userId);
-    		chatRoomDto.setUserIdB(otherUserId);
+    		chatRoomDto.setUserUuidA(userUuid);
+    		chatRoomDto.setUserUuidB(otherUserUuid);
     		if(createChatRoom(chatRoomDto)) {;
 	    		log.info("채팅방을 생성하였습니다.");
-	    		crList = cor.findAllByChatRoom(userId);
+	    		crList = cor.findAllByChatRoom(userUuid);
     		} else {
     			log.info("채팅방 생성도중 오류가 발생습니다.");
     		}
@@ -120,12 +118,12 @@ public class ChatServiceImpl implements ChatService{
     	}
     	
     	return crList.stream()
-		.filter(chatRoom -> otherUserId.equals(chatRoom.getUserIdA()) || otherUserId.equals(chatRoom.getUserIdB()))
+		.filter(chatRoom -> otherUserUuid.equals(chatRoom.getUserUuidA()) || otherUserUuid.equals(chatRoom.getUserUuidB()))
 		.findFirst()
     	.map(chatRoom -> {
     		Map<String,Object> nrMap = new HashMap<>();
     		nrMap.put("roomId", chatRoom.getRoomId());
-    		nrMap.put("otherUserId", !chatRoom.getUserIdA().equalsIgnoreCase(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
+    		nrMap.put("otherUserUuid", !chatRoom.getUserUuidA().equalsIgnoreCase(userUuid) ? chatRoom.getUserUuidA() : chatRoom.getUserUuidB());
     		return nrMap;
     	}).orElseGet(Collections::emptyMap);
     	
@@ -133,25 +131,51 @@ public class ChatServiceImpl implements ChatService{
     }
     
     /* 채팅방 목록 */
-    public List<Map<String,Object>> getChatRoomList(Authentication authentication) {
-    	
-    	String userId = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-    	List<ChatRoom> crList = cor.findAllByChatRoom(userId);
-    	
-    	DateTimeFormatter fmtDateTime = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm");
-    	
-    	log.info("채팅방 목록 : "+userId + "의 채팅방 전체 목록 가져옵니다. ");
-    	
-    	return crList.stream()
-    		.map(chatRoom -> {
-    			Map<String, Object> nrMap = new HashMap<>();
-				nrMap.put("roomId", chatRoom.getRoomId());
-				nrMap.put("otherUserId", !chatRoom.getUserIdA().equalsIgnoreCase(userId) ? chatRoom.getUserIdA() : chatRoom.getUserIdB());
-				nrMap.put("roomUpdatedT", chatRoom.getRoomUpdatedT().format(fmtDateTime));
-				return nrMap;
-    		})
-    		.collect(Collectors.toList());
+    public List<Map<String, Object>> getChatRoomList(Authentication authentication) {
+
+        String userUuid = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+        List<ChatRoom> crList = cor.findAllByChatRoom(userUuid);
+
+        DateTimeFormatter fmtDateTime = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm");
+
+        log.info("채팅방 목록 (USER UUID) : " + userUuid + "의 채팅방 전체 목록 가져옵니다.");
+
+        /* UUID 추출 및 닉네임 조회 */
+        Set<String> otherUserUuids = crList.stream()
+            .map(chatRoom -> !chatRoom.getUserUuidA().equalsIgnoreCase(userUuid)
+                ? chatRoom.getUserUuidA()
+                : chatRoom.getUserUuidB())
+            .collect(Collectors.toSet());
+
+        /* *
+         *  K : UUID, V : NICKNAME
+         *  Collect -> SQL In 함수 처리
+         */
+        List<User> otherUsers = ur.findAllByUserUuidIn(otherUserUuids);
+        Map<String, String> otherUserUuidToNickname = otherUsers.stream()
+            .collect(Collectors.toMap(User::getUserUuid, User::getUserNickname));
+
+        /* 반환 */
+        return crList.stream()
+            .map(chatRoom -> {
+                Map<String, Object> nrMap = new HashMap<>();
+
+                String otherUserUuid = !chatRoom.getUserUuidA().equalsIgnoreCase(userUuid)
+                    ? chatRoom.getUserUuidA()
+                    : chatRoom.getUserUuidB();
+
+                String otherUserNickname = otherUserUuidToNickname.getOrDefault(otherUserUuid, "(알수없음)");
+
+                nrMap.put("roomId", chatRoom.getRoomId());
+                nrMap.put("otherUserUuid", otherUserUuid);
+                nrMap.put("otherUserNickname", otherUserNickname);
+                nrMap.put("roomUpdatedT", chatRoom.getRoomUpdatedT().format(fmtDateTime));
+
+                return nrMap;
+            })
+            .collect(Collectors.toList());
     }
+
     
     /* ************************* 채팅 데이터 처리 **************************************** */
     /* 

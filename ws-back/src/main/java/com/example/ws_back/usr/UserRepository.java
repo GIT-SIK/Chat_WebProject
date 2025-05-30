@@ -1,6 +1,7 @@
 /* DB : Oracle */
 
 package com.example.ws_back.usr;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,7 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * 사용 : UUID (기본 사용자 정보)
 	 */
 	
-	@Query(value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_UUID) LIKE LOWER(:userUuid)", nativeQuery = true)
+	@Query(value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_UUID) = LOWER(:userUuid)", nativeQuery = true)
 	User findByUserUuid(String userUuid);
 	
 	/*
@@ -45,6 +46,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	@Query(value = "SELECT * FROM TB_USER_MA WHERE LOWER(USER_NICKNAME) LIKE LOWER(:userNickname)", nativeQuery = true)
 	User findByNickName(String userNickname);
+	
+	
+	/*
+	 * 유저 정보 (다중)
+	 * 사용 : UUID
+	 * Collect 값들 -> IN 조회 -> LIST 반환 (다:다)
+	 */
+	
+    @Query(value = "SELECT * FROM TB_USER_MA WHERE USER_UUID IN (:userUuids)", nativeQuery = true)
+    List<User> findAllByUserUuidIn(@Param("userUuids") Collection<String> userUuids);
+	
 	
 	/*
 	 * 공개된 유저 목록

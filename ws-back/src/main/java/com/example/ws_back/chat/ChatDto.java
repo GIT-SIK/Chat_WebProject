@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.example.ws_back.frnd.FriendDto;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +19,7 @@ import lombok.Setter;
 public class ChatDto {
 
 	private String roomId;
-	private String senderUserId;
+	private String senderUserUuid;
 	private String message;
 	private LocalDateTime date;
 }

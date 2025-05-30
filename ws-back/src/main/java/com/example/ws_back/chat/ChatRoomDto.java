@@ -15,8 +15,8 @@ import lombok.Setter;
 public class ChatRoomDto {
 	
 	String roomId;
-	String userIdA;
-	String userIdB;
+	String userUuidA;
+	String userUuidB;
     LocalDateTime roomCreatedT;
     LocalDateTime roomUpdatedT;
     

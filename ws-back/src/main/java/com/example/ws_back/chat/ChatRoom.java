@@ -32,11 +32,11 @@ public class ChatRoom {
     @Column(name = "ROOM_ID")
     private String roomId;
     
-    @Column(name = "USER_ID_A")
-    private String userIdA;
+    @Column(name = "USER_UUID_A")
+    private String userUuidA;
     
-    @Column(name = "USER_ID_B")
-    private String userIdB;
+    @Column(name = "USER_UUID_B")
+    private String userUuidB;
     
     @Column(name = "ROOM_CREATED_T")
     private LocalDateTime roomCreatedT;
