@@ -30,14 +30,10 @@ export default {
 
     /* 채팅방 정보, 채팅 내역 상태 저장 */
     const chatRoomListEmitData = async (data) => {
-      const roomInfo = await chat.getChatRoomInfoApi(data.ouUuid)
-      if (!roomInfo.data.error) {
-        chatStore.setRoomId(roomInfo.data.chatRoomInfo.roomId)
-        chatStore.setOtherUserUuid(roomInfo.data.chatRoomInfo.otherUserUuid)
-        chatStore.setOtherUserNickname(data.ouNickname)
-        chatStore.setOlderMessages(roomInfo.data.chatRoomMessages)
-      } else {
-        showToast(roomInfo.data.message)
+      try {
+        await chatStore.getChatRoomInfo(data.ouUuid)
+      } catch (e) {
+        console.log('채팅방 정보 가져오는 중 에러 발생 - ', e)
       }
     }
 
@@ -52,9 +48,9 @@ export default {
 
     /* 친구목록 -> 채팅방 열기 */
     const handleFriendClk = () => {
-      const userUuid = route.query.userUuid
-      if (userUuid) {
-        chatRoomListEmitData(userUuid)
+      const userUuid = route.query.r
+      if (userUuid && chatStore.otherUserUuid != null) {
+        chatRoomListEmitData({ ouUuid: chatStore.otherUserUuid })
       }
     }
 

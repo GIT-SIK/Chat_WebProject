@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import * as chat from '@/api/chat'
 
 export const useChatStore = defineStore('chat', () => {
   const roomId = ref(null)
@@ -22,6 +23,16 @@ export const useChatStore = defineStore('chat', () => {
     olderMessages.value = nOlderMessages
   }
 
+  async function getChatRoomInfo(friendUuid) {
+    const roomInfo = await chat.getChatRoomInfoApi(friendUuid)
+    if (!roomInfo.data.error) {
+      roomId.value = roomInfo.data.chatRoomInfo.roomId
+      otherUserUuid.value = roomInfo.data.chatRoomInfo.otherUserUuid
+      otherUserNickname.value = roomInfo.data.otherUserNickname
+      olderMessages.value = roomInfo.data.chatRoomMessages
+    }
+  }
+
   return {
     roomId,
     otherUserUuid,
@@ -31,5 +42,6 @@ export const useChatStore = defineStore('chat', () => {
     setOtherUserUuid,
     setOtherUserNickname,
     setOlderMessages,
+    getChatRoomInfo,
   }
 })
