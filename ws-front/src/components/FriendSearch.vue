@@ -56,12 +56,15 @@ export default {
   setup() {
     const showToast = inject('showToast')
     const searchFriendList = ref([])
-    const searchFriendData = ref()
+    const searchFriendData = ref('')
     const hasNoFriends = ref(false)
     const router = useRouter()
+
     const searchFriend = async () => {
+      setTimeout(() => {}, 100)
+      if (!searchFriendData.value) return
       try {
-        const response = await friend.getSearchFriendApi(searchFriendData.value)
+        const response = await friend.getSearchFriendListApi(searchFriendData.value)
         if (response.data.length > 0) {
           showToast(response.data.length + `명의 친구를 찾았습니다.`)
         } else {
