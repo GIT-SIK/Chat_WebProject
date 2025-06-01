@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/friends")
 public class FriendController {
 	private final FriendService fs;
 	/*
@@ -41,7 +41,7 @@ public class FriendController {
 	 * @return List<FriendInfoDto> : 친구 리스트 반환 (상태 : ACCEPTED 인 경우)
 	 */
 	
-	@RequestMapping(value = "/gfriend", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<?> getUserFriendList(@RequestBody UserDto userDto) {
 		log.info(userDto.getUserUuid() +"님의 친구 목록을 가져옵니다.");
@@ -55,9 +55,9 @@ public class FriendController {
 	 * @param String : 검색할 단어
 	 * @return List<User> : 검색한 친구 리스트 반환 (IS_PUBLIC 이 true 인 경우)
 	 */
-	@RequestMapping(value = "/sfriend", method = RequestMethod.GET) 
+	@RequestMapping(value = "/search", method = RequestMethod.GET) 
 	@ResponseBody
-	public ResponseEntity<?> getSearchFriendList (@RequestParam String search, @AuthenticationPrincipal UserDetails userDetails) {
+	public ResponseEntity<?> getSearchFriendList (@RequestParam("s") String search, @AuthenticationPrincipal UserDetails userDetails) {
 		List<Map<String, Object>> searchUserList = fs.getSearchFriendList(search, userDetails.getUsername());
 		return ResponseEntity.ok(!searchUserList.isEmpty() ? searchUserList : new ArrayList<>());
 	}
@@ -67,7 +67,7 @@ public class FriendController {
 	 * @param friendDto
 	 * @return Boolean | 친구 수락, 거절 여부 반환
 	 */
-	@RequestMapping(value = "/ufriend", method = RequestMethod.POST) 
+	@RequestMapping(value = "/accept", method = RequestMethod.POST) 
 	@ResponseBody
 	public ResponseEntity<?> respondToFriendRequest(@RequestBody FriendRequestDto friendRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
 		return fs.respondToFriendRequest(friendRequestDto, userDetails.getUsername()) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
@@ -75,15 +75,15 @@ public class FriendController {
 	
 	/**
 	 * 친구 (추가) 신청 처리
-	 * @param friendDto | 상대방 아이디
+	 * @param FriendInfoDto | Dto 중 상대방 아이디만
 	 * @return String | 친구 신청 시 확인 문구 반환 
 	 */
-	@RequestMapping(value = "/cfriend", method = RequestMethod.GET)
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<String> addFriend(@RequestParam("add") String userNickname, Authentication authentication) {
-		log.info("등록할 친구닉네임 : " + userNickname);
+	public ResponseEntity<String> addFriend(@RequestBody FriendInfoDto friendDto, Authentication authentication) {
+		log.info("등록할 친구 Uuid : " + friendDto.getFriendUuid());
 		
-		String response = fs.addFriend(userNickname, authentication);
+		String response = fs.addFriend(friendDto.getFriendUuid(), authentication);
 		log.info(response);
 		return ResponseEntity.ok(response);	
 	}
