@@ -47,7 +47,7 @@ export default {
 
       /* 친구 목록 데이터 갱신 로직 */
       if (newTabValue === '친구 목록' && friendStore.isUpdated) {
-        await friendStore.fetchFriendList(authUser.userUuid)
+        await friendStore.fetchFriendList()
         friendStore.setIsUpdated(false)
       }
     })

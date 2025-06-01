@@ -1,6 +1,8 @@
 package com.example.ws_back.chat;
 
 import com.example.ws_back.security.CustomUserDetails;
+import com.example.ws_back.usr.UserDto;
+import com.example.ws_back.usr.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ChatController {	
 
 		private final ChatService cs;
+		private final UserService us;
 		 
 		/** 실시간 메시지 저장, 반환 처리
 		 * 
@@ -79,11 +82,13 @@ public class ChatController {
 		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
 		public ResponseEntity<?> getChatMessage(@RequestParam("v") String otherUserUuid, Authentication authentication) {
 			Map<String, Object> chatRoom = cs.getChatRoom(otherUserUuid, authentication);
+			UserDto otherUserData = us.findByUserUuid(otherUserUuid);
 			Map<String, Object> response = new HashMap<>();
 			
 			if(!chatRoom.isEmpty()) {
 				response.put("error", false);
 				response.put("chatRoomInfo", chatRoom);
+				response.put("otherUserNickname", otherUserData.getUserNickname());
 			    response.put("chatRoomMessages", cs.getChatMessage(chatRoom.get("roomId").toString()));
 			} else {
 				response.put("error", true);

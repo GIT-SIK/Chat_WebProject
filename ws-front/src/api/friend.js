@@ -1,27 +1,43 @@
 import api from '@/utils/api'
 
-export async function getFriendListApi(userUuid) {
-  const data = {
-    userUuid: userUuid,
-  }
+const FRIENDS_API = '/api/auth/friends'
 
-  return await api.post('/api/auth/gfriend', data)
+/*
+ * 등록된 친구 목록 API
+ *
+ */
+
+export async function getFriendListApi() {
+  return await api.get(FRIENDS_API)
 }
 
-/* 로직 변경 필요 */
-export async function friendRequestApi(senderUserUuid, status) {
+/*
+ * 친구 요청 수락/ 거절 처리 API
+ *
+ */
+export async function friendRespondApi(senderUserUuid, friendStatus) {
   const data = {
     senderUserUuid: senderUserUuid,
-    friendStatus: status,
+    friendStatus: friendStatus,
   }
 
-  return await api.post('/api/auth/ufriend', data)
+  return await api.post(`${FRIENDS_API}/respond`, data)
 }
 
-export async function getSearchFriendApi(searchData) {
-  return await api.get('/api/auth/sfriend', { params: { search: searchData } })
+/*
+ * 친구 신청 처리 API
+ *
+ */
+
+export async function friendRequestApi(friendUuid) {
+  return await api.post(`${FRIENDS_API}/request`, { friendUuid })
 }
 
-export async function addFriendApi(userUuid) {
-  return await api.get('/api/auth/cfriend', { params: { add: userUuid } })
+/*
+ * 친구 검색 API
+ *
+ */
+
+export async function getSearchFriendListApi(searchData) {
+  return await api.get(`${FRIENDS_API}/search`, { params: { v: searchData } })
 }

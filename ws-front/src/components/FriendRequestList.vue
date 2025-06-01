@@ -21,8 +21,8 @@
           <!-- 받은 요청시 처리 -->
           <template v-if="type === 'received'">
             <v-card-actions>
-              <v-btn @click="friendRequestData(req.friendUuid, 'ACCEPTED')"> 수락 </v-btn>
-              <v-btn @click="friendRequestData(req.friendUuid, 'REJECTED')"> 거절 </v-btn>
+              <v-btn @click="friendRespond(req.friendUuid, 'ACCEPTED')"> 수락 </v-btn>
+              <v-btn @click="friendRespond(req.friendUuid, 'REJECTED')"> 거절 </v-btn>
             </v-card-actions>
           </template>
         </v-card>
@@ -31,7 +31,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 import * as friend from '@/api/friend'
 import defaultUserImage from '@/assets/default_user.png'
 import { useUserStore } from '@/store/user'
@@ -40,6 +40,7 @@ import { useFriendStore } from '@/store/friend'
 const authUser = useUserStore()
 const friendStore = useFriendStore()
 const requestList = ref([])
+const showToast = inject('showToast')
 
 const props = defineProps({
   type: {
@@ -49,10 +50,14 @@ const props = defineProps({
 })
 
 /* 친구 요청 수락에 따른 목록 데이터 갱신 로직 */
-const friendRequestData = async (friendUuid, status) => {
-  await friend.friendRequestApi(friendUuid, status)
-  requestList.value = requestList.value.filter((req) => req.friendUuid !== friendUuid)
-  friendStore.setIsUpdated(true)
+const friendRespond = async (friendUuid, status) => {
+  try {
+    await friend.friendRespondApi(friendUuid, status)
+    requestList.value = requestList.value.filter((req) => req.friendUuid !== friendUuid)
+    friendStore.setIsUpdated(true)
+  } catch (error) {
+    showToast('친구 요청 처리를 다시 시도해주세요.')
+  }
 }
 
 const fetchRequestData = async () => {
