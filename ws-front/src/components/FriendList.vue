@@ -47,7 +47,7 @@ export default {
 
     /* 친구 목록 가져오기 (최초 1회) */
     onMounted(() => {
-      friendStore.fetchFriendList(authUser.userUuid)
+      friendStore.fetchFriendList()
     })
 
     return {

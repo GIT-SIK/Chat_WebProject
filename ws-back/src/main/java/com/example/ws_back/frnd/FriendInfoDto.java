@@ -11,6 +11,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+/* 친구 정보를 가공하는 DTO */
 public class FriendInfoDto {
     private String friendUuid;
     private String friendNickname;

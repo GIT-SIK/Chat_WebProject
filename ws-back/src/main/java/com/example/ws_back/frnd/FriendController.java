@@ -41,11 +41,11 @@ public class FriendController {
 	 * @return List<FriendInfoDto> : 친구 리스트 반환 (상태 : ACCEPTED 인 경우)
 	 */
 	
-	@RequestMapping(value = "", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<?> getUserFriendList(@RequestBody UserDto userDto) {
-		log.info(userDto.getUserUuid() +"님의 친구 목록을 가져옵니다.");
-		List<FriendInfoDto> friendList = fs.getUserFriendList(userDto.getUserUuid());
+	public ResponseEntity<?> getFriendList(@AuthenticationPrincipal UserDetails userDetails) {
+		log.info(userDetails.getUsername() +"님의 친구 목록을 가져옵니다.");
+		List<FriendInfoDto> friendList = fs.getUserFriendList(userDetails.getUsername());
 		
 		return ResponseEntity.ok(!friendList.isEmpty() ? friendList : new ArrayList<>());
 	}
@@ -57,30 +57,31 @@ public class FriendController {
 	 */
 	@RequestMapping(value = "/search", method = RequestMethod.GET) 
 	@ResponseBody
-	public ResponseEntity<?> getSearchFriendList (@RequestParam("s") String search, @AuthenticationPrincipal UserDetails userDetails) {
+	public ResponseEntity<?> getSearchFriendList (@RequestParam("v") String search, @AuthenticationPrincipal UserDetails userDetails) {
 		List<Map<String, Object>> searchUserList = fs.getSearchFriendList(search, userDetails.getUsername());
 		return ResponseEntity.ok(!searchUserList.isEmpty() ? searchUserList : new ArrayList<>());
 	}
 	
 	/**
 	 * 친구 수락 거절 처리
-	 * @param friendDto
+	 * @param FriendRequestDto (Respond : 친구 UUID , 수락 상태)
 	 * @return Boolean | 친구 수락, 거절 여부 반환
 	 */
-	@RequestMapping(value = "/accept", method = RequestMethod.POST) 
+	@RequestMapping(value = "/respond", method = RequestMethod.POST) 
 	@ResponseBody
-	public ResponseEntity<?> respondToFriendRequest(@RequestBody FriendRequestDto friendRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
+	public ResponseEntity<?> friendRespond(@RequestBody FriendRequestDto friendRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
 		return fs.respondToFriendRequest(friendRequestDto, userDetails.getUsername()) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
 	}
 	
+	
 	/**
 	 * 친구 (추가) 신청 처리
-	 * @param FriendInfoDto | Dto 중 상대방 아이디만
+	 * @param FriendInfoDto | (상대방 아이디)
 	 * @return String | 친구 신청 시 확인 문구 반환 
 	 */
-	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	@RequestMapping(value = "/request", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<String> addFriend(@RequestBody FriendInfoDto friendDto, Authentication authentication) {
+	public ResponseEntity<String> friendrequest(@RequestBody FriendInfoDto friendDto, Authentication authentication) {
 		log.info("등록할 친구 Uuid : " + friendDto.getFriendUuid());
 		
 		String response = fs.addFriend(friendDto.getFriendUuid(), authentication);

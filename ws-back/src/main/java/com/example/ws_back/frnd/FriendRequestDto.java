@@ -11,6 +11,10 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+/* 친구 요청/신청 처리 가공하는 DTO */
+/* 
+ * Request - Respond가 일부 포함되어 있어 통합하여 사용함.
+ */
 public class FriendRequestDto {
 	private Long seq;
 	private String senderUserUuid;

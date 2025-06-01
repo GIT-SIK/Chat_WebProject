@@ -21,9 +21,9 @@ export const useFriendStore = defineStore(
       isUpdated.value = bool
     }
 
-    const fetchFriendList = async (userUuid) => {
+    const fetchFriendList = async () => {
       try {
-        const response = await friend.getFriendListApi(userUuid)
+        const response = await friend.getFriendListApi()
         friendList.value = response.data.filter((item) => item.friendStatus === 'ACCEPTED')
       } catch (e) {
         console.error('친구 목록 불러오기 실패:', e)

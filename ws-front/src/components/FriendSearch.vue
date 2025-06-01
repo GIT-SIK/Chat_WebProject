@@ -31,7 +31,7 @@
             {{ searchfriendItem.userNickname }}
           </div>
           <v-card-actions>
-            <v-btn @click="addFriend(searchfriendItem.userUuid)"> 친구 추가 </v-btn>
+            <v-btn @click="friendRequest(searchfriendItem.userUuid)"> 친구 추가 </v-btn>
             <v-btn @click="handleChatRoomClk(searchfriendItem.userUuid)"> 메시지 보내기 </v-btn>
           </v-card-actions>
         </v-card>
@@ -45,12 +45,6 @@
     </v-row>
   </v-card>
 </template>
-
-<!-- 
-
-친구 찾기 @click="searchFriend()"
-친구 추가 @click="addFriend(searchfriendItem.userId)"
--->
 
 <script>
 import { ref, inject } from 'vue'
@@ -88,9 +82,9 @@ export default {
       router.push({ path: '/auth/chat', query: { fu: friendUuid } })
     }
 
-    const addFriend = async (friendUuid) => {
+    const friendRequest = async (friendUuid) => {
       /* 반환시 모두 OK로 처리하여 Try가 필요 없음. */
-      const response = await friend.addFriendApi(friendUuid)
+      const response = await friend.friendRequestApi(friendUuid)
       showToast(response.data)
     }
 
@@ -102,7 +96,7 @@ export default {
       searchFriendList,
       searchFriendData,
       defaultUserImage,
-      addFriend,
+      friendRequest,
     }
   },
 }
