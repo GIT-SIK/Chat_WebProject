@@ -32,10 +32,10 @@
             <v-list-item
               v-for="(msg, i) in recentMessages"
               :key="i"
-              @click="goToChatRoom(msg.user)"
+              @click="goToChatRoom(msg.otherUserUuid)"
             >
               <v-list-item-title>
-                {{ msg.user }}
+                {{ msg.otherUserNickname }}
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{ msg.text }}
@@ -53,6 +53,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import { useChatStore } from '@/store/chat'
 import { useFriendStore } from '@/store/friend'
 import * as chat from '@/api/chat'
 import * as friend from '@/api/friend'
@@ -60,6 +61,7 @@ import * as friend from '@/api/friend'
 const router = useRouter()
 const userStore = useUserStore()
 const friendStore = useFriendStore()
+const chatStore = useChatStore()
 
 const userUuid = userStore.userUuid
 const friendCount = ref(0)
@@ -84,13 +86,15 @@ const fetchDashboardData = async () => {
 
   /* 최근 대화내역 */
   recentMessages.value = chatResponse.data.slice(0, 3).map((room) => ({
-    user: room.otherUserId,
+    otherUserNickname: room.otherUserNickname,
+    otherUserUuid: room.otherUserUuid,
     text: room.lastMessage,
   }))
 }
 
 const goToChatRoom = (friendUuid) => {
-  router.push({ path: '/auth/chat', query: { fu: friendUuid } })
+  chatStore.setOtherUserUuid(friendUuid)
+  router.push({ path: '/auth/chat', query: { r: 1 } })
 }
 
 onMounted(fetchDashboardData)
