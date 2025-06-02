@@ -41,8 +41,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
     	registry.addEndpoint(wsEndPoint)
-        .setAllowedOrigins(allowedOrigins); // vue 만 허용 
-//        .withSockJS();
+        .setAllowedOrigins(allowedOrigins) // vue 만 허용 
+        .withSockJS();
     }
     
     @Override

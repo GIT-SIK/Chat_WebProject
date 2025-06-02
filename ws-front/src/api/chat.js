@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
 import api from '@/utils/api'
 
 const BASE_URL = 'http://localhost:8081/api'
@@ -15,15 +16,23 @@ class WebSocketService {
       console.log('이미 웹소켓이 연결되어 있습니다.')
       return
     }
+
+    const sockJS = new SockJS(`${BASE_URL}${endpoint}`)
     // stomp.js 설정
     this.socket = new Client({
-      brokerURL: `${BASE_URL}${endpoint}`,
+      webSocketFactory: () => sockJS,
+      /* StompJs 만 사용할 경우 */
+      // brokerURL: `${BASE_URL}${endpoint}`,
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
       onConnect: () => {
         console.log(`WebSocket connected to ${BASE_URL}${endpoint}`)
-        this.subscribe(roomId)
+
+        /* 채팅방 정보가 없으면 구독하지 않음 */
+        // if (roomId !== null) {
+        //   this.subscribe(roomId)
+        // }
       },
       onDisconnect: () => {
         console.log('Disconnected from WebSocket.')
@@ -31,9 +40,9 @@ class WebSocketService {
       onStompError: (frame) => {
         console.error(`STOMP Error: ${frame.headers['message']}`)
       },
-      debug: (msg) => {
-        console.log(`debug : ${msg}`)
-      },
+      // debug: (msg) => {
+      //   console.log(`debug : ${msg}`)
+      // },
     })
 
     this.socket.activate()
@@ -66,7 +75,6 @@ class WebSocketService {
   // 메시지 send
   send(data) {
     if (this.socket && this.socket.connected) {
-      console.log(data)
       this.socket.publish({
         destination: `/api/chat/send`,
         body: JSON.stringify(data), // 메시지 데이터
