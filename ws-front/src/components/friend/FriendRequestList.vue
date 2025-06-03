@@ -63,6 +63,7 @@ const friendRespond = async (friendUuid, status) => {
 const fetchRequestData = async () => {
   const response = await friend.getFriendListApi(authUser.userUuid)
 
+  console.log(response.data)
   /* 보낸 요청 */
   if (props.type === 'sent') {
     requestList.value = response.data.filter(
