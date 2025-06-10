@@ -18,9 +18,9 @@
 
 <script>
 import { ref, watch, watchEffect } from 'vue'
-import FriendList from '../components/FriendList.vue'
-import FriendSearch from '../components/FriendSearch.vue'
-import FriendRequestList from '../components/FriendRequestList.vue'
+import FriendList from '../components/friend/FriendList.vue'
+import FriendSearch from '../components/friend/FriendSearch.vue'
+import FriendRequestList from '../components/friend/FriendRequestList.vue'
 import { useFriendStore } from '@/store/friend'
 import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
