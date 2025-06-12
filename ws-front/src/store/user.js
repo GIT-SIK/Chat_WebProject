@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import * as login from '@/api/login'
 import * as user from '@/api/user'
 
 export const useUserStore = defineStore('user', () => {
@@ -8,10 +7,9 @@ export const useUserStore = defineStore('user', () => {
   const token = ref(null)
   const userId = ref(null)
   const userUuid = ref(null)
-  /* */
-  const userNickname = ref(null)
 
   /* My Page data */
+  const userNickname = ref(null)
   const isAdmin = ref(null)
   const isPublic = ref(null)
   const userChatReceiveScope = ref(null)
@@ -19,14 +17,14 @@ export const useUserStore = defineStore('user', () => {
   /* My Page Updated ? */
   const isUpdated = ref(false)
 
-  async function setToken(nToken) {
+  const setToken = async (nToken) => {
     token.value = nToken
   }
 
   /* 유저 정보 불러오기
    * 사용 : 로그인, 사용자 정보가 필요한 로직
    */
-  async function getUserInfo() {
+  const getUserInfo = async () => {
     try {
       const localToken = localStorage.getItem('access_token')
       const response = await user.getUserInfo(localToken)
@@ -46,7 +44,15 @@ export const useUserStore = defineStore('user', () => {
    * 유저 정보 저장
    * 사용 : 마이페이지
    */
-  async function setUserData() {}
+  const setUserData = async () => {}
+
+  /*
+   * 유저 정보 업데이트 여부
+   * 사용 : 마이페이지
+   */
+  const setIsUpdated = (bool) => {
+    isUpdated.value = bool
+  }
 
   return {
     token,
@@ -58,6 +64,7 @@ export const useUserStore = defineStore('user', () => {
     userChatReceiveScope,
     isUpdated,
 
+    setIsUpdated,
     setToken,
     setUserData,
     getUserInfo,
