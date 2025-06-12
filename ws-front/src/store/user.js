@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', () => {
   const isAdmin = ref(null)
   const isPublic = ref(null)
   const userChatReceiveScope = ref(null)
+  const userCreatedAt = ref(null)
 
   /* My Page Updated ? */
   const isUpdated = ref(false)
@@ -33,6 +34,9 @@ export const useUserStore = defineStore('user', () => {
       userId.value = response.data.userId
       userUuid.value = response.data.userUuid
       isAdmin.value = response.data.isAdmin
+      userChatReceiveScope.value = response.data.userChatReceiveScope
+      isPublic.value = response.data.isPublic
+      userCreatedAt.value = response.data.userCreatedAt
 
       userNickname.value = response.data.userNickname
     } catch (e) {
@@ -44,7 +48,21 @@ export const useUserStore = defineStore('user', () => {
    * 유저 정보 저장
    * 사용 : 마이페이지
    */
-  const setUserData = async () => {}
+  const setUserData = async (data) => {
+    try {
+      // userNickname.value = data.userNickname
+      isPublic.value = data.isPublic
+      userChatReceiveScope.value = data.userChatReceiveScope
+
+      if (isUpdated.value) {
+        isUpdated.value = false
+        const msg = await user.updateUserDataApi(data)
+        console.log(msg)
+      }
+    } catch (e) {
+      console.error('유저 정보 Error => ', e)
+    }
+  }
 
   /*
    * 유저 정보 업데이트 여부
@@ -63,6 +81,7 @@ export const useUserStore = defineStore('user', () => {
     isAdmin,
     userChatReceiveScope,
     isUpdated,
+    userCreatedAt,
 
     setIsUpdated,
     setToken,
