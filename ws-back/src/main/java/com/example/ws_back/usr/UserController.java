@@ -65,6 +65,21 @@ public class UserController {
         }
     }
 
+    /* MYPAGE (T)*/
+    @RequestMapping(value = "/api/auth/user/update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @AuthenticationPrincipal UserDetails userDetails) {
+    	
+    	System.out.println(userDto);
+    	System.out.println(userDto.getUserNickname());
+    	System.out.println(userDto.getIsPublic());
+    	System.out.println(userDto.getUserChatReceiveScope());
+    	
+    	System.out.println(userDetails.getUsername());
+    	
+    	return ResponseEntity.ok().body("SERVER : SAVE?");
+    }
+    
     
     /********* 로그인, 회원가입 *************/
 	
