@@ -9,6 +9,14 @@
       <v-card>
         <v-card-text>
           프로필 검색 공개 여부
+          <BaseTooltip
+            icon="mdi-help-circle"
+            location="right"
+            text="친구 검색을 통한 공개여부 설정"
+            size="sm"
+            color="grey-lighten-1"
+          />
+          <!-- <span>친구 검색을 통한 공개여부 설정</span> -->
           <v-switch
             v-model="publicStatus"
             @change="chkChange"
@@ -19,6 +27,14 @@
             :class="{ on: publicStatus == 'true', off: publicStatus == 'false' }"
           />
           채팅 수신 범위
+          <BaseTooltip
+            icon="mdi-help-circle"
+            location="right"
+            text="이미 생성된 채팅방을 제외한 채팅의 수신 범위를 전체, 친구만 인지 설정"
+            size="sm"
+            color="grey-lighten-1"
+          />
+
           <v-switch
             v-model="chatScope"
             @change="chkChange"
