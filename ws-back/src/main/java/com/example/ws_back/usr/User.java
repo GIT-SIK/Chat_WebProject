@@ -1,5 +1,6 @@
 package com.example.ws_back.usr;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Table(name = "TB_USER_MA")
 @DynamicInsert
+@DynamicUpdate
 public class User {
     @Id
     @Column(name = "USER_ID")

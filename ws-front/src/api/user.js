@@ -1,16 +1,12 @@
 import api from '@/utils/api'
 
 /**
- * 유저
- *
- *
- *
- *
+ * 유저 (MyAccount) 업데이트
+ * @param data(isPublic, userChatReceiveScope)
+ * @returns 완료 여부
  */
-
-export async function setUserDataApi() {
-  const data = {}
-  return await api.post('/api/auth/user/', data)
+export async function updateUserDataApi(data) {
+  return await api.post('/api/auth/user/update', data)
 }
 
 /**

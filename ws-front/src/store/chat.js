@@ -8,22 +8,23 @@ export const useChatStore = defineStore('chat', () => {
   const otherUserNickname = ref(null)
   const olderMessages = ref(null)
 
-  async function setRoomId(nRoomId) {
+  const setRoomId = async (nRoomId) => {
     roomId.value = nRoomId
   }
-  async function setOtherUserUuid(nOtherUserUuid) {
+
+  const setOtherUserUuid = async (nOtherUserUuid) => {
     otherUserUuid.value = nOtherUserUuid
   }
 
-  async function setOtherUserNickname(nOtherUserNickname) {
+  const setOtherUserNickname = async (nOtherUserNickname) => {
     otherUserNickname.value = nOtherUserNickname
   }
 
-  async function setOlderMessages(nOlderMessages) {
+  const setOlderMessages = async (nOlderMessages) => {
     olderMessages.value = nOlderMessages
   }
 
-  async function getChatRoomInfo(friendUuid) {
+  const getChatRoomInfo = async (friendUuid) => {
     const roomInfo = await chat.getChatRoomInfoApi(friendUuid)
     if (!roomInfo.data.error) {
       roomId.value = roomInfo.data.chatRoomInfo.roomId

@@ -8,13 +8,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.ws_back.chat.ChatServiceImpl;
 import com.example.ws_back.security.JwtUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -31,6 +34,27 @@ public class UserServiceImpl implements UserService {
 
     public UserDto findByUserUuid(String userUuid){
         return modelMapper.map(ur.findByUserUuid(userUuid),UserDto.class);
+    }
+    
+    
+	/**
+     * 유저 데이터 저장 (마이페이지)
+     * @Param : userUuid
+     * @Return : User -> UserDto
+     */
+    /**
+     * Repository @Param updateUserByUserUuid(String userUuid, String userNickname, String isPublic, String userChatReceiveScope);
+     */
+    
+    public boolean updateUser(UserDto userDto) {
+    	try {
+    	User user = modelMapper.map(userDto, User.class);
+    	return ur.updateUserByUserUuid(user.getUserUuid(), user.getUserNickname(), user.getIsPublic(), user.getUserChatReceiveScope()) > 0 ? true : false; 	
+    	} catch (Exception e) {
+    	    log.error(userDto.getUserUuid() + "님 유저 데이터 저장 오류");
+    		return false;
+    	}
+    	
     }
 
     /**

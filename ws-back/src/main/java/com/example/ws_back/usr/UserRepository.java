@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -23,6 +25,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false' END FROM TB_USER_MA WHERE LOWER(USER_ID) LIKE LOWER(:id)", nativeQuery = true)
 	boolean existsByUserId(String id);
 		
+	/*
+	 * 유저 저장
+	 * 사용 : 마이페이지
+	 */
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TB_USER_MA u SET u.USER_NICKNAME = NVL(:userNickname, u.USER_NICKNAME), u.IS_PUBLIC = NVL(:isPublic, u.IS_PUBLIC), u.USER_CHAT_RECEIVE_SCOPE = NVL(:userChatReceiveScope, u.USER_CHAT_RECEIVE_SCOPE) WHERE u.USER_UUID = :userUuid", nativeQuery = true)
+	int updateUserByUserUuid(String userUuid, String userNickname, String isPublic, String userChatReceiveScope);
+
+	
 	/*
 	 * 유저 정보 
 	 * 사용 : 로그인 (기본 사용자 정보)

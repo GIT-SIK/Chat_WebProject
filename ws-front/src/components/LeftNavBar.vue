@@ -103,7 +103,7 @@ export default {
       { icon: 'mdi-chat-outline', badge: false, tooltip: 'Chat', val: 'chat' },
       { tab: '' },
       { tab: '' },
-      { icon: 'mdi-cog-outline', badge: false, tooltip: 'My Account' },
+      { icon: 'mdi-cog-outline', badge: false, tooltip: 'My Account', val: 'account' },
       { icon: 'mdi-logout', badge: false, tooltip: 'Logout', val: 'logout' },
     ]
 
@@ -113,6 +113,7 @@ export default {
       } else if (item === 'friends') router.push({ path: '/auth/friend' })
       else if (item === 'chat') router.push({ path: '/auth/chat' })
       else if (item === 'home') router.push({ path: '/auth' })
+    else if (item === 'account') router.push({ path: '/auth/my' })
     }
 
     const logout = () => {

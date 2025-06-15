@@ -3,14 +3,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as friend from '@/api/friend'
-import { useUserStore } from '@/store/user'
 
 export const useFriendStore = defineStore(
   'friend',
   () => {
     const tabStatus = ref('')
     const friendList = ref([])
-    const authUser = useUserStore()
     const isUpdated = ref(false)
 
     const setTabStatus = (newTabStatus) => {

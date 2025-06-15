@@ -5,6 +5,7 @@ import FriendPage from '../views/FriendPage.vue'
 import ChatPage from '../views/ChatPage.vue'
 import { useUserStore } from '@/store/user'
 import MainPage from '../views/MainPage.vue'
+import MyAccountPage from '../views/MyAccountPage.vue'
 
 /* */
 import AdminPage from '../views/AdminPage.vue'
@@ -30,6 +31,7 @@ const router = createRouter({
         { path: '', component: MainPage },
         { path: 'chat', component: ChatPage },
         { path: 'friend', component: FriendPage },
+        { path: 'my', component: MyAccountPage },
       ],
       meta: {
         roles: ['true', 'false'],

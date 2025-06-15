@@ -65,6 +65,16 @@ public class UserController {
         }
     }
 
+    /* MYPAGE (T)*/
+    @RequestMapping(value = "/api/auth/user/update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @AuthenticationPrincipal UserDetails userDetails) {
+    	
+    	userDto.setUserUuid(userDetails.getUsername());
+    	boolean isUserUpdate = us.updateUser(userDto);    	
+    	return ResponseEntity.ok().body(isUserUpdate ? "저장되었습니다.": "저장할 수 없습니다.");
+    }
+    
     
     /********* 로그인, 회원가입 *************/
 	
