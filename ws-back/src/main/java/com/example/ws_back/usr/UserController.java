@@ -70,14 +70,9 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @AuthenticationPrincipal UserDetails userDetails) {
     	
-    	System.out.println(userDto);
-    	System.out.println(userDto.getUserNickname());
-    	System.out.println(userDto.getIsPublic());
-    	System.out.println(userDto.getUserChatReceiveScope());
-    	
-    	System.out.println(userDetails.getUsername());
-    	
-    	return ResponseEntity.ok().body("SERVER : SAVE?");
+    	userDto.setUserUuid(userDetails.getUsername());
+    	boolean isUserUpdate = us.updateUser(userDto);    	
+    	return ResponseEntity.ok().body(isUserUpdate ? "저장되었습니다.": "저장할 수 없습니다.");
     }
     
     
