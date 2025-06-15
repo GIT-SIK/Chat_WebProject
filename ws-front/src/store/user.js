@@ -57,7 +57,7 @@ export const useUserStore = defineStore('user', () => {
       if (isUpdated.value) {
         isUpdated.value = false
         const msg = await user.updateUserDataApi(data)
-        console.log(msg)
+        return msg.data
       }
     } catch (e) {
       console.error('유저 정보 Error => ', e)

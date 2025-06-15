@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
@@ -63,6 +63,7 @@ const nickname = ref(userStore.userNickname)
 const publicStatus = ref(userStore.isPublic)
 const chatScope = ref(userStore.userChatReceiveScope)
 const userCreatedAt = ref(userStore.userCreatedAt)
+const showToast = inject('showToast')
 
 const chkChange = () => {
   if (
@@ -75,11 +76,12 @@ const chkChange = () => {
   }
 }
 
-const saveUser = () => {
-  userStore.setUserData({
+const saveUser = async() => {
+  const msg = await userStore.setUserData({
     isPublic: publicStatus.value,
     userChatReceiveScope: chatScope.value,
   })
+  showToast(msg)
 }
 
 const formatDate = (dateString) => {
