@@ -1,5 +1,7 @@
 import api from '@/utils/api'
 
+const SIGNUP_API = '/api/signup'
+
 export async function signupApi(userId, password, nickname) {
   const data = {
     userId: userId,
@@ -7,7 +9,7 @@ export async function signupApi(userId, password, nickname) {
     userNickName: nickname,
   }
 
-  return await api.post('/api/signup', data)
+  return await api.post(SIGNUP_API, data)
 }
 
 export async function checkUserApi(type, tData) {
@@ -16,5 +18,5 @@ export async function checkUserApi(type, tData) {
     data: tData,
   }
 
-  return await api.post('/api/checkuser', data)
+  return await api.get(SIGNUP_API, data)
 }

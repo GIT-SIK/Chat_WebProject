@@ -40,7 +40,7 @@ public class UserController {
      * @param request
      * @return ResponseEntity<UserDto>
      */
-    @RequestMapping(value = "/api/userinfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/users/me", method = RequestMethod.GET)
     public ResponseEntity<?> UserRefresh(HttpServletRequest request) {
         // Authorization 헤더에서 토큰 추출
         String token = request.getHeader("Authorization");
@@ -66,7 +66,7 @@ public class UserController {
     }
 
     /* MYPAGE (T)*/
-    @RequestMapping(value = "/api/auth/user/update", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/users/me", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @AuthenticationPrincipal UserDetails userDetails) {
     	
@@ -119,7 +119,7 @@ public class UserController {
 	 * @param request (userId, userNickName)
 	 * @return ResponseEntity<Map<String, Boolean>> 
 	 */
-	@RequestMapping(value = "/api/checkuser", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/signup", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> checkUser(@RequestBody Map<String, String> request) {
 	    
@@ -152,7 +152,7 @@ public class UserController {
 	  * @return USER_ID
 	  */
 	
-	@RequestMapping(value = "/api/auth/info", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/admin/info", method = RequestMethod.POST)
 	@ResponseBody
 	public UserDto testpage(@AuthenticationPrincipal CustomUserDetails userDetails) {
 	    // 인증된 사용자 정보 가져오기

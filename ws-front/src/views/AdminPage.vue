@@ -89,7 +89,7 @@ export default {
         }
 
         const response = await api.post(
-          '/api/auth/info',
+          '/admin/info',
           {},
           {
             headers: {

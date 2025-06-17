@@ -49,6 +49,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
+  try {
   await userStore.getUserInfo()
   if (userStore.isAdmin === null) {
     if (to.path.startsWith('/auth') || to.path.startsWith('/admin')) {
@@ -64,6 +65,9 @@ router.beforeEach(async (to, from, next) => {
     return next('/auth')
   }
   next()
+  } catch (e) {
+    return next('/')
+  }
 })
 
 export default router

@@ -26,7 +26,7 @@ public class WebSocketEventListener {
     private ChatController wsc;
 
 
-    String href = "/api/auth/topic/ws1";
+    String href = "/event/topic/ws1";
     String type = "notification";
 
     /* 입장 퇴장 메시지 */

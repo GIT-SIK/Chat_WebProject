@@ -21,12 +21,13 @@ axiosInst.interceptors.request.use(
     return config
   },
   (error) => Promise.reject(error),
+  
 )
 
 axiosInst.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('[api.js] API ERROR:', error.response || error.message)
+    // console.error('[api.js] API ERROR:', error.response || error.message)
     return Promise.reject(error.response || error.message)
   },
 )

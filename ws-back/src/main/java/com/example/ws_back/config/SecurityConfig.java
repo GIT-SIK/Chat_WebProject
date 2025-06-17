@@ -32,11 +32,11 @@ public class SecurityConfig {
      * 미인증 사용자까지 허용할 주소 리스트
      */
     private static final String[] AUTH_WHITELIST = {
-        "/logout", "/login", "/api/**"
+        "/logout", "/login", "/signup", "/ws/**"
     };	
 
     private static final String[] AUTH_REQUIRED_LIST = {
-    	"/api/auth/**"		
+    	"/api/**", "/event/**"
     };
     
     private static final String[] ADMIN_AUTH_REQUIRED_LIST = {
@@ -60,7 +60,14 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             
-            // JWT 필터 추가
+            // JWT 필터 추가 (로그인 / API 요청)
+            /*
+             * class 실행 전 JwtAuthFilter 우선순위 실행
+             * 
+             * 로그인시 JwtAuthFilter 통과함.
+             * API요청시 JwtAuthFilter를 통해 요청으로 들어온 토큰을 확인하는 역할 부여 
+             * 
+             */
             .addFilterBefore(
                 new JwtAuthFilter(customUserDetailsService, jwtUtil),
                 UsernamePasswordAuthenticationFilter.class
@@ -74,9 +81,9 @@ public class SecurityConfig {
             
             // 권한 설정
             .authorizeHttpRequests(authorize -> authorize
+            	.requestMatchers(AUTH_WHITELIST).permitAll()
             	.requestMatchers(ADMIN_AUTH_REQUIRED_LIST).hasAuthority("IsAdmin_true")
             	.requestMatchers(AUTH_REQUIRED_LIST).authenticated()
-                .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().denyAll() 
                 // .anyRequest().authenticated()
             )

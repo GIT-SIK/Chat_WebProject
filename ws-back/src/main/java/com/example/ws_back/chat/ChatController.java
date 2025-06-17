@@ -111,7 +111,7 @@ public class ChatController {
 		// 동시성(동기화) 제어를 위해 Atomic 처리
 		public AtomicInteger userCount = new AtomicInteger(0);
 		
-	    @RequestMapping(value = "/api/chat/uc", method = RequestMethod.GET)
+	    @RequestMapping(value = "/chat/uc", method = RequestMethod.GET)
 	    @ResponseBody
 		public ChatUserCount returnUC(@AuthenticationPrincipal CustomUserDetails userDetails) {
 	    	return new ChatUserCount(userCount.get());

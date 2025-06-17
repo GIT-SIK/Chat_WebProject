@@ -9,7 +9,7 @@ export function subscribeToSse(userUuid, onMessageCallback, onErrorCallback) {
   const EventSource = EventSourcePolyfill
 
   const sse = new EventSource(
-    `http://localhost:8081/api/auth/notification/subscribe?userUuid=${userUuid}`,
+    `http://localhost:8081/event/notification/subscribe?userUuid=${userUuid}`,
     {
       headers: headers,
       withCredentials: true,

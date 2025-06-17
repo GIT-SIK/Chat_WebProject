@@ -39,8 +39,10 @@ export const useUserStore = defineStore('user', () => {
       userCreatedAt.value = response.data.userCreatedAt
 
       userNickname.value = response.data.userNickname
+      return true
     } catch (e) {
       localStorage.removeItem('access_token')
+      return false
     }
   }
 

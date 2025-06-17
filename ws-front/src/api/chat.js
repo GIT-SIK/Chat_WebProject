@@ -2,7 +2,7 @@ import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import api from '@/utils/api'
 
-const BASE_URL = 'http://localhost:8081/api'
+const BASE_URL = 'http://localhost:8081'
 
 class WebSocketService {
   constructor() {

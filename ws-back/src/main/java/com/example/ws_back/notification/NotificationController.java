@@ -15,7 +15,6 @@ import com.example.ws_back.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/api/auth/notification")
 @RequiredArgsConstructor
 public class NotificationController {
 
@@ -26,7 +25,7 @@ public class NotificationController {
      * @param authentication
      * @return List<NotificationDto> | 알림 리스트
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/notification", method = RequestMethod.GET)
     public ResponseEntity<?> getNotis(Authentication authentication) {
     	String userUuid = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
         return ResponseEntity.ok(noti.getNotificationList(userUuid));
@@ -36,7 +35,7 @@ public class NotificationController {
      * @param UserId | 알림 받을 (구독) 유저
      * @return SseEmitter
      */
-    @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
+    @RequestMapping(value = "/event/notification/subscribe", method = RequestMethod.GET)
     public SseEmitter sseSubscribe(@RequestParam String userUuid, Authentication authentication) {
     	String authUserUuid = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
     	
