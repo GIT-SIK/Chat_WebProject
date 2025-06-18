@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.ws_back.security.CustomUserDetails;
@@ -46,7 +47,7 @@ public class UserController {
         // Authorization 헤더에서 토큰 추출
         String token = request.getHeader("Authorization");
         if (token == null || token.equals("Bearer null") || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("사용자를 확인할 수 없습니다.");
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
         
         // "Bearer "를 제외한 실제 토큰 부분만 추출
@@ -62,7 +63,7 @@ public class UserController {
             
             return ResponseEntity.ok(userDto);  // 유저 정보를 반환
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("사용자를 확인할 수 없습니다.");
+            return ResponseEntity.status(404).body("사용자를 확인할 수 없습니다.");
         }
     }
 
@@ -112,7 +113,17 @@ public class UserController {
 	@ResponseBody
 	public ResponseEntity<?> signup(@RequestBody UserDto userDto) {
 		log.info("회원가입 처리 중...");
-		return us.signup(userDto) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
+		String userId = userDto.getUserId();
+		String userNickname = userDto.getUserNickname();
+		String userPw = userDto.getUserPw();
+		if((userId.length() < 9 && userId.length() > 2) 
+			&& (userNickname.length() < 9 && userNickname.length() > 2 )
+			&& (userPw.length() > 3 && userPw.length() < 16)
+		) {
+			return ResponseEntity.ok(us.signup(userDto));
+		} else {
+			return ResponseEntity.ok(false);
+		}
 	}
 	
 	/** 회원가입 아이디, 닉네임 사용 여부
@@ -121,27 +132,28 @@ public class UserController {
 	 * @return ResponseEntity<Map<String, Boolean>> 
 	 */
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
-	@ResponseBody
-	public ResponseEntity<Map<String, Object>> checkUser(@RequestBody Map<String, String> request) {
+	public ResponseEntity<Map<String, Object>> checkUser(    @RequestParam(required = false) String id,
+		    @RequestParam(required = false) String nickname ) {
 	    
-        String type = request.get("type");
-        String data = request.get("data");
-        
+      
         Map<String, Object> response = new HashMap<>();
   
-        if (type.equals("id")) {
+        log.info("--------------------- 회원가입 체크 ---------------------");
+        if (id != null) {
             response.put("type", "id");
-            response.put("data", us.isIdValid(data));
-            log.info("ID 확인 성공 | 반환 : " + us.isIdValid(data));
-        } else if (type.equals("nickname")) {
+            response.put("data", us.isIdValid(id));
+            log.info("ID 확인 성공 | 반환 : " + us.isIdValid(id));
+        } else if (nickname != null) {
             response.put("type", "nickname");
-            response.put("data", us.isNickValid(data));
-            log.info("NICKNAME 확인 성공 | 반환 : " + us.isNickValid(data));
+            response.put("data", us.isNickValid(nickname));
+            log.info("NICKNAME 확인 성공 | 반환 : " + us.isNickValid(nickname));
         } else {
         	log.info("ID, NICKNAME 확인 실패");
+        	log.info("------------------------------------------------------");
 			return ResponseEntity.badRequest().build();
 		
 		}
+        log.info("------------------------------------------------------");
 		return ResponseEntity.ok(response);
 	}
 	

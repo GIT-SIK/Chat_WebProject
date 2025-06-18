@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { signupApi, checkUserApi } from '@/api/signup'
 
 export default {
@@ -45,6 +45,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const showToast = inject('showToast')
     // 유효성 상태
     const validationColors = ref({
       id: 'default',
@@ -81,22 +82,34 @@ export default {
     // 아이디, 닉네임 중복여부 체크
     const checkUser = async (cType) => {
       try {
-        const response = await checkUserApi(cType, signupData.value[cType])
-        validationColors.value[response.data.type] = response.data.data ? 'red' : 'green'
-      } catch (error) {
-        console.error('중복 확인 중 오류:', error)
-      }
+        if (signupData.value[cType].length > 2 && signupData.value[cType].length < 9) {
+          const response = await checkUserApi(cType, signupData.value[cType])
+          validationColors.value[response.data.type] = response.data.data ? 'red' : 'green'
+        } else {
+          if (cType === 'id') {
+            showToast('아이디는 3~8자만 사용 가능합니다.')
+          } else {
+            showToast('닉네임는 3~8자만 사용 가능합니다.')
+          }
+          validationColors.value[cType] = 'red'
+        }
+      } catch (error) {}
     }
 
     // 회원가입
     const signup = async () => {
       if (validationColors.value.id !== 'green' || validationColors.value.nickname !== 'green') {
-        alert('아이디와 닉네임을 확인해주세요.')
+        showToast('아이디와 닉네임을 확인해주세요.')
         return
       }
 
       if (signupData.value.password !== signupData.value.cpassword) {
-        alert('비밀번호가 일치하지 않습니다.')
+        showToast('비밀번호가 일치하지 않습니다.')
+        return
+      }
+      console.log(signupData.value.password.length)
+      if (!(signupData.value.password.length > 3 && signupData.value.password.length < 16)) {
+        showToast('비밀번호는 4~15자만 가능합니다.')
         return
       }
 
@@ -106,8 +119,8 @@ export default {
           signupData.value.password,
           signupData.value.nickname,
         )
-        if (response.status === 200) {
-          alert('회원가입이 완료되었습니다.')
+        if (response.data) {
+          showToast('회원가입이 완료되었습니다.')
           signupData.value = {
             id: '',
             nickname: '',
@@ -115,11 +128,13 @@ export default {
             cpassword: '',
           }
           signupClose()
+        } else {
+          showToast('회원가입이 실패하였습니다.')
         }
       } catch (e) {
         if (e.response) {
-          if (e.response.status === 500) {
-            console.error('500 : 회원가입을 실패하였습니다.')
+          if (e.response === 500) {
+            showToast('회원가입을 실패하였습니다.')
           } else if (e.response.status === 400) {
             console.error('400 : ', e.response.data)
           }
