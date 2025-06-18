@@ -85,7 +85,8 @@ export default {
       if (!token) {
         return
       }
-      chatService.connect('/ws', token, roomId.value) // WebSocket 연결
+      /* CHAT.js BASE URL */
+      chatService.connect('', token, roomId.value)
     }
 
     // 이전 메시지 목록 가져와서 date 포멧팅

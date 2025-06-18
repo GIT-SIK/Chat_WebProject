@@ -13,6 +13,7 @@ import com.example.ws_back.chat.ChatController;
 
 import lombok.extern.slf4j.Slf4j;
 
+/* 다인 챗방시 사용될 이벤트 리스너 */
 @Component
 @Slf4j
 public class WebSocketEventListener {
@@ -26,7 +27,7 @@ public class WebSocketEventListener {
     private ChatController wsc;
 
 
-    String href = "/event/topic/ws1";
+    String href = "/event/chat/topic/ws1";
     String type = "notification";
 
     /* 입장 퇴장 메시지 */

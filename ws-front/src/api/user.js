@@ -1,6 +1,6 @@
 import api from '@/utils/api'
 
-const USER_API = '/api/users/me'
+const USER_API = '/users/me'
 
 /**
  * 유저 (MyAccount) 업데이트

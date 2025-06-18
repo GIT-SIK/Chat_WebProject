@@ -1,6 +1,6 @@
 import api from '@/utils/api'
 
-const FRIENDS_API = '/api/friends'
+const FRIENDS_API = '/friends'
 
 /*
  * 등록된 친구 목록 API

@@ -1,6 +1,6 @@
 import api from '@/utils/api'
 
-const SIGNUP_API = '/api/signup'
+const SIGNUP_API = '/signup'
 
 export async function signupApi(userId, password, nickname) {
   const data = {

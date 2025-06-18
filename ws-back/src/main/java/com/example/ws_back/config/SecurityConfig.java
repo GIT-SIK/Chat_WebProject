@@ -32,7 +32,7 @@ public class SecurityConfig {
      * 미인증 사용자까지 허용할 주소 리스트
      */
     private static final String[] AUTH_WHITELIST = {
-        "/logout", "/login", "/signup", "/ws/**"
+        "/api/logout", "/api/login", "/api/signup", "/event/ws/**"
     };	
 
     private static final String[] AUTH_REQUIRED_LIST = {

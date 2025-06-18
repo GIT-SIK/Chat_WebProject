@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @Slf4j
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ChatController {	
 
@@ -45,8 +46,8 @@ public class ChatController {
 		 * 
 		 * 
 		 */
-		
-		@MessageMapping("/api/chat/send")
+		/* WebSocketConfig 라우터 규칙 Prefixes 주석 처리 */
+		@MessageMapping("/event/chat/app")
 		public void sendMessage(ChatDto chatDto) {		
 			cs.chatMessage(chatDto);
 	    }
@@ -66,7 +67,7 @@ public class ChatController {
 		 * @return List<Map<String, Object>> | List -> 채팅방 ID, 상대방 ID, 마지막 업데이트일
 		 */
 		
-		@RequestMapping(value = "/api/chat/list", method = RequestMethod.GET)
+		@RequestMapping(value = "/chat/list", method = RequestMethod.GET)
 		public ResponseEntity<List<Map<String, Object>>> getChatList(Authentication authentication) {
 			/* 해당 사용자의 채팅방 리스트 리턴 */
 			List<Map<String, Object>> crList = cs.getChatRoomList(authentication);
@@ -79,7 +80,7 @@ public class ChatController {
 		 * @return ChatRoomInfo, ChatRoomMessages | 채팅방 ID, 본인ID, 상대방ID, 방 생성일, 마지막 업데이트일 / 채팅 메시지 내
 		 * 채팅방 ID는 UUID로 생성됨.
 		 */
-		@RequestMapping(value = "/api/chat/join", method = RequestMethod.GET)
+		@RequestMapping(value = "/chat/join", method = RequestMethod.GET)
 		public ResponseEntity<?> getChatMessage(@RequestParam("v") String otherUserUuid, Authentication authentication) {
 			Map<String, Object> chatRoom = cs.getChatRoom(otherUserUuid, authentication);
 			UserDto otherUserData = us.findByUserUuid(otherUserUuid);
