@@ -50,21 +50,16 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   try {
-  await userStore.getUserInfo()
-  if (userStore.isAdmin === null) {
-    if (to.path.startsWith('/auth') || to.path.startsWith('/admin')) {
-      return next('/')
+    await userStore.getUserInfo()
+    if (to.meta.roles.includes(userStore.isAdmin)) {
+      return next()
+    } else {
+      if (userStore.isAdmin !== null) {
+        return next('/auth')
+      } else {
+        return next('/')
+      }
     }
-    return next()
-  }
-  if (to.meta.roles && !to.meta.roles.includes(userStore.isAdmin)) {
-    return next('/auth')
-  }
-
-  if (to.path === '/' && userStore.isAdmin !== null) {
-    return next('/auth')
-  }
-  next()
   } catch (e) {
     return next('/')
   }
