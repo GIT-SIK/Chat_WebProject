@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/auth/friends")
+@RequestMapping("/api/friends")
 public class FriendController {
 	private final FriendService fs;
 	/*
@@ -67,7 +67,7 @@ public class FriendController {
 	 * @param FriendRequestDto (Respond : 친구 UUID , 수락 상태)
 	 * @return Boolean | 친구 수락, 거절 여부 반환
 	 */
-	@RequestMapping(value = "/respond", method = RequestMethod.POST) 
+	@RequestMapping(value = "", method = RequestMethod.PUT) 
 	@ResponseBody
 	public ResponseEntity<?> friendRespond(@RequestBody FriendRequestDto friendRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
 		return fs.respondToFriendRequest(friendRequestDto, userDetails.getUsername()) ? ResponseEntity.ok(true) : ResponseEntity.status(500).body(false);	
@@ -79,7 +79,7 @@ public class FriendController {
 	 * @param FriendInfoDto | (상대방 아이디)
 	 * @return String | 친구 신청 시 확인 문구 반환 
 	 */
-	@RequestMapping(value = "/request", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> friendrequest(@RequestBody FriendInfoDto friendDto, Authentication authentication) {
 		log.info("등록할 친구 Uuid : " + friendDto.getFriendUuid());

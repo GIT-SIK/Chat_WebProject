@@ -3,6 +3,7 @@ package com.example.ws_back.config;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -31,8 +32,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 	
     /* 메시지 브로커 / 라우팅 규칙 */
+    /* Server → Client(메시지 주소)(topic, queue) : enableSimpleBroker
+     * Client → Server(주소 생략 [prefix])(app) : setApplicationDestinationPrefixes,@MessageMapping
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
+
         registry.enableSimpleBroker(wsBroker); 
 //        registry.setApplicationDestinationPrefixes(wsApp); 
     }

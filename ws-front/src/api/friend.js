@@ -1,6 +1,6 @@
 import api from '@/utils/api'
 
-const FRIENDS_API = '/api/auth/friends'
+const FRIENDS_API = '/friends'
 
 /*
  * 등록된 친구 목록 API
@@ -21,7 +21,7 @@ export async function friendRespondApi(senderUserUuid, friendStatus) {
     friendStatus: friendStatus,
   }
 
-  return await api.post(`${FRIENDS_API}/respond`, data)
+  return await api.put(`${FRIENDS_API}`, data)
 }
 
 /*
@@ -30,7 +30,7 @@ export async function friendRespondApi(senderUserUuid, friendStatus) {
  */
 
 export async function friendRequestApi(friendUuid) {
-  return await api.post(`${FRIENDS_API}/request`, { friendUuid })
+  return await api.post(`${FRIENDS_API}`, { friendUuid })
 }
 
 /*

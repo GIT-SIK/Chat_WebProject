@@ -195,7 +195,7 @@ public class ChatServiceImpl implements ChatService{
     public void chatMessage(ChatDto chatDto) {
     	chatDto.setDate(UtcToKst(chatDto.getDate()));
     	saveMessageToRedis(chatDto.getRoomId(), chatDto);
-    	smt.convertAndSend("/api/chat/receive/" + chatDto.getRoomId(), chatDto);
+    	smt.convertAndSend("/event/chat/queue/" + chatDto.getRoomId(), chatDto);
     }
     
     /* [save] Redis */

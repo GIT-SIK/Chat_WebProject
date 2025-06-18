@@ -1,20 +1,17 @@
 import api from '@/utils/api'
 
+const SIGNUP_API = '/signup'
+
 export async function signupApi(userId, password, nickname) {
   const data = {
     userId: userId,
     userPw: password,
-    userNickName: nickname,
+    userNickname: nickname,
   }
 
-  return await api.post('/api/signup', data)
+  return await api.post(SIGNUP_API, data)
 }
 
 export async function checkUserApi(type, tData) {
-  const data = {
-    type: type,
-    data: tData,
-  }
-
-  return await api.post('/api/checkuser', data)
+  return await api.get(SIGNUP_API, { params: { [type]: tData } })
 }

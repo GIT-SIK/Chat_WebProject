@@ -47,6 +47,7 @@ defineExpose({ addToast })
   margin-bottom: 0 !important;
   transition: opacity 0.5s ease-in-out;
   display: block !important;
+  white-space: pre-line;
 }
 
 /* 애니메이션 효과 */

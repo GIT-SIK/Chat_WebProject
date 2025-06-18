@@ -49,21 +49,20 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
-  await userStore.getUserInfo()
-  if (userStore.isAdmin === null) {
-    if (to.path.startsWith('/auth') || to.path.startsWith('/admin')) {
-      return next('/')
+  try {
+    await userStore.getUserInfo()
+    if (to.meta.roles.includes(userStore.isAdmin)) {
+      return next()
+    } else {
+      if (userStore.isAdmin !== null) {
+        return next('/auth')
+      } else {
+        return next('/')
+      }
     }
-    return next()
+  } catch (e) {
+    return next('/')
   }
-  if (to.meta.roles && !to.meta.roles.includes(userStore.isAdmin)) {
-    return next('/auth')
-  }
-
-  if (to.path === '/' && userStore.isAdmin !== null) {
-    return next('/auth')
-  }
-  next()
 })
 
 export default router

@@ -2,7 +2,7 @@ import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import api from '@/utils/api'
 
-const BASE_URL = 'http://localhost:8081/api'
+const BASE_URL = 'http://localhost:8081/event/ws'
 
 class WebSocketService {
   constructor() {
@@ -51,7 +51,7 @@ class WebSocketService {
   // 구독 추가
   subscribe(roomId) {
     this.unsubscribe(roomId)
-    this.subscriptions[roomId] = this.socket.subscribe(`/api/chat/receive/${roomId}`, (message) => {
+    this.subscriptions[roomId] = this.socket.subscribe(`/event/chat/queue/${roomId}`, (message) => {
       const msg = JSON.parse(message.body)
       if (this.listeners[roomId]) {
         this.listeners[roomId](msg)
@@ -76,7 +76,7 @@ class WebSocketService {
   send(data) {
     if (this.socket && this.socket.connected) {
       this.socket.publish({
-        destination: `/api/chat/send`,
+        destination: `/event/chat/app`,
         body: JSON.stringify(data), // 메시지 데이터
       })
     } else {
@@ -115,9 +115,9 @@ export default chatService
 /* ********** API ********** */
 
 export async function getChatRoomInfoApi(otherUserUuid) {
-  return await api.get('/api/chat/join', { params: { v: otherUserUuid } })
+  return await api.get('/chat/join', { params: { v: otherUserUuid } })
 }
 
 export async function getChatRoomListApi() {
-  return await api.get('/api/chat/list')
+  return await api.get('/chat/list')
 }

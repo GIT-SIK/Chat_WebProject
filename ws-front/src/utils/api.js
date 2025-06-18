@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = 'http://localhost:8081/'
+const baseURL = 'http://localhost:8081/api'
 
 const axiosInst = axios.create({
   baseURL: baseURL,
@@ -26,7 +26,7 @@ axiosInst.interceptors.request.use(
 axiosInst.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('[api.js] API ERROR:', error.response || error.message)
+    // console.error('[api.js] API ERROR:', error.response || error.message)
     return Promise.reject(error.response || error.message)
   },
 )

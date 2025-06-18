@@ -51,6 +51,7 @@ import { ref, inject } from 'vue'
 import * as friend from '@/api/friend'
 import defaultUserImage from '@/assets/default_user.png'
 import { useRouter } from 'vue-router'
+import { useChatStore } from '@/store/chat'
 
 export default {
   setup() {
@@ -58,6 +59,7 @@ export default {
     const searchFriendList = ref([])
     const searchFriendData = ref('')
     const hasNoFriends = ref(false)
+    const chatStore = useChatStore()
     const router = useRouter()
 
     const searchFriend = async () => {
@@ -82,7 +84,8 @@ export default {
 
     /* 채팅방 열기 */
     const handleChatRoomClk = (friendUuid) => {
-      router.push({ path: '/auth/chat', query: { fu: friendUuid } })
+      chatStore.setOtherUserUuid(friendUuid)
+      router.push({ path: '/auth/chat', query: { r: 1 } })
     }
 
     const friendRequest = async (friendUuid) => {
