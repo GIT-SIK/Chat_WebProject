@@ -18,13 +18,43 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	/* ID, NICKNAME은 LOWER 로 처리할 것. */
 	
 	/**
-	 * 친구 등록 목록 (전체)
+	 * 친구 등록 목록 (전체) 
 	 */
 	
 	@Query(value = "SELECT * FROM TB_FRIEND_MA WHERE (LOWER(SENDER_USER_UUID) = LOWER(:userUuid) OR LOWER(RECEIVER_USER_UUID) = LOWER(:userUuid))", nativeQuery = true)
 	List<Friend> findAllByFriend(@Param("userUuid") String userUuid);
 	
+	/**
+	 * 친구 등록 목록 (전체) (가공)
+	 * friendUuid, friendNickname, friendStatus, friendAcceptedAt, friendRequestedAt, isSender
+	 * 
+	 */
+	@Query(value = """
+		    SELECT
+		      CASE 
+		        WHEN LOWER(tfm.SENDER_USER_UUID) = LOWER(:userUuid) THEN LOWER(tfm.RECEIVER_USER_UUID)
+		        ELSE LOWER(tfm.SENDER_USER_UUID)
+		      END AS friendUuid,
+		      tum.USER_NICKNAME AS friendNickname,
+		      tfm.FRIEND_STATUS AS friendStatus,
+		      tfm.FRIEND_ACCEPTED_AT AS friendAcceptedAt,
+		      tfm.FRIEND_REQUESTED_AT AS friendRequestedAt, 
+		        CASE
+			    WHEN LOWER(tfm.SENDER_USER_UUID) = LOWER(:userUuid) THEN 'true'
+			    ELSE 'false'
+			  END AS isSender
+		    FROM TB_FRIEND_MA tfm
+		    JOIN TB_USER_MA tum ON LOWER(tum.USER_UUID) = 
+		      CASE 
+		        WHEN LOWER(tfm.SENDER_USER_UUID) = LOWER(:userUuid) THEN LOWER(tfm.RECEIVER_USER_UUID)
+		        ELSE LOWER(tfm.SENDER_USER_UUID)
+		      END
+		    WHERE LOWER(:userUuid) IN (LOWER(tfm.SENDER_USER_UUID), LOWER(tfm.RECEIVER_USER_UUID))
+		    """, nativeQuery = true)
+		List<Object[]> findAllByFriendWithNickname(@Param("userUuid") String userUuid);
 	
+	
+		
 	/**
 	 * 친구 수락, 거절
 	 */

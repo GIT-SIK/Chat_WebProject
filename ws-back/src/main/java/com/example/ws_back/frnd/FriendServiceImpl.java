@@ -44,43 +44,23 @@ public class FriendServiceImpl implements FriendService{
 	 * @param userUuid | 유저 UUID
 	 * @return List<FriendInfoDto> | 친구 목록 반환
 	 */
-	
 	public List<FriendInfoDto> getUserFriendList(String userUuid) {
-	    List<Friend> friends = fr.findAllByFriend(userUuid);
+	    List<Object[]> friends = fr.findAllByFriendWithNickname(userUuid);
+
 	    return friends.stream()
 	            .map(friend -> {
-	                // 상대방 UUID 추출
-	                String friendUuid = friend.getSenderUserUuid().equalsIgnoreCase(userUuid)
-	                        ? friend.getReceiverUserUuid()
-	                        : friend.getSenderUserUuid();
-	                
-	                boolean isSender = friend.getSenderUserUuid().equalsIgnoreCase(userUuid)
-	                        ? true
-	                        : false;
-	                
-	                // 상대방 닉네임 조회
-	                String friendNickname = ur.findByUserUuid(friendUuid).getUserNickname();
-
-	                // 날짜 -> 문자열
-	                String requestedAt = friend.getFriendRequestedAt() != null
-	                        ? friend.getFriendRequestedAt().toString()
-	                        : null;
-
-	                String acceptedAt = friend.getFriendAcceptedAt() != null
-	                        ? friend.getFriendAcceptedAt().toString()
-	                        : null;
-
-	                return new FriendInfoDto(
-	                        friendUuid,
-	                        friendNickname,
-	                        isSender,
-	                        friend.getFriendStatus(),
-	                        requestedAt,
-	                        acceptedAt
-	                );
+	                return FriendInfoDto.builder()
+	                        .friendUuid((String) friend[0])
+	                        .friendNickname((String) friend[1])
+	                        .isSender(((String) friend[5]).equalsIgnoreCase("true"))
+	                        .friendStatus((String) friend[2])
+	                        .friendRequestedAt(friend[4] != null ? friend[4].toString() : null)
+	                        .friendAcceptedAt(friend[3] != null ? friend[3].toString() : null)
+	                        .build();
 	            })
 	            .toList();
 	}
+
 
 	
 	/** 
