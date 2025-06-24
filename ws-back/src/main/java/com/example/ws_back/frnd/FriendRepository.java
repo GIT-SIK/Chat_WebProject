@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.ws_back.frnd.projection.FriendProjection;
+
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -51,7 +53,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 		      END
 		    WHERE LOWER(:userUuid) IN (LOWER(tfm.SENDER_USER_UUID), LOWER(tfm.RECEIVER_USER_UUID))
 		    """, nativeQuery = true)
-		List<Object[]> findAllByFriendWithNickname(@Param("userUuid") String userUuid);
+		List<FriendProjection> findAllByFriendWithNickname(@Param("userUuid") String userUuid);
 	
 	
 		

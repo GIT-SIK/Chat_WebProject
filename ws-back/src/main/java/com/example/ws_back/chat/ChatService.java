@@ -5,10 +5,13 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 
+import com.example.ws_back.chat.projection.ChatRoomInfoProjection;
+import com.example.ws_back.chat.projection.ChatRoomProjection;
+
 public interface ChatService {
 
-	public Map<String, Object> getChatRoom(String otherUserId, Authentication authentication);
-	public List<Map<String,Object>> getChatRoomList(Authentication authentication);
+	public ChatRoomInfoProjection getChatRoom(String otherUserId, Authentication authentication);
+	public List<ChatRoomProjection> getChatRoomList(Authentication authentication);
 	public void chatMessage(ChatDto chatDto);
 	public List<ChatDto> getChatMessage(String roomId);
 	 public String saveAllMessagesToMongo();

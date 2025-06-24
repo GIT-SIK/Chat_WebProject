@@ -6,11 +6,13 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.example.ws_back.frnd.projection.FriendProjection;
 import com.example.ws_back.notification.NotificationDto;
 import com.example.ws_back.notification.NotificationService;
 import com.example.ws_back.security.CustomUserDetails;
@@ -45,20 +47,17 @@ public class FriendServiceImpl implements FriendService{
 	 * @return List<FriendInfoDto> | 친구 목록 반환
 	 */
 	public List<FriendInfoDto> getUserFriendList(String userUuid) {
-	    List<Object[]> friends = fr.findAllByFriendWithNickname(userUuid);
-
-	    return friends.stream()
-	            .map(friend -> {
-	                return FriendInfoDto.builder()
-	                        .friendUuid((String) friend[0])
-	                        .friendNickname((String) friend[1])
-	                        .isSender(((String) friend[5]).equalsIgnoreCase("true"))
-	                        .friendStatus((String) friend[2])
-	                        .friendRequestedAt(friend[4] != null ? friend[4].toString() : null)
-	                        .friendAcceptedAt(friend[3] != null ? friend[3].toString() : null)
-	                        .build();
-	            })
-	            .toList();
+	    List<FriendProjection> projections = fr.findAllByFriendWithNickname(userUuid);
+	    return projections.stream()
+	        .map(p -> FriendInfoDto.builder()
+	            .friendUuid(p.getFriendUuid())
+	            .friendNickname(p.getFriendNickName())
+	            .friendStatus(p.getFriendStatus())
+	            .friendRequestedAt(p.getFriendRequestedAt())
+	            .friendAcceptedAt(p.getFriendAcceptedAt())
+	            .isSender(p.getIsSender())
+	            .build())
+	        .collect(Collectors.toList());
 	}
 
 
