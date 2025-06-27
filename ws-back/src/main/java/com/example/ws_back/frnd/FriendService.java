@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 
+import com.example.ws_back.frnd.projection.FriendProjection;
 import com.example.ws_back.usr.User;
 
 public interface FriendService {

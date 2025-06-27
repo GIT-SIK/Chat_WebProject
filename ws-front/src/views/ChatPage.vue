@@ -42,7 +42,7 @@ export default {
       try {
         chatRoomList.value = await chat.getChatRoomListApi()
       } catch (e) {
-        console.log('(ChatPage.vue) 채팅방 리스트 불러오는 중 에러 발생 - ' + e)
+        console.log('(ChatPage.vue) 채팅방 리스트 불러오는 중 에러 발생 - ')
       }
     }
 

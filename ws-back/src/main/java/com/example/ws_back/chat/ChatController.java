@@ -1,5 +1,7 @@
 package com.example.ws_back.chat;
 
+import com.example.ws_back.chat.projection.ChatRoomInfoProjection;
+import com.example.ws_back.chat.projection.ChatRoomProjection;
 import com.example.ws_back.security.CustomUserDetails;
 import com.example.ws_back.usr.UserDto;
 import com.example.ws_back.usr.UserService;
@@ -68,9 +70,9 @@ public class ChatController {
 		 */
 		
 		@RequestMapping(value = "/chat/list", method = RequestMethod.GET)
-		public ResponseEntity<List<Map<String, Object>>> getChatList(Authentication authentication) {
+		public ResponseEntity<?> getChatList(Authentication authentication) {
 			/* 해당 사용자의 채팅방 리스트 리턴 */
-			List<Map<String, Object>> crList = cs.getChatRoomList(authentication);
+			List<ChatRoomProjection> crList = cs.getChatRoomList(authentication);
 			return ResponseEntity.ok().body(crList);
 		}
 		
@@ -82,21 +84,19 @@ public class ChatController {
 		 */
 		@RequestMapping(value = "/chat/join", method = RequestMethod.GET)
 		public ResponseEntity<?> getChatMessage(@RequestParam("v") String otherUserUuid, Authentication authentication) {
-			Map<String, Object> chatRoom = cs.getChatRoom(otherUserUuid, authentication);
-			UserDto otherUserData = us.findByUserUuid(otherUserUuid);
-			Map<String, Object> response = new HashMap<>();
-			
-			if(!chatRoom.isEmpty()) {
-				response.put("error", false);
-				response.put("chatRoomInfo", chatRoom);
-				response.put("otherUserNickname", otherUserData.getUserNickname());
-			    response.put("chatRoomMessages", cs.getChatMessage(chatRoom.get("roomId").toString()));
-			} else {
-				response.put("error", true);
-				response.put("message","채팅을 열 수 없습니다.");
-			}
-		    
-			return ResponseEntity.ok().body(response);
+		    ChatRoomInfoProjection chatRoom = cs.getChatRoom(otherUserUuid, authentication);
+		    Map<String, Object> response = new HashMap<>();
+
+		    if (chatRoom != null) {
+		        response.put("error", false);
+		        response.put("chatRoomInfo", chatRoom);
+		        response.put("chatRoomMessages", cs.getChatMessage(String.valueOf(chatRoom.getRoomId())));
+		    } else {
+		        response.put("error", true);
+		        response.put("message", "채팅을 열 수 없습니다.");
+		    }
+
+		    return ResponseEntity.ok().body(response);
 		}
 		
 		

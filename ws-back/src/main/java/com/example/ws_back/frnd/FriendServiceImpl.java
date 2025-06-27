@@ -6,11 +6,13 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.example.ws_back.frnd.projection.FriendProjection;
 import com.example.ws_back.notification.NotificationDto;
 import com.example.ws_back.notification.NotificationService;
 import com.example.ws_back.security.CustomUserDetails;
@@ -44,43 +46,20 @@ public class FriendServiceImpl implements FriendService{
 	 * @param userUuid | 유저 UUID
 	 * @return List<FriendInfoDto> | 친구 목록 반환
 	 */
-	
 	public List<FriendInfoDto> getUserFriendList(String userUuid) {
-	    List<Friend> friends = fr.findAllByFriend(userUuid);
-	    return friends.stream()
-	            .map(friend -> {
-	                // 상대방 UUID 추출
-	                String friendUuid = friend.getSenderUserUuid().equalsIgnoreCase(userUuid)
-	                        ? friend.getReceiverUserUuid()
-	                        : friend.getSenderUserUuid();
-	                
-	                boolean isSender = friend.getSenderUserUuid().equalsIgnoreCase(userUuid)
-	                        ? true
-	                        : false;
-	                
-	                // 상대방 닉네임 조회
-	                String friendNickname = ur.findByUserUuid(friendUuid).getUserNickname();
-
-	                // 날짜 -> 문자열
-	                String requestedAt = friend.getFriendRequestedAt() != null
-	                        ? friend.getFriendRequestedAt().toString()
-	                        : null;
-
-	                String acceptedAt = friend.getFriendAcceptedAt() != null
-	                        ? friend.getFriendAcceptedAt().toString()
-	                        : null;
-
-	                return new FriendInfoDto(
-	                        friendUuid,
-	                        friendNickname,
-	                        isSender,
-	                        friend.getFriendStatus(),
-	                        requestedAt,
-	                        acceptedAt
-	                );
-	            })
-	            .toList();
+	    List<FriendProjection> projections = fr.findAllByFriendWithNickname(userUuid);
+	    return projections.stream()
+	        .map(p -> FriendInfoDto.builder()
+	            .friendUuid(p.getFriendUuid())
+	            .friendNickname(p.getFriendNickName())
+	            .friendStatus(p.getFriendStatus())
+	            .friendRequestedAt(p.getFriendRequestedAt())
+	            .friendAcceptedAt(p.getFriendAcceptedAt())
+	            .isSender(p.getIsSender())
+	            .build())
+	        .collect(Collectors.toList());
 	}
+
 
 	
 	/** 
