@@ -30,7 +30,7 @@ public class ServiceImplTest {
     private ChatServiceImpl csi;
 
     private static final String USER_UUID = "user-46eb5085-5acf-49df-a6a4-6afebebb9757";
-    private static final String OTHER_USER_UUID = "NULL";
+    private static final String OTHER_USER_UUID = "user-38eb3585-5acf-49df-a6a4-6afebebb9757";
     
     @Test
     public void ChatServiceMethod() {

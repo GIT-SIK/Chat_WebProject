@@ -29,7 +29,7 @@ export const useChatStore = defineStore('chat', () => {
     if (!roomInfo.data.error) {
       roomId.value = roomInfo.data.chatRoomInfo.roomId
       otherUserUuid.value = roomInfo.data.chatRoomInfo.otherUserUuid
-      otherUserNickname.value = roomInfo.data.otherUserNickname
+      otherUserNickname.value = roomInfo.data.chatRoomInfo.otherUserNickname
       olderMessages.value = roomInfo.data.chatRoomMessages
     }
   }
