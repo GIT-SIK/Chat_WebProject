@@ -5,6 +5,7 @@ import api from '@/utils/api'
 import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
 import piniaPersistedstate from 'pinia-plugin-persistedstate'
+import './assets/styles/fonts.css'
 
 const app = createApp(App)
 

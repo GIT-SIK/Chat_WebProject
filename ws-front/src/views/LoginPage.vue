@@ -9,8 +9,8 @@
       ></v-progress-linear>
     </template>
 
-    <v-card-title class="mt-4" style="text-align: center" color="brown-darken-2">
-      Chat APP
+    <v-card-title class="mt-4 text-h5 text-center logo" style="text-align: center" color="brown-darken-2">
+      Chatty
     </v-card-title>
     <v-container>
       <v-text-field
@@ -102,5 +102,8 @@ export default {
 }
 .signup-label {
   font-size: 14px !important;
+}
+.logo {
+  font-family: 'BookkMyungjo-Bd', sans-serif !important;
 }
 </style>
