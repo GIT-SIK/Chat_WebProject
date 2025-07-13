@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository ur;
 	private final ModelMapper modelMapper;
 	private final JwtUtil jwtUtil;
+	private final BCryptPasswordEncoder pwEncoder;
 
 	
 	/**
@@ -69,8 +71,8 @@ public class UserServiceImpl implements UserService {
         if(user == null) {
             throw new UsernameNotFoundException("아이디가 존재하지 않습니다.");
         }
-
-        if(!user.getUserPw().equals(password)) {
+        
+        if(!pwEncoder.matches(password, user.getUserPw())) {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -115,6 +117,7 @@ public class UserServiceImpl implements UserService {
 	public boolean signup(UserDto userDto) {	
 		try {
 			userDto.setUserUuid("user-" + UUID.randomUUID().toString());
+			userDto.setUserPw(pwEncoder.encode(userDto.getUserPw()));
 			ur.save(modelMapper.map(userDto, User.class));
 			return true;
 		} catch (Exception e) {
