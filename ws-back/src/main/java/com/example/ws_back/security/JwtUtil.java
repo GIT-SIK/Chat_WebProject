@@ -19,7 +19,7 @@ import javax.crypto.SecretKey;
 @Slf4j
 @Component
 public class JwtUtil {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 20 * 60 * 1000L; // 20분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 15 * 60 * 1000L; // 15분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
     private final SecretKey key;
 
@@ -34,10 +34,10 @@ public class JwtUtil {
      * @return Token String
      */
     public String createAccessToken(UserDto userDto) {
-        return createToken(userDto, ACCESS_TOKEN_EXPIRE_TIME);
+        return createAccessToken(userDto, ACCESS_TOKEN_EXPIRE_TIME);
     }
     public String createRefreshToken(UserDto userDto) {
-        return createToken(userDto, REFRESH_TOKEN_EXPIRE_TIME);
+        return createRefreshToken(userDto, REFRESH_TOKEN_EXPIRE_TIME);
     }
 
     /**
@@ -46,18 +46,34 @@ public class JwtUtil {
      * @param expireTime
      * @return JWT String
      */
-    private String createToken(UserDto userDto, long expireTime) {
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime tokenValidity = now.plusSeconds(expireTime / 1000); // Convert milliseconds to seconds
-
+    private String createAccessToken(UserDto userDto, long expireTime) {
+        ZonedDateTime now = ZonedDateTime.now(); 
+        ZonedDateTime tokenValidity = now.plusSeconds(expireTime / 1000); 
         return Jwts.builder()
-                .claim("uuid", userDto.getUserUuid())
-                .claim("isAdmin", userDto.getIsAdmin())
-                .claim("issuedAt", now.toInstant().toEpochMilli())
-                .claim("expiration", tokenValidity.toInstant().toEpochMilli())
+                .claim("uuid", userDto.getUserUuid())       
+                .claim("isAdmin", userDto.getIsAdmin())     
+                .claim("type", "access")
+                .issuedAt(Date.from(now.toInstant()))
+                .expiration(Date.from(tokenValidity.toInstant()))
                 .signWith(key)
                 .compact();
     }
+    
+    private String createRefreshToken(UserDto userDto, long expireTime) {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime tokenValidity = now.plusSeconds(expireTime / 1000);
+        return Jwts.builder()
+                .claim("uuid", userDto.getUserUuid())
+                .claim("issuedAt", now.toInstant().toEpochMilli())
+                .claim("expiration", tokenValidity.toInstant().toEpochMilli())
+                .issuedAt(Date.from(now.toInstant()))   
+                .expiration(Date.from(tokenValidity.toInstant()))
+                .claim("type", "refresh")
+                .signWith(key)
+                .compact();
+    }
+    
+    
 
     /**
      * Token에서 UserUUID 추출
@@ -75,7 +91,11 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+        	Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT Token");

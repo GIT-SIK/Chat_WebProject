@@ -10,18 +10,21 @@ const axiosInst = axios.create({
   },
 })
 
-/* config 헤더에 토큰 추가 */
-axiosInst.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    /* 없을 경우 토큰 없이 전송 */
+/* config 헤더에 토큰 추가 
+
+SkipAuth 값에 따른 헤더 설정
+*/
+axiosInst.interceptors.request.use((config) => {
+  if (config.skipAuth) {
     return config
-  },
-  (error) => Promise.reject(error),
-)
+  }
+
+  const token = localStorage.getItem('access_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
 
 axiosInst.interceptors.response.use(
   (response) => response,

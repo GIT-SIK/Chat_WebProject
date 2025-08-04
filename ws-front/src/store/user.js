@@ -4,7 +4,8 @@ import * as user from '@/api/user'
 
 export const useUserStore = defineStore('user', () => {
   // 상태
-  const token = ref(null)
+  const accessToken = ref(null)
+  const refreshToken = ref(null)
   const userId = ref(null)
   const userUuid = ref(null)
 
@@ -18,8 +19,14 @@ export const useUserStore = defineStore('user', () => {
   /* My Page Updated ? */
   const isUpdated = ref(false)
 
-  const setToken = async (nToken) => {
-    token.value = nToken
+  const setAccessToken = async (nToken) => {
+    localStorage.setItem('access_token', nToken)
+    accessToken.value = nToken
+  }
+
+  const setRefreshToken = async (nToken) => {
+    localStorage.setItem('refresh_token', nToken)
+    refreshToken.value = nToken
   }
 
   /* 유저 정보 불러오기
@@ -29,23 +36,57 @@ export const useUserStore = defineStore('user', () => {
     try {
       const localToken = localStorage.getItem('access_token')
       const response = await user.getUserInfo(localToken)
-
-      token.value = localToken
-      userId.value = response.data.userId
-      userUuid.value = response.data.userUuid
-      isAdmin.value = response.data.isAdmin
-      userChatReceiveScope.value = response.data.userChatReceiveScope
-      isPublic.value = response.data.isPublic
-      userCreatedAt.value = response.data.userCreatedAt
-
-      userNickname.value = response.data.userNickname
+      accessToken.value = localToken
+      setUserAccessData(response)
       return true
     } catch (e) {
-      localStorage.removeItem('access_token')
-      return false
+      if (e.status === 401 || e.status === 403) {
+      const newAccessToken = await refreshAccessToken()
+      if (newAccessToken) {
+        try {
+          const response = await user.getUserInfo(newAccessToken)
+          accessToken.value = newAccessToken
+          setUserAccessData(response)
+          return true
+        } catch (e2) {
+          console.error("사용자 정보 요청 실패", e2)
+        }
+      }
+    }
     }
   }
 
+const setUserAccessData = (response) => {
+  userId.value = response.data.userId
+  userUuid.value = response.data.userUuid
+  isAdmin.value = response.data.isAdmin
+  userChatReceiveScope.value = response.data.userChatReceiveScope
+  isPublic.value = response.data.isPublic
+  userCreatedAt.value = response.data.userCreatedAt
+  userNickname.value = response.data.userNickname
+}
+
+
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem('refresh_token')
+    if (!refreshToken) {
+      return false
+    }
+
+    const response = await user.getAccessToken(refreshToken)
+    const newAccessToken = response.data
+    localStorage.setItem('access_token', newAccessToken)
+    accessToken.value = newAccessToken
+    return newAccessToken
+  } catch (e) {
+    accessToken.value = ''
+    refreshToken.value = ''
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    return false
+  }
+}
   /*
    * 유저 정보 저장
    * 사용 : 마이페이지
@@ -62,7 +103,7 @@ export const useUserStore = defineStore('user', () => {
         return msg.data
       }
     } catch (e) {
-      console.error('유저 정보 Error => ', e)
+      //
     }
   }
 
@@ -75,7 +116,8 @@ export const useUserStore = defineStore('user', () => {
   }
 
   return {
-    token,
+    accessToken,
+    refreshToken,
     userUuid,
 
     userNickname,
@@ -86,7 +128,8 @@ export const useUserStore = defineStore('user', () => {
     userCreatedAt,
 
     setIsUpdated,
-    setToken,
+    setAccessToken,
+    setRefreshToken,
     setUserData,
     getUserInfo,
   }

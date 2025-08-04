@@ -65,8 +65,8 @@ export default {
       loading.value = true
       await loginApi(loginData.value.id, loginData.value.pw)
         .then(async (response) => {
-          userStore.setToken(response.data.token)
-          localStorage.setItem('access_token', response.data.token)
+          userStore.setAccessToken(response.data.accessToken)
+          userStore.setRefreshToken(response.data.refreshToken)
           await userStore.getUserInfo()
           showToast(userStore.userNickname + `님! 환영합니다.`)
           loading.value = false

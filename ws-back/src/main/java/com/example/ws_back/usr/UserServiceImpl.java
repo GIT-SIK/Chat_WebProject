@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     /**
      * 로그인 시 유저 데이터 반환
      * @Param : id, password
-     * @Return : AccessToken, User -> UserDto
+     * @Return : AccessToken, RefreshToken, User -> UserDto
      */
 
     public LoginResponse login(String userId, String password){
@@ -79,27 +79,42 @@ public class UserServiceImpl implements UserService {
         UserDto userDto = modelMapper.map(user,UserDto.class);
 
         String accessToken = jwtUtil.createAccessToken(userDto);
-        return new LoginResponse(accessToken, userDto);
+        String refreshToken = jwtUtil.createRefreshToken(userDto);
+        
+        return new LoginResponse(accessToken, refreshToken, userDto);
     }
 
+    public String UserRefreshAccessToken(String refreshToken) {
+    	String userUuid = jwtUtil.getUserUuid(refreshToken);
+    	User user = ur.findByUserUuid(userUuid);
+    	UserDto userDto = modelMapper.map(user,UserDto.class);
+    	return jwtUtil.createAccessToken(userDto);
+    }
     /**
      * Front로 반환될 데이터를 가공하는 클래스
      * @return : serviceToken, User
      *
      */
     public class LoginResponse {
-        private String token;
+        private String accessToken;
+        private String refreshToken;
 
         @JsonProperty("user")
         private UserDto userDto;
 
-        public LoginResponse(String token, UserDto userDto) {
-            this.token = token;
+        public LoginResponse(String accessToken, String refreshToken, UserDto userDto) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
             this.userDto = userDto;
         }
 
-        public String getToken(){
-            return token;
+        public String getAccessToken(){
+            return accessToken;
+
+        }
+        
+        public String getRefreshToken(){
+            return refreshToken;
 
         }
 
