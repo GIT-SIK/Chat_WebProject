@@ -24,6 +24,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,15 +60,39 @@ public class UserController {
             UserDto userDto = us.findByUserUuid(userUuid);  // 유저 정보를 찾기 위한 서비스 호출
             
             if (userDto == null) {
-                return ResponseEntity.status(404).body("사용자를 확인할 수 없습니다.");
+                return ResponseEntity.status(403).body("사용자를 확인할 수 없습니다.");
             }
             
             return ResponseEntity.ok(userDto);  // 유저 정보를 반환
+        
         } catch (Exception e) {
-            return ResponseEntity.status(404).body("사용자를 확인할 수 없습니다.");
+            return ResponseEntity.status(500).body("사용자를 확인할 수 없습니다.");
         }
     }
-
+    @RequestMapping(value = "/auth/refresh", method = RequestMethod.POST)
+    public ResponseEntity<?> UserRefreshAccessToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        System.out.println("REFRESH");
+        System.out.println(token);
+        if (token == null || token.equals("Bearer null") || !token.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+        String refreshJwtToken = token.substring(7);
+        try {
+        	String refreshAccessToken = us.UserRefreshAccessToken(refreshJwtToken);
+        	System.out.println("재발급 ACCESS TOKEN : " + refreshAccessToken);
+            return ResponseEntity.ok(refreshAccessToken);
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(401).body("리프레시 토큰이 만료되었습니다.");
+        } catch (JwtException e) {
+            return ResponseEntity.status(403).body("유효하지 않은 토큰입니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+        }
+    		
+    }
+    	
+    
     /* MYPAGE (T)*/
     @RequestMapping(value = "/users/me", method = RequestMethod.PUT)
     @ResponseBody

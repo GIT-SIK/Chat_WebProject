@@ -119,6 +119,8 @@ export default {
     const logout = () => {
       showToast('다음에 또 만나요!')
       localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('friend')
       userStore.token = null
       userStore.userId = null
       userStore.isAdmin = null

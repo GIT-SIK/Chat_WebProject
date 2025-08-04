@@ -9,6 +9,7 @@ public interface UserService {
 	public boolean isIdValid(String userId);
 	public boolean updateUser(UserDto userDto);
 	public UserDto findByUserUuid(String uuid);
+	public String UserRefreshAccessToken(String refreshToken);
 	public LoginResponse login(String userId, String password);
 	
 }
