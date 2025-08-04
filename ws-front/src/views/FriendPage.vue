@@ -22,7 +22,6 @@ import FriendList from '../components/friend/FriendList.vue'
 import FriendSearch from '../components/friend/FriendSearch.vue'
 import FriendRequestList from '../components/friend/FriendRequestList.vue'
 import { useFriendStore } from '@/store/friend'
-import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
 
 export default {
@@ -33,7 +32,6 @@ export default {
   },
   setup() {
     const friendStore = useFriendStore()
-    const authUser = useUserStore()
     const { tabStatus } = storeToRefs(friendStore)
 
     const tab = ref(tabStatus.value)
