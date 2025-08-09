@@ -15,3 +15,17 @@ export async function loginApi(userId, password) {
   }
   return await api.post('/login', data)
 }
+
+/**
+ * 로그아웃
+ * @param refreshToken
+ * @returns
+ */
+
+export async function logoutApi(refreshToken) {
+  return await api.post('/logout', null, {
+      skipAuth: true,
+      headers: {Authorization: `Bearer ${refreshToken}`}
+    }
+  )
+}

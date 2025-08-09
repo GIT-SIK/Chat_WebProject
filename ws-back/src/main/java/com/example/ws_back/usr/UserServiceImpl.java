@@ -1,8 +1,11 @@
 package com.example.ws_back.usr;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.ws_back.chat.ChatServiceImpl;
 import com.example.ws_back.security.JwtUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,8 @@ public class UserServiceImpl implements UserService {
 	private final ModelMapper modelMapper;
 	private final JwtUtil jwtUtil;
 	private final BCryptPasswordEncoder pwEncoder;
+	/* REDIS */
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	
 	/**
@@ -90,6 +96,67 @@ public class UserServiceImpl implements UserService {
     	UserDto userDto = modelMapper.map(user,UserDto.class);
     	return jwtUtil.createAccessToken(userDto);
     }
+    
+    /**
+     * 로그아웃 
+     * @Param : UserUuid, Token
+     *
+     * 사용자 토큰 → Redis Key 블랙리스트 추가
+     * 토큰 만료시간 → Redis TTL 
+     */
+
+    public void logout(String userUuid, String prefixRefreshToken){
+    	log.info("REDIS (토큰) 데이터를 저장합니다.");
+    	
+    	String refreshToken = prefixRefreshToken.substring(7);
+    	String key = "blacktoken:" + refreshToken; 
+    	
+    	/* REDIS 가공 클래스 */
+    	UserBlackToken ubt = new UserBlackToken();
+    	
+    	/* 토큰 남은 시간 확인 / 해당 토큰 USERUUID */
+    	log.info("Token Expiration : " + jwtUtil.getExpiration(refreshToken));
+    	log.info("Logout UserUuid : " + userUuid);
+    	
+    	/* 객체 값 지정 */
+    	ubt.setToken(refreshToken);
+    	ubt.setUserUuid(userUuid);
+    	ubt.setLogoutTime(LocalDateTime.now());
+    	
+   
+    	redisTemplate.opsForValue().set(key, ubt, Duration.ofSeconds(jwtUtil.getExpiration(refreshToken)/1000));
+    }
+    
+	/**
+	 * 회원가입 처리
+	 * @param UserDto | UserDto -> User 변환 후 User를 저장
+	 * @return Boolean | 회원가입 여부에 따른 true, false 반환
+	 */
+	public boolean signup(UserDto userDto) {	
+		try {
+			userDto.setUserUuid("user-" + UUID.randomUUID().toString());
+			userDto.setUserPw(pwEncoder.encode(userDto.getUserPw()));
+			ur.save(modelMapper.map(userDto, User.class));
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	};
+	
+	
+	/**
+	 *  아이디 닉네임 여부
+	 *  @param String | id, nickname 
+	 *  @return Boolean | 각 값에 따라 값이 존재할 경우 true, 아니면 false
+	 *   */
+	public boolean isNickValid(String nickname) {
+		return ur.existsByUserNickName(nickname);
+	}
+	public boolean isIdValid(String chkId) {
+		return ur.existsByUserId(chkId);
+	}
+	
+	/** 가공 데이터 **/
     /**
      * Front로 반환될 데이터를 가공하는 클래스
      * @return : serviceToken, User
@@ -123,33 +190,4 @@ public class UserServiceImpl implements UserService {
 
         }
     }
-
-	/**
-	 * 회원가입 처리
-	 * @param UserDto | UserDto -> User 변환 후 User를 저장
-	 * @return Boolean | 회원가입 여부에 따른 true, false 반환
-	 */
-	public boolean signup(UserDto userDto) {	
-		try {
-			userDto.setUserUuid("user-" + UUID.randomUUID().toString());
-			userDto.setUserPw(pwEncoder.encode(userDto.getUserPw()));
-			ur.save(modelMapper.map(userDto, User.class));
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	};
-	
-	
-	/**
-	 *  아이디 닉네임 여부
-	 *  @param String | id, nickname 
-	 *  @return Boolean | 각 값에 따라 값이 존재할 경우 true, 아니면 false
-	 *   */
-	public boolean isNickValid(String nickname) {
-		return ur.existsByUserNickName(nickname);
-	}
-	public boolean isIdValid(String chkId) {
-		return ur.existsByUserId(chkId);
-	}
 }

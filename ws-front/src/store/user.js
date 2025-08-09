@@ -42,17 +42,17 @@ export const useUserStore = defineStore('user', () => {
     } catch (e) {
       if (e.status === 401 || e.status === 403) {
       const newAccessToken = await refreshAccessToken()
-      if (newAccessToken) {
-        try {
-          const response = await user.getUserInfo(newAccessToken)
-          accessToken.value = newAccessToken
-          setUserAccessData(response)
-          return true
-        } catch (e2) {
-          console.error("사용자 정보 요청 실패", e2)
+        if (newAccessToken) {
+          try {
+            const response = await user.getUserInfo(newAccessToken)
+            accessToken.value = newAccessToken
+            setUserAccessData(response)
+            return true
+          } catch (e2) {
+            console.error("사용자 정보 요청 실패", e2)
+          }
         }
       }
-    }
     }
   }
 

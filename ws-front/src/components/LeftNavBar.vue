@@ -70,6 +70,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useNotificationStore } from '@/store/notification'
 import { storeToRefs } from 'pinia'
+import { logoutApi } from '@/api/login'
 import NotificationList from '../components/NotificationList.vue'
 
 export default {
@@ -81,6 +82,7 @@ export default {
     const userStore = useUserStore()
     const showToast = inject('showToast')
     const notificationStore = useNotificationStore()
+    
   
 
     /* 알림, 토글 갱신 상태 */
@@ -116,8 +118,10 @@ export default {
     else if (item === 'account') router.push({ path: '/auth/my' })
     }
 
-    const logout = () => {
-      showToast('다음에 또 만나요!')
+    const logout = async() => {
+      try {
+      if(await logoutApi(localStorage.getItem('refresh_token'))){
+        showToast('다음에 또 만나요!')
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
       localStorage.removeItem('friend')
@@ -125,6 +129,17 @@ export default {
       userStore.userId = null
       userStore.isAdmin = null
       router.push({ path: '/' })
+      } else {
+        showToast('잠시 후 다시 시도해주세요.')
+      }
+    } catch (e) {
+      localStorage.removeItem('friend')
+      localStorage.removeItem('refresh_token')
+      userStore.token = null
+      userStore.userId = null
+      userStore.isAdmin = null
+      router.push({ path: '/' })
+    }
     }
 
     return {
