@@ -11,5 +11,6 @@ public interface UserService {
 	public UserDto findByUserUuid(String uuid);
 	public String UserRefreshAccessToken(String refreshToken);
 	public LoginResponse login(String userId, String password);
+	public void logout(String token, String userUuid);
 	
 }

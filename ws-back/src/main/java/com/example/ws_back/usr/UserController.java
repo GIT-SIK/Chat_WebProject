@@ -41,7 +41,7 @@ public class UserController {
 	
 	/** [필수 : 항상 인증된 유저를 검증하기 위해 사용되는 메소드]
      * 토큰을 사용하여 유저 정보 반환
-     * @param request
+     * @param HttpServletRequest
      * @return ResponseEntity<UserDto>
      */
     @RequestMapping(value = "/users/me", method = RequestMethod.GET)
@@ -74,7 +74,12 @@ public class UserController {
         String token = request.getHeader("Authorization");
         System.out.println("REFRESH");
         System.out.println(token);
-        if (token == null || token.equals("Bearer null") || !token.startsWith("Bearer ")) {
+        
+        if(!jwtUtil.validateToken(token.substring(7))) {
+        	return ResponseEntity.status(401).body("사용자 인증 정보가 만료되었습니다.");
+        }
+        
+        else if (token == null || token.equals("Bearer null") || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
         String refreshJwtToken = token.substring(7);
@@ -128,6 +133,28 @@ public class UserController {
         	log.error(e.getMessage());
             return ResponseEntity.status(401).body("아이디와 비밀번호를 확인해주세요.");
         }
+	}
+	
+	/**
+	 * 로그아웃 처리
+	 * @param HttpServletRequest
+	 * @return ResponseEntity<?> | 로그아웃 여부
+	 * 토큰 블랙리스트 추가
+	 */
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
+	public ResponseEntity<?> logout(HttpServletRequest request, @AuthenticationPrincipal UserDetails userDetails) {	
+        String refreshToken = request.getHeader("Authorization");
+        if (refreshToken == null || refreshToken.equals("Bearer null") || !refreshToken.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("잘못된 접근입니다.");
+        }    
+        try {
+        us.logout(userDetails.getUsername(), refreshToken); 
+        } catch(Exception e) {
+        	return ResponseEntity.status(403).body("유효하지 않은 사용자입니다."); 
+        }
+        
+		return ResponseEntity.ok().body(true);		
 	}
     
 	/** 회원가입 처리

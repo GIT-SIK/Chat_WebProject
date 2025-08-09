@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
@@ -19,13 +20,16 @@ import javax.crypto.SecretKey;
 @Slf4j
 @Component
 public class JwtUtil {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 15 * 60 * 1000L; // 15분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 15분 (임시 1분)
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
+    private final  RedisTemplate<String, Object> redisTemplate;
     private final SecretKey key;
+   
 
-    public JwtUtil(@Value("${jwt.secret}") String secretKey) {
+    public JwtUtil(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, Object> redisTemplate) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -91,11 +95,19 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
+        	
         	Jwts.parser()
             .verifyWith(key)
             .build()
             .parseSignedClaims(token)
             .getPayload();
+        	
+            String blacListKey = "blacktoken:" + token;
+            if (Boolean.TRUE.equals(redisTemplate.hasKey(blacListKey))) {
+                log.warn("블랙리스트 등록된 토큰 입니다.");
+                return false;
+            }
+        	
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT Token");
@@ -141,6 +153,17 @@ public class JwtUtil {
                 .getExpiration();
         // 현재 시간
         Long now = new Date().getTime();
+        long tokenExpSeconds = (expiration.getTime()-now) / 1000;
+    	long tokenExpMinute = tokenExpSeconds / 60;
+    	long tokenExpHour = tokenExpMinute / 60;
+    	long tokenExpDay = tokenExpHour / 24;
+    	System.out.println("토큰 유효 시간 : " + 
+    			tokenExpDay +"일 " + 
+    			tokenExpHour % 24 +"시간 " + 
+    			tokenExpMinute % 60+ "분 " + 
+    			tokenExpSeconds % 60 + "초"
+    			);
+        
         return (expiration.getTime() - now);
     }
 }
